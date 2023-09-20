@@ -6,7 +6,7 @@ services:
     image: postgres:latest
     container_name: db
     ports:
-      - "5432:5432"
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
@@ -27,9 +27,7 @@ services:
     volumes:
       - ./backend/src:/usr/src/app/src
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE_URL=${DATABASE_URL}
     networks:
       - transcendence
 
