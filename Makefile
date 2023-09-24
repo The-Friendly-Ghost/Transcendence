@@ -23,4 +23,4 @@ re:
 	build stop run
 
 
-.PHONY: build start stop clean fclean re run
+.PHONY: all build start stop clean fclean re
