@@ -11,7 +11,7 @@ RUN npm install prisma --save-dev && \
   npx prisma && \
   npx prisma generate
 
-EXPOSE 3333
+EXPOSE $BACKEND_PORT
 
 # Run the start script in dev mode, to watch logs
 ENTRYPOINT ["npm", "run", "start:dev"]
