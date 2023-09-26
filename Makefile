@@ -19,8 +19,7 @@ clean:
 fclean:
 	docker compose down --volumes --remove-orphans
 
-re:
-	build stop run
+re: stop build start
 
 
 .PHONY: all build start stop clean fclean re

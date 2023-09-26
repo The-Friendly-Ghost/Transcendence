@@ -14,7 +14,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -43,9 +43,27 @@ services:
     networks:
       - transcendence
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./frontend/src:/usr/src/app/src
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - FRONTEND_HOST=${FRONTEND_HOST}
+      - FRONTEND_PORT=${FRONTEND_PORT}
+    networks:
+      - transcendence
 
 volumes:
   pgdata:
+
 
 networks:
   transcendence:
