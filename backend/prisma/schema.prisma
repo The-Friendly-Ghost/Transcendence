@@ -11,8 +11,10 @@ datasource db {
 }
 
 model User {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+  id       Int    @id @default(autoincrement())
+  intraId  Int    @unique
+  name     String @unique
+  password String
 
   // Standard variables to track when the user was created and updated
   createdAt DateTime @default(now())

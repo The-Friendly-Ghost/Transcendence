@@ -33,9 +33,13 @@ services:
     volumes:
       - ./backend/src:/usr/src/app/src
     environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - BACKEND_HOST=${BACKEND_HOST}
       - BACKEND_PORT=${BACKEND_PORT}
       - FRONTEND_PORT=${FRONTEND_PORT}
-      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - FORTYTWO_CLIENT_ID=${FORTYTWO_CLIENT_ID}
+      - FORTYTWO_CLIENT_SECRET=${FORTYTWO_CLIENT_SECRET}
     networks:
       - transcendence
 

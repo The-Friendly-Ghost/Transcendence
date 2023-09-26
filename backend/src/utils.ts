@@ -1,3 +1,3 @@
 export enum Debug {
-  ENABLED = 0,
+  ENABLED = 1,
 }

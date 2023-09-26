@@ -6,10 +6,11 @@ import { PrismaService } from './prisma/prisma.service';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import * as coockieParser from 'cookie-parser';
+import * as dotenv from 'dotenv';
 
-require('dotenv').config(); // Load .env file to the `process` variable
+dotenv.config(); // Load .env file to the `process` variable
 if (Debug.ENABLED) {
-  console.log(process.env);
+  console.log('Debug mode enabled');
 }
 
 async function bootstrap() {
@@ -32,6 +33,8 @@ async function bootstrap() {
   await prismaService.enableShutdownHooks(app);
 
   const origins: string[] = [
+    '*',
+    'https://api.intra.42.fr',
     'http://localhost:' + process.env.FRONTEND_PORT,
     'http://127.0.0.1:' + process.env.FRONTEND_PORT,
   ];
@@ -39,16 +42,7 @@ async function bootstrap() {
   for (let f = 0; f < 2; f++) {
     for (let r = 1; r < 7; r++) {
       for (let s = 1; s < 30; s++) {
-        origins.push(
-          'http://f' +
-            f +
-            'r' +
-            r +
-            's' +
-            s +
-            '.codam.nl:' +
-            process.env.FRONTEND_PORT,
-        );
+        origins.push('http://f' + f + 'r' + r + 's' + s + '.codam.nl:' + process.env.FRONTEND_PORT);
       }
     }
   }
@@ -57,7 +51,7 @@ async function bootstrap() {
     origin: origins,
     methods: ['GET', 'POST', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
+    // credentials: true,
   });
 
   app.use(
@@ -65,7 +59,7 @@ async function bootstrap() {
       // 3600 * 24 * 1000 = 86400000 ms = 24 hours
       cookie: { maxAge: 86400000, httpOnly: false, secure: false },
       name: 'transcendence',
-      secret: 'transcendence',
+      secret: process.env.FORTYTWO_CLIENT_SECRET,
       resave: false,
       saveUninitialized: false,
     }),
