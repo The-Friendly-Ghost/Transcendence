@@ -59,7 +59,7 @@ async function bootstrap() {
       // 3600 * 24 * 1000 = 86400000 ms = 24 hours
       cookie: { maxAge: 86400000, httpOnly: false, secure: false },
       name: 'transcendence',
-      secret: process.env.FORTYTWO_CLIENT_SECRET,
+      secret: process.env.FORTYTWO_CLIENT_SECRET + process.env.JWT_SECRET,
       resave: false,
       saveUninitialized: false,
     }),

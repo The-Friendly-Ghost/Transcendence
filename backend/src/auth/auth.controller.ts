@@ -1,24 +1,32 @@
-import { Controller, UseGuards, Request, Response, Get, Post } from '@nestjs/common';
+import { Controller, UseGuards, Request, Response, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FortyTwoAuthGuard } from './utils/forty_two_auth.guard';
+import { AuthService } from './auth.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor() {}
+  constructor(private readonly authService: AuthService) {}
 
   @Get('')
   @UseGuards(FortyTwoAuthGuard)
   @ApiOperation({ summary: 'Redirects to 42 login' })
-  async handleLogin() {
-    console.log('AuthController.handleLogin');
-    // return { msg: 'Redirecting to 42 login page' };
-  }
+  async handleLogin() {}
 
   @Get('callback')
   @UseGuards(FortyTwoAuthGuard)
-  async handleCallback() {
+  @ApiOperation({ summary: 'Callback after 42 login' })
+  async handleCallback(@Request() req: any, @Response() res: any) {
     console.log('AuthController.handleCallback');
-    return { msg: 'OK' };
+
+    const loggedUser = this.authService.login(req.user.intraId, req.user.name);
+
+    res.clearCookie('jwt');
+    res.cookie('jwt', (await loggedUser).access_token, {
+      httpOnly: false,
+      secure: false,
+    });
+
+    return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
   }
 }

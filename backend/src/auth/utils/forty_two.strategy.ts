@@ -1,10 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
-  constructor() {
+  constructor(private readonly AuthService: AuthService) {
     super({
       clientID: process.env.FORTYTWO_CLIENT_ID,
       clientSecret: process.env.FORTYTWO_CLIENT_SECRET,
@@ -18,6 +19,11 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     console.log('refreshToken', refreshToken);
     console.log('profile.username', profile.username);
 
-    return profile.login;
+    const user = await this.AuthService.validateUser(profile.id, profile.username);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return user;
   }
 }
