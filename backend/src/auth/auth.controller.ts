@@ -3,8 +3,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FortyTwoAuthGuard } from './utils/forty_two_auth.guard';
 import { authDto } from './dto/auth_dto';
 import * as argon from 'argon2';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthService } from './auth.service';
 
 @ApiTags('auth')
@@ -18,12 +16,12 @@ export class AuthController {
   async handleLogin() {}
 
   // test endpoint to try out hashing and class validation
-  @Post('info')
-  async create(@Body() authDto: authDto) {
-    const hash = await argon.hash(authDto.password);
-    console.log(hash);
-    return 'created dto, I think. hash:' + hash;
-  }
+  // @Post('info')
+  // async create(@Body() authDto: authDto) {
+  //   const hash = await argon.hash(authDto.password);
+  //   console.log(hash);
+  //   return 'created dto, I think. hash:' + hash;
+  // }
 
   @Get('callback')
   @UseGuards(FortyTwoAuthGuard)
@@ -39,6 +37,7 @@ export class AuthController {
       secure: false,
     });
 
+    console.log('AuthController.handleCallback redirecting to frontend');
     return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
   }
 }
