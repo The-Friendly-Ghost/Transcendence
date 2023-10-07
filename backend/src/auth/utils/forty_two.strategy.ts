@@ -9,8 +9,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     super({
       clientID: process.env.FORTYTWO_CLIENT_ID,
       clientSecret: process.env.FORTYTWO_CLIENT_SECRET,
-      // callbackURL: `http://${process.env.BACKEND_HOST}:${process.env.BACKEND_PORT}/auth/callback`,
-      callbackURL: 'http://localhost:3000/auth/callback', // This url is used for now, but should be changed to the one above
+      callbackURL: `http://${process.env.BACKEND_HOST}:${process.env.BACKEND_PORT}/auth/callback`,
+      // callbackURL: 'http://localhost:3000/auth/callback', // This url is used for now, but should be changed to the one above
     });
   }
 

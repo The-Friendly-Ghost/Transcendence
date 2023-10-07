@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common'
 import { AppModule } from './app.module';
 import { Debug } from './utils';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -15,6 +16,7 @@ if (Debug.ENABLED) {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
+  app.useGlobalPipes(new ValidationPipe());
 
   const config = new DocumentBuilder()
     .setTitle('Transcendence API')
