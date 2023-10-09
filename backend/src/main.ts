@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common'
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { Debug } from './utils';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -16,7 +16,7 @@ if (Debug.ENABLED) {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   const config = new DocumentBuilder()
     .setTitle('Transcendence API')
@@ -61,7 +61,7 @@ async function bootstrap() {
       // 3600 * 24 * 1000 = 86400000 ms = 24 hours
       cookie: { maxAge: 86400000, httpOnly: false, secure: false },
       name: 'transcendence',
-      secret: process.env.FORTYTWO_CLIENT_SECRET,
+      secret: process.env.FORTYTWO_CLIENT_SECRET + process.env.JWT_SECRET,
       resave: false,
       saveUninitialized: false,
     }),

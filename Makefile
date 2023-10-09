@@ -18,9 +18,11 @@ clean:
 	docker compose down --remove-orphans
 fclean:
 	docker compose down --volumes --remove-orphans
+	docker system prune -a -f
 
-re:
-	build stop run
+re: stop build start
 
+seed:
+	@docker exec -it backend npx prisma db seed || echo "\033[1;31mCould it be the container is not running?"
 
 .PHONY: all build start stop clean fclean re

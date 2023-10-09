@@ -3,24 +3,17 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FortyTwoAuthGuard } from './utils/forty_two_auth.guard';
 import { authDto } from './dto/index';
 import * as argon from 'argon2';
-import * as bcrypt from 'bcrypt';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthService } from './auth.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  //constructor(private prisma: PrismaService) {}
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Get('')
   @UseGuards(FortyTwoAuthGuard)
   @ApiOperation({ summary: 'Redirects to 42 login' })
-  async handleLogin() {
-    console.log('AuthController.handleLogin');
-    // return { msg: 'Redirecting to 42 login page' };
-  }
+  async handleLogin() {}
 
   @Get('test')
   async testFunc() {
@@ -49,12 +42,6 @@ export class AuthController {
     return 'nonesense';
   }
 
-  @Get('callback')
-  @UseGuards(FortyTwoAuthGuard)
-  async handleCallback() {
-    return this.authService.callback();
-  }
-
   // singin and signup function as shown in tutorial
   @Post('test_login')
   login(@Body() dto: authDto) {
@@ -64,6 +51,24 @@ export class AuthController {
 
   @Post('test_signup')
   signup(@Body() dto: authDto) {
-    return this.authService.test_signup(dto);
+    return this.authService.test_signup(dto);}
+
+
+  @Get('callback')
+  @UseGuards(FortyTwoAuthGuard)
+  @ApiOperation({ summary: 'Callback after 42 login' })
+  async handleCallback(@Request() req: any, @Response() res: any) {
+    console.log('AuthController.handleCallback');
+
+    const loggedUser = this.authService.login(req.user.intraId, req.user.name);
+
+    res.clearCookie('jwt');
+    res.cookie('jwt', (await loggedUser).access_token, {
+      httpOnly: false,
+      secure: false,
+    });
+
+    console.log('AuthController.handleCallback redirecting to frontend');
+    return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
   }
 }

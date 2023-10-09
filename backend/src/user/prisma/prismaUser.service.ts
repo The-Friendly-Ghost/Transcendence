@@ -1,20 +1,24 @@
 import { Injectable } from '@nestjs/common';
-// import { PrismaService } from 'src/prisma/prisma.service';
-// import { User, Prisma, Access } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { User, Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaUserService {
-  // constructor(private prisma: PrismaService) {}
-  // async findOrCreateUser(data: Prisma.UserCreateInput): Promise<User> {
-  //   const { intraId, name } = data;
-  //   return this.prisma.user
-  //     .upsert({
-  //       where: { intraId },
-  //       update: {},
-  //       create: { intraId, name },
-  //     })
-  //     .catch(() => {
-  //       return undefined;
-  //     });
-  // }
+  constructor(private prisma: PrismaService) {}
+
+  async findOrCreateUser(data: Prisma.UserCreateInput): Promise<User> {
+    const { intraId, name, password } = data;
+    console.log('PrismaUserService.findOrCreateUser');
+    console.log('intraId: ', typeof intraId);
+    console.log('name: ', name);
+
+    return this.prisma.user.upsert({
+      create: { intraId: intraId, name: name, password: password },
+      update: {},
+      where: { intraId: intraId || undefined },
+    });
+    // .catch(() => {
+    //   return undefined;
+    // });
+  }
 }

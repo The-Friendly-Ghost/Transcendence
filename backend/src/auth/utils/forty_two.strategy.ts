@@ -1,11 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
-  constructor() {
+  constructor(private readonly AuthService: AuthService) {
     super({
       clientID: process.env.FORTYTWO_CLIENT_ID,
       clientSecret: process.env.FORTYTWO_CLIENT_SECRET,
@@ -15,10 +15,17 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: any): Promise<any> {
+    console.log('FortyTwoStrategy.validate');
     console.log('accasToken', accessToken);
     console.log('refreshToken', refreshToken);
     console.log('profile', profile);
 
-    return profile.login;
+    const user = await this.AuthService.validateUser(Number(profile.id), profile.username);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    console.log('FortyTwoStrategy.validate returning user');
+    return user;
   }
 }
