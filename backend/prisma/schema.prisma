@@ -14,6 +14,7 @@ model User {
   id      Int    @id @default(autoincrement())
   intraId Int    @unique
   name    String @unique
+  friends Int[]
 
   // Standard variables to track when the user was created and updated
   // createdAt DateTime @default(now())

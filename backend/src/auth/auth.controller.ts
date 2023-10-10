@@ -1,6 +1,6 @@
 import { Controller, UseGuards, Request, Response, Get, Post, Body } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { FortyTwoAuthGuard } from './utils/forty_two_auth.guard';
+import { FortyTwoAuthGuard } from './guard/forty_two_auth.guard';
 import { authDto } from './dto/auth_dto';
 import * as argon from 'argon2';
 import { AuthService } from './auth.service';

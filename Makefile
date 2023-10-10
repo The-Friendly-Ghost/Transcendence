@@ -1,5 +1,6 @@
 
 all: build start
+	@cd backend && npx prisma db push || echo "\033[1;31mCould it be the container is not running?"
 
 host:
 	@bash SET_HOSTS
@@ -21,8 +22,5 @@ fclean:
 	docker system prune -a -f
 
 re: stop build start
-
-seed:
-	@docker exec -it backend npx prisma db seed || echo "\033[1;31mCould it be the container is not running?"
 
 .PHONY: all build start stop clean fclean re

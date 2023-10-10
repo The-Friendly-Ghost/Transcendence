@@ -18,7 +18,7 @@ export class AuthService {
     const user = await this.prismaUserService.findOrCreateUser({ intraId, name });
 
     console.log('AuthService.validateUser returning user:', user);
-    return name;
+    return user;
   }
 
   async login(intraId: number, name: string): Promise<{ access_token: string }> {
