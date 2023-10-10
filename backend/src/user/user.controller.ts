@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  InternalServerErrorException,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
@@ -13,8 +20,26 @@ export class UserController {
   @Get('me')
   @ApiOperation({ summary: 'Get json of me' })
   async getMe(@GetUser() user: User) {
-    console.log('UserController.getMe intraId', user);
+    console.info('UserController.getMe intraId', user);
     return user;
+  }
+
+  @Post('setUserName')
+  @ApiOperation({ summary: 'Set the name of the user' })
+  @ApiBody({ type: String, description: 'Name to set' })
+  async setUserName(@Body() body: any, @GetUser('intraId') intraId: number) {
+    console.log('UserController.setUserName intraId', intraId);
+    console.log('UserController.setUserName name', body.name);
+
+    // Do something with the database
+    const name: string = await this.userService
+      .setUserName(intraId, body.name)
+      .catch((e: Error) => {
+        console.error('UserController.setUserName error: ' + e.message);
+        throw new InternalServerErrorException();
+      });
+
+    return name;
   }
 
   @Post('addFriend')

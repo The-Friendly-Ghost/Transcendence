@@ -8,13 +8,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly prismaUserService: PrismaUserService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,
     });
   }
 
   async validate(payload: { intraId: number }) {
     console.log('JwtStrategy.validate payload', payload.intraId);
+    console.log('JwtStrategy.validate payload', payload);
 
     const user = await this.prismaUserService.findUser({ intraId: payload.intraId });
     if (!user) {

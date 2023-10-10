@@ -1,34 +1,46 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
-import { addFriendDto } from '../dto';
+import { addFriendDto, setUsernameDto } from '../dto';
 
 @Injectable()
 export class PrismaUserService {
   constructor(private prisma: PrismaService) {}
 
-  async findOrCreateUser(data: Prisma.UserCreateInput): Promise<User> {
-    const { intraId, name } = data;
-    console.log('PrismaUserService.findOrCreateUser');
-    console.log('intraId: ', typeof intraId);
-    console.log('name: ', name);
-
-    return this.prisma.user
+  /**
+   *
+   *
+   * Insert or update the name of the user.
+   *
+   * @param dto setUsernameDto { intraId: number, name: string}
+   * @returns
+   * User model
+   */
+  async insertOrUpdateUsername(dto: setUsernameDto): Promise<User> {
+    console.info('PrismaUserService.insertOrUpdateUsername');
+    const user: User = await this.prisma.user
       .upsert({
-        create: { intraId: intraId, name: name },
-        update: {},
-        where: { intraId: intraId || undefined },
+        create: { intraId: dto.intraId, name: dto.name },
+        update: { name: dto.name },
+        where: { intraId: dto.intraId || undefined },
       })
       .catch((e: Error) => {
-        console.log('PrismaUserService.findOrCreateUser error reason:', e.message);
-        // throw the internal prisma error
-        return undefined;
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error(
+            'PrismaUserService.insertOrUpdateUsername error reason: ' +
+              e.message +
+              ' code: ' +
+              e.code,
+          );
+        }
+        throw new Error('Error in PrismaUserService.insertOrUpdateUsername');
       });
+
+    return user;
   }
 
   async findUser(data: Prisma.UserWhereUniqueInput): Promise<User> {
-    console.log('PrismaUserService.findUser');
-    console.log('data: ', data);
+    console.info('PrismaUserService.findUser');
 
     return this.prisma.user
       .findUnique({

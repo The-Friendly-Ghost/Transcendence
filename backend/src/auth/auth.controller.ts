@@ -18,6 +18,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Callback after 42 login' })
   async handleCallback(@Request() req: any, @Response() res: any) {
     console.log('AuthController.handleCallback');
+    console.log('AuthController.handleCallback req.user.intraId', req.user.intraId);
+    console.log('AuthController.handleCallback req.user', req.user);
 
     const loggedUser = this.authService.login(req.user.intraId, req.user.name);
 
