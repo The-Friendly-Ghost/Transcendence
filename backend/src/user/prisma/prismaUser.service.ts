@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
 import { addFriendDto } from '../dto';
 
@@ -19,7 +19,7 @@ export class PrismaUserService {
         update: {},
         where: { intraId: intraId || undefined },
       })
-      .catch((e) => {
+      .catch((e: Error) => {
         console.log('PrismaUserService.findOrCreateUser error reason:', e.message);
         // throw the internal prisma error
         return undefined;

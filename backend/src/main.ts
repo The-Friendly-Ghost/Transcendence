@@ -1,18 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { Debug } from './utils';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { PrismaService } from './prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import * as coockieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); // Load .env file to the `process` variable
-if (Debug.ENABLED) {
-  console.log('Debug mode enabled');
-}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
