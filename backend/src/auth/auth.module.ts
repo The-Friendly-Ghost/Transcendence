@@ -13,3 +13,4 @@ import { FortyTwoStrategy, JwtStrategy } from './strategy';
   providers: [PrismaUserService, FortyTwoStrategy, JwtStrategy, AuthService, SessionSerializer],
 })
 export class AuthModule {}
+

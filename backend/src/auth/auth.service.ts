@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaUserService } from 'src/user/prisma/prismaUser.service';
+import { Injectable } from '@nestjs/common';
 
-@Injectable()
+@Injectable({})
 export class AuthService {
   constructor(
     private readonly prismaUserService: PrismaUserService,
@@ -18,7 +18,7 @@ export class AuthService {
     const user = await this.prismaUserService.findOrCreateUser({ intraId, name });
 
     console.log('AuthService.validateUser returning user:', user);
-    return user;
+    return name;
   }
 
   async login(intraId: number, name: string): Promise<{ access_token: string }> {
