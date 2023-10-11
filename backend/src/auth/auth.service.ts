@@ -1,6 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { PrismaUserService } from 'src/user/prisma/prismaUser.service';
 import { Injectable } from '@nestjs/common';
+import { authDto } from './dto';
 
 @Injectable({})
 export class AuthService {
@@ -18,11 +19,12 @@ export class AuthService {
     const user = await this.prismaUserService.findOrCreateUser({ intraId, name });
 
     console.log('AuthService.validateUser returning user:', user);
-    return name;
+    return user;
   }
 
   async login(intraId: number, name: string): Promise<{ access_token: string }> {
     console.log('AuthService.signToken');
+    console.log('intraId: ', intraId);
 
     const payload = { intraId: intraId, name: name };
     const token = await this.jwtService.signAsync(payload, {
@@ -32,5 +34,9 @@ export class AuthService {
 
     console.log('AuthService.signToken returning token');
     return { access_token: token };
+  }
+  callback() {
+    console.log(authDto);
+    return 'returned callback';
   }
 }

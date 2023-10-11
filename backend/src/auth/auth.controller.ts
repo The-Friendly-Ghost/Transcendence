@@ -1,9 +1,8 @@
 import { Controller, UseGuards, Request, Response, Get, Post, Body } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { FortyTwoAuthGuard } from './guard/forty_two_auth.guard';
-import { authDto } from './dto/auth_dto';
-import * as argon from 'argon2';
+import { authDto } from './dto/index';
 import { AuthService } from './auth.service';
+import { FortyTwoAuthGuard } from './guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -19,39 +18,6 @@ export class AuthController {
   async testFunc() {
     console.log('executed auth/test endpoint.');
     return 'executed auth/test endpoint';
-  }
-
-  // test endpoint to try out hashing and class validation
-  @Post('info')
-  async create(@Body() authDto: authDto) {
-    console.log('info endpont has been activated');
-    console.log(authDto.password);
-    // const salt = await bcrypt.genSalt();
-    // const hash = await bcrypt.hash(authDto.password, salt);
-    const hash = authDto.password;
-    // console.log("info2 endpont has been activated");
-    // const user = await this.prisma.user.create({
-    //   data: {
-    //     id:       35,
-    //     intraId: "svos",
-    //     name:     "testje",
-    //     password: hash,
-    //   },
-    // });
-    // return user;
-    return 'nonesense';
-  }
-
-  // singin and signup function as shown in tutorial
-  @Post('test_login')
-  login(@Body() dto: authDto) {
-    console.log(dto);
-    return this.authService.test_login(dto);
-  }
-
-  @Post('test_signup')
-  signup(@Body() dto: authDto) {
-    return this.authService.test_signup(dto);
   }
 
   @Get('callback')
