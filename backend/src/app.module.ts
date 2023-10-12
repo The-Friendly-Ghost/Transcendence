@@ -5,9 +5,10 @@ import { UserModule } from './user/user.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { TFAService } from './2fa/2fa.service';
 import { TFAModule } from './2fa/2fa.module';
+import { PrismaTFAService } from './2fa/prisma';
 
 @Module({
   imports: [AuthModule, PrismaModule, UserModule, TFAModule],
-  providers: [PrismaService, TFAService],
+  providers: [PrismaService, TFAService, PrismaTFAService],
 })
 export class AppModule {}
