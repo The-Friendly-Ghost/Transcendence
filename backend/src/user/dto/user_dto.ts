@@ -3,6 +3,10 @@ export class setUsernameDto {
   name: string;
 }
 
+export class findUserDto {
+  intraId: number;
+}
+
 export class addFriendDto {
   intraId: number;
   intraIdFriend: number;

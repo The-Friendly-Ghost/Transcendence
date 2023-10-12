@@ -1,1 +1,0 @@
-Handle prisma errors at the place where they occur. e.g. when error after insert or update throw it there!

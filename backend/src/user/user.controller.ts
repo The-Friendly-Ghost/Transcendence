@@ -2,8 +2,14 @@ import {
   Body,
   Controller,
   Get,
-  InternalServerErrorException,
+  HttpCode,
+  Param,
+  ParseIntPipe,
   Post,
+  Put,
+  Query,
+  Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -18,38 +24,34 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get('me')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Get json of me' })
   async getMe(@GetUser() user: User) {
     console.info('UserController.getMe intraId', user);
     return user;
   }
 
-  @Post('setUserName')
+  @Put('setUserName/:userName')
+  @HttpCode(201)
   @ApiOperation({ summary: 'Set the name of the user' })
-  @ApiBody({ type: String, description: 'Name to set' })
-  async setUserName(@Body() body: any, @GetUser('intraId') intraId: number) {
+  async setUserName(@Param('username') userName: string, @GetUser('intraId') intraId: number) {
     console.log('UserController.setUserName intraId', intraId);
-    console.log('UserController.setUserName name', body.name);
+    console.log('UserController.setUserName userName', userName);
 
-    // Do something with the database
-    const name: string = await this.userService
-      .setUserName(intraId, body.name)
-      .catch((e: Error) => {
-        console.error('UserController.setUserName error: ' + e.message);
-        throw new InternalServerErrorException();
-      });
-
+    const name: string = await this.userService.setUserName(intraId, userName);
     return name;
   }
 
-  @Post('addFriend')
+  @Post('addFriend/:friendId')
+  @HttpCode(201)
   @ApiOperation({ summary: 'Add a friend to the friendlist' })
-  @ApiBody({ type: Object, description: 'Friend to add' })
-  async addUser(@Body() body: any, @GetUser('intraId') intraId: number) {
-    console.log('UserController.addFriend intraId', body.intraIdFriend);
+  async postFriend(
+    @Param('friendId', ParseIntPipe) friendId: number,
+    @GetUser('intraId') intraId: number,
+  ) {
+    console.log('UserController.addFriend intraId', friendId);
 
-    // Do something with the database
-    const result = await this.userService.addFriend(intraId, body.intraIdFriend);
-    return result;
+    const user: User = await this.userService.addFriend(intraId, Number(friendId));
+    return user;
   }
 }

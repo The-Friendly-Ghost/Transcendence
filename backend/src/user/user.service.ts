@@ -27,15 +27,15 @@ export class UserService {
     return user.name;
   }
 
-  async addFriend(intraId: number, intraIdFriend: number): Promise<any> {
+  async addFriend(intraId: number, intraIdFriend: number): Promise<User> {
     console.log('UserService.validateUser');
     console.log('intraId: ', intraId);
     console.log('intraIdFriend: ', intraIdFriend);
 
     // Do some stuff to add the user to the database if needed
-    const res = await this.prismaUserService.addFriend({ intraId, intraIdFriend });
+    const user: User = await this.prismaUserService.addFriend({ intraId, intraIdFriend });
 
-    console.log('UserService.addFriend returning user:', res);
-    return res;
+    console.log('UserService.addFriend returning user:', user);
+    return user;
   }
 }
