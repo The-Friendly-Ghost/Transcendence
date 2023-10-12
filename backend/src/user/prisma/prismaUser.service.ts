@@ -1,23 +1,43 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
-import { addFriendDto, findUserDto, setUsernameDto } from '../dto';
+import { addFriendDto, findUserDto, insertUserDto, updateUsernameDto } from '../dto';
 
 @Injectable()
 export class PrismaUserService {
   constructor(private prisma: PrismaService) {}
 
+  async firstInsertUsername(dto: insertUserDto): Promise<User> {
+    const user: User = await this.prisma.user
+      .upsert({
+        create: { intraId: dto.intraId, name: dto.name, image_url: dto.image_url },
+        update: {},
+        where: { intraId: dto.intraId || undefined },
+      })
+      .catch((e: Error) => {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error(
+            'PrismaUserService.insertOrUpdateUsername error reason: ' +
+              e.message +
+              ' code: ' +
+              e.code,
+          );
+        }
+        throw new InternalServerErrorException();
+      });
+    return user;
+  }
+
   /**
    * Inserts or updates a user's username in the database.
-   * @param setUsernameDto - The DTO containing the user's intraId and new username.
+   * @param updateUsernameDto - The DTO containing the user's intraId and new username.
    * @returns The updated user object as a Promis.
    * @throws InternalServerErrorException if there was an error inserting/updating the user.
    */
-  async insertOrUpdateUsername(dto: setUsernameDto): Promise<User> {
+  async updateUsername(dto: updateUsernameDto): Promise<User> {
     const user: User = await this.prisma.user
-      .upsert({
-        create: { intraId: dto.intraId, name: dto.name },
-        update: { name: dto.name },
+      .update({
+        data: { intraId: dto.intraId, name: dto.name },
         where: { intraId: dto.intraId || undefined },
       })
       .catch((e: Error) => {

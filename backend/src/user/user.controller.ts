@@ -1,18 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Param,
-  ParseIntPipe,
-  Post,
-  Put,
-  Query,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { JwtAuthGuard } from 'src/auth/guard';
@@ -24,7 +11,6 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Get('me')
-  @HttpCode(200)
   @ApiOperation({ summary: 'Get json of me' })
   async getMe(@GetUser() user: User) {
     console.info('UserController.getMe intraId', user);
@@ -32,7 +18,6 @@ export class UserController {
   }
 
   @Put('setUserName/:userName')
-  @HttpCode(201)
   @ApiOperation({ summary: 'Set the name of the user' })
   async setUserName(@Param('username') userName: string, @GetUser('intraId') intraId: number) {
     console.log('UserController.setUserName intraId', intraId);
@@ -43,7 +28,6 @@ export class UserController {
   }
 
   @Post('addFriend/:friendId')
-  @HttpCode(201)
   @ApiOperation({ summary: 'Add a friend to the friendlist' })
   async postFriend(
     @Param('friendId', ParseIntPipe) friendId: number,

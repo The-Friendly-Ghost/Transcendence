@@ -19,7 +19,7 @@ export class UserService {
     console.log('username: ', username);
 
     // Do some stuff to add the user to the database if needed
-    const user: User = await this.prismaUserService.insertOrUpdateUsername({
+    const user: User = await this.prismaUserService.updateUsername({
       intraId,
       name: username,
     });

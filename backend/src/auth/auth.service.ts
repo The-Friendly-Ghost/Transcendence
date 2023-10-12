@@ -10,13 +10,18 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(intraId: number, name: string): Promise<Object> {
+  async validateUser(intraId: number, name: string, image_url: string): Promise<Object> {
     console.log('AuthService.validateUser');
     console.log('intraId: ', intraId);
     console.log('name: ', name);
+    console.log('image_url: ', image_url);
 
     // Do some stuff to add the user to the database if needed
-    const user: User = await this.prismaUserService.insertOrUpdateUsername({ intraId, name });
+    const user: User = await this.prismaUserService.firstInsertUsername({
+      intraId,
+      name,
+      image_url,
+    });
 
     console.log('AuthService.validateUser returning user:', user);
     return { intraId: user.intraId, name: user.name };

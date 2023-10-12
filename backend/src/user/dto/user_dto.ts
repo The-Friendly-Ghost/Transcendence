@@ -1,4 +1,10 @@
-export class setUsernameDto {
+export class insertUserDto {
+  intraId: number;
+  name: string;
+  image_url: string;
+}
+
+export class updateUsernameDto {
   intraId: number;
   name: string;
 }
