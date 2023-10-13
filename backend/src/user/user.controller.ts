@@ -1,4 +1,13 @@
-import { Controller, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
@@ -49,13 +58,16 @@ export class UserController {
   @Post('addFriend/:friendId')
   @ApiOperation({
     summary: 'Add a friend to the user',
-    description: 'Adds a friend with the specified ID to the user with the authenticated intra ID.',
+    description:
+      'Adds a friend with the specified ID to the user with the authenticated intra ID. Throws a BadRequestException if the friend ID is the same as the authenticated intra ID.',
   })
   async postFriend(
     @Param('friendId', ParseIntPipe) friendId: number,
     @GetUser('intraId') intraId: number,
   ) {
     console.log('UserController.postFriend intraId', friendId);
+
+    if (intraId === friendId) throw new BadRequestException("You can't add yourself as a friend.");
 
     const user: User = await this.userService.addFriend(intraId, Number(friendId));
     return user;

@@ -1,7 +1,8 @@
-import { Controller, UseGuards, Request, Response, Get, Post, Body } from '@nestjs/common';
+import { Controller, UseGuards, Request, Response, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FortyTwoAuthGuard } from './guard/forty_two_auth.guard';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -37,6 +38,18 @@ export class AuthController {
     });
 
     console.log('AuthController.handleCallback redirecting to frontend');
+    return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
+  }
+
+  @Get('logout')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Handle logout',
+    description: 'Logs out the user.',
+  })
+  async handleLogout(@Response() res: any) {
+    console.log('AuthController.handleLogout');
+    res.clearCookie('jwt');
     return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
   }
 }

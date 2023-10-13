@@ -66,20 +66,29 @@ export class PrismaUserService {
   }
 
   /**
-   * Adds a friend to a user's friend list.
-   * @param addFriendDto - The DTO containing the user's intraId and the friend's intraId.
-   * @returns User Promise - The updated user object.
-   * @throws InternalServerErrorException - If there is an error updating the user's friend list.
+   * Adds a friend with the specified intra ID to the user with the authenticated intra ID.
+   * If the user already has the friend as a friend, returns the friend.
+   * @param addFriendDto - The DTO containing the intra ID of the friend to add.
+   * @returns The updated user object.
+   * @throws InternalServerErrorException if there is an error updating the user in the database.
    */
   async addFriend(dto: addFriendDto): Promise<User> {
-    const f = await this.prisma.user.findUnique({
-      where: { intraId: dto.intraId || undefined },
-      select: { friends: true },
-    });
+    const f = await this.prisma.user
+      .findUnique({
+        where: { intraId: dto.intraId || undefined },
+        select: { friends: true },
+      })
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error(
+          'PrismaUserService.addFriend error reason: ' + e.message + ' code: ' + e.code,
+        );
+        throw new InternalServerErrorException();
+      });
+
     const user: User = await this.prisma.user
       .update({
         data: {
-          friends: [...f.friends, dto.intraIdFriend], // TODO: how to append number to array of numbers?
+          friends: [...new Set([...f.friends, dto.intraIdFriend])], // Set removes duplicates
         },
         where: { intraId: dto.intraId || undefined },
       })

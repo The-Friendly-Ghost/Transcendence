@@ -28,6 +28,12 @@ export class AuthService {
   }
 
   async login(intraId: number, name: string): Promise<{ access_token: string }> {
+    // TODO: Add 2fa
+    // 1. Check if the user has 2fa enabled
+    // 2. If not, sign the token
+    // 3. Else If so, ask for the 2fa code
+    // 3.1 If the code is correct, sign the token
+
     console.log('AuthService.signToken');
     console.log('intraId: ', intraId);
 

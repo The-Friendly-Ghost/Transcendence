@@ -43,7 +43,10 @@ export class UserService {
     console.log('intraId: ', intraId);
     console.log('intraIdFriend: ', intraIdFriend);
 
-    // Do some stuff to add the user to the database if needed
+    // Check if the user is in the database. Throws NotFoundException if not found
+    await this.prismaUserService.findUser({ intraId: intraIdFriend });
+
+    // Add the friend to the user
     const user: User = await this.prismaUserService.addFriend({ intraId, intraIdFriend });
 
     console.log('UserService.addFriend returning user:', user);
