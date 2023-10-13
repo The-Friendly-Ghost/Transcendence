@@ -10,15 +10,34 @@ import { UserService } from './user.service';
 @ApiTags('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  @Get('me')
-  @ApiOperation({ summary: 'Get json of me' })
+  @Get('getMe')
+  @ApiOperation({
+    summary: 'Get the authenticated user',
+    description: 'Retrieves the user with the authenticated intra ID.',
+  })
   async getMe(@GetUser() user: User) {
     console.info('UserController.getMe intraId', user);
     return user;
   }
 
+  @Get('getUser/:intraId')
+  @ApiOperation({
+    summary: 'Get user by intra ID',
+    description: 'Retrieves the user with the specified intra ID.',
+  })
+  async getUser(@Param('intraId', ParseIntPipe) intraId: number) {
+    console.log('UserController.getUser intraId', intraId);
+
+    const user: User = await this.userService.getUser(intraId);
+    return user;
+  }
+
   @Put('setUserName/:userName')
-  @ApiOperation({ summary: 'Set the name of the user' })
+  @ApiOperation({
+    summary: 'Set the name of the user',
+    description:
+      'Updates the name of the user with the authenticated intra ID to the specified name.',
+  })
   async setUserName(@Param('username') userName: string, @GetUser('intraId') intraId: number) {
     console.log('UserController.setUserName intraId', intraId);
     console.log('UserController.setUserName userName', userName);
@@ -28,12 +47,15 @@ export class UserController {
   }
 
   @Post('addFriend/:friendId')
-  @ApiOperation({ summary: 'Add a friend to the friendlist' })
+  @ApiOperation({
+    summary: 'Add a friend to the user',
+    description: 'Adds a friend with the specified ID to the user with the authenticated intra ID.',
+  })
   async postFriend(
     @Param('friendId', ParseIntPipe) friendId: number,
     @GetUser('intraId') intraId: number,
   ) {
-    console.log('UserController.addFriend intraId', friendId);
+    console.log('UserController.postFriend intraId', friendId);
 
     const user: User = await this.userService.addFriend(intraId, Number(friendId));
     return user;

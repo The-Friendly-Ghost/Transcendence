@@ -10,12 +10,19 @@ export class AuthController {
 
   @Get('')
   @UseGuards(FortyTwoAuthGuard)
-  @ApiOperation({ summary: 'Redirects to 42 login' })
+  @ApiOperation({
+    summary: 'Handle login',
+    description: 'Redirects the user to the OAuth provider for authentication.',
+  })
   async handleLogin() {}
 
   @Get('callback')
   @UseGuards(FortyTwoAuthGuard)
-  @ApiOperation({ summary: 'Callback after 42 login' })
+  @ApiOperation({
+    summary: 'Handle authentication callback',
+    description:
+      'Handles the authentication callback from the OAuth provider and logs in the user.',
+  })
   async handleCallback(@Request() req: any, @Response() res: any) {
     console.log('AuthController.handleCallback');
     console.log('AuthController.handleCallback req.user.intraId', req.user.intraId);

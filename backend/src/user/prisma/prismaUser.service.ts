@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
 import { addFriendDto, findUserDto, insertUserDto, updateUsernameDto } from '../dto';
@@ -14,15 +14,10 @@ export class PrismaUserService {
         update: {},
         where: { intraId: dto.intraId || undefined },
       })
-      .catch((e: Error) => {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          console.error(
-            'PrismaUserService.insertOrUpdateUsername error reason: ' +
-              e.message +
-              ' code: ' +
-              e.code,
-          );
-        }
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error(
+          'PrismaUserService.firstInsertUsername error reason: ' + e.message + ' code: ' + e.code,
+        );
         throw new InternalServerErrorException();
       });
     return user;
@@ -40,38 +35,32 @@ export class PrismaUserService {
         data: { intraId: dto.intraId, name: dto.name },
         where: { intraId: dto.intraId || undefined },
       })
-      .catch((e: Error) => {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          console.error(
-            'PrismaUserService.insertOrUpdateUsername error reason: ' +
-              e.message +
-              ' code: ' +
-              e.code,
-          );
-        }
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error(
+          'PrismaUserService.insertOrUpdateUsername error reason: ' +
+            e.message +
+            ' code: ' +
+            e.code,
+        );
         throw new InternalServerErrorException();
       });
     return user;
   }
 
   /**
-   * Finds a user in the database based on their intraId.
+   * Finds a user in the database by their intraId.
    * @param findUserDto - The DTO containing the intraId of the user to find.
-   * @returns User Promise - The user object that matches the given intraId.
-   * @throws InternalServerErrorException - If there was an error while querying the database.
+   * @returns The user object if found.
+   * @throws NotFoundException if the user is not found.
    */
   async findUser(dto: findUserDto): Promise<User> {
     const user: User = await this.prisma.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: { intraId: dto.intraId },
       })
-      .catch((e: Error) => {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          console.error(
-            'PrismaUserService.findUser error reason: ' + e.message + ' code: ' + e.code,
-          );
-        }
-        throw new InternalServerErrorException();
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error('PrismaUserService.findUser error reason: ' + e.message + ' code: ' + e.code);
+        throw new NotFoundException();
       });
     return user;
   }
@@ -94,12 +83,10 @@ export class PrismaUserService {
         },
         where: { intraId: dto.intraId || undefined },
       })
-      .catch((e: Error) => {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          console.error(
-            'PrismaUserService.addFriend error reason: ' + e.message + ' code: ' + e.code,
-          );
-        }
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error(
+          'PrismaUserService.addFriend error reason: ' + e.message + ' code: ' + e.code,
+        );
         throw new InternalServerErrorException();
       });
     return user;
