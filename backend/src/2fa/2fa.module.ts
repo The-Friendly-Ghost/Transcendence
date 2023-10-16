@@ -1,11 +1,24 @@
 import { Module } from '@nestjs/common';
 import { TFAController } from './2fa.controller';
 import { TFAService } from './2fa.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaTFAService } from './prisma';
+import { PrismaService } from 'prisma/prisma.service';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
+import { PrismaUserService } from 'src/user/prisma';
+import { JwtTFAStrategy } from './strategy';
 
 @Module({
-    controllers: [TFAController],
-    providers: [TFAService, PrismaService, PrismaTFAService],
+  imports: [JwtModule.register({})],
+  controllers: [TFAController],
+  providers: [
+    TFAService,
+    PrismaService,
+    PrismaTFAService,
+    JwtService,
+    UserService,
+    PrismaUserService,
+    JwtTFAStrategy,
+  ],
 })
-export class TFAModule { }
+export class TFAModule {}

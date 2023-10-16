@@ -1,18 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { Debug } from './utils';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { PrismaService } from './prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import * as coockieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); // Load .env file to the `process` variable
-if (Debug.ENABLED) {
-  console.log('Debug mode enabled');
-}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -61,7 +57,7 @@ async function bootstrap() {
       // 3600 * 24 * 1000 = 86400000 ms = 24 hours
       cookie: { maxAge: 86400000, httpOnly: false, secure: false },
       name: 'transcendence',
-      secret: process.env.FORTYTWO_CLIENT_SECRET + process.env.JWT_SECRET,
+      secret: process.env.JWT_SECRET,
       resave: false,
       saveUninitialized: false,
     }),

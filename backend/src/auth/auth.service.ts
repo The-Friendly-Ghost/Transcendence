@@ -1,7 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { PrismaUserService } from 'src/user/prisma/prismaUser.service';
 import { Injectable } from '@nestjs/common';
-import { authDto } from './dto';
+import { User } from '@prisma/client';
 
 @Injectable({})
 export class AuthService {
@@ -10,20 +10,25 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(intraId: number, name: string): Promise<any> {
+  async validateUser(intraId: number, name: string, image_url: string): Promise<Object> {
     console.log('AuthService.validateUser');
     console.log('intraId: ', intraId);
     console.log('name: ', name);
+    console.log('image_url: ', image_url);
 
     // Do some stuff to add the user to the database if needed
-    const user = await this.prismaUserService.findOrCreateUser({ intraId, name });
+    const user: User = await this.prismaUserService.firstInsertUsername({
+      intraId,
+      name,
+      image_url,
+    });
 
     console.log('AuthService.validateUser returning user:', user);
-    return user;
+    return { intraId: user.intraId, name: user.name };
   }
 
   async login(intraId: number, name: string): Promise<{ access_token: string }> {
-    console.log('AuthService.signToken');
+    console.log('AuthService.login');
     console.log('intraId: ', intraId);
 
     const payload = { intraId: intraId, name: name };
@@ -32,11 +37,7 @@ export class AuthService {
       secret: process.env.JWT_SECRET,
     });
 
-    console.log('AuthService.signToken returning token');
+    console.log('AuthService.login returning token');
     return { access_token: token };
-  }
-  callback() {
-    console.log(authDto);
-    return 'returned callback';
   }
 }
