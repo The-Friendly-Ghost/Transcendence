@@ -13,7 +13,7 @@ export class TFAService {
   ) {}
 
   async getOtpauthUrl(stream: Response, name: string, intraId: number): Promise<void> {
-    console.log;
+    console.log('TFAService.getOtpauthUrl');
     const secret = authenticator.generateSecret();
 
     await this.prisma.updateTFASecret({ intraId, secret });
@@ -24,8 +24,9 @@ export class TFAService {
   }
 
   async compareCodeSecret(tfacode: string, intraId: number): Promise<boolean> {
-    const secret = await this.prisma.getTFASecret(intraId);
     console.log('TFAService.compareCodeSecret');
+
+    const secret = await this.prisma.getTFASecret(intraId);
     console.log('secret in compareCodeSecret:', secret);
 
     return authenticator.verify({ token: tfacode, secret: String(secret) });

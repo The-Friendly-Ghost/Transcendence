@@ -19,7 +19,16 @@ model User {
   twoFAEnabled Boolean @default(false)
   twoFASecret  String?
 
-  // Standard variables to track when the user was created and updated
-  // createdAt DateTime @default(now())
-  // updatedAt DateTime @updatedAt
+  // Games
+  gamesPlayed Game[]
+  wins        Int    @default(0)
+  losses      Int    @default(0)
+}
+
+model Game {
+  id       Int    @id @default(autoincrement())
+  players  User[]
+  score    Int[]
+  winnerId Int
+  loserId  Int
 }
