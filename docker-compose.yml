@@ -53,10 +53,11 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./frontend/src:/usr/src/app/app
+      - ./frontend/app:/usr/src/app/app
     environment:
       - BACKEND_HOST=${BACKEND_HOST}
       - BACKEND_PORT=${BACKEND_PORT}
+      - FRONTEND_HOST=${FRONTEND_HOST}
       - FRONTEND_PORT=${FRONTEND_PORT}
     networks:
       - transcendence
