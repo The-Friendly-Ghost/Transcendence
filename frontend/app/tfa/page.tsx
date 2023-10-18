@@ -26,24 +26,25 @@ const tfa_page = () => {
 	};
 
   return (
-	<section className='container_full_centered'>
-
+	<div className='container_full_centered'>
+		<div className='w-[300px]'>
+		<h1 className="h3_font mb-2">2FA required</h1>
 		<form onSubmit={handleSubmit}>
 			<input 
 				type="text" 
-				// value={inputValue} 
-				// onChange={handleChange} 
+				// value={inputValue}
+				onChange={handleChange}
 				className="p-2 w-full rounded-md text-black"
-				placeholder="2FA code"
+				placeholder="Enter code"
 			/>
 			<button 
 				type="submit" 
-				className="main_btn">
+				className="main_btn w-full">
 					Verify
 			</button>
 		</form>
-
-	</section>
+	</div>
+	</div>
   )
 }
 
