@@ -1,7 +1,6 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
   db:
     image: postgres:latest
     restart: always
@@ -15,7 +14,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -44,6 +43,23 @@ services:
     networks:
       - transcendence
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./frontend/src:/usr/src/app/app
+    environment:
+      - BACKEND_HOST=${BACKEND_HOST}
+      - BACKEND_PORT=${BACKEND_PORT}
+      - FRONTEND_PORT=${FRONTEND_PORT}
+    networks:
+      - transcendence
 
 volumes:
   pgdata:
