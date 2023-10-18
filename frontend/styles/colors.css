@@ -1,0 +1,25 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer base {
+    .col_1 {
+        @apply bg-violet-900;
+    }
+
+    .col_2 {
+        @apply bg-violet-700;
+    }
+
+    .col_3 {
+        @apply bg-cyan-500;
+    }
+
+    .col_4 {
+        @apply bg-cyan-200;
+    }
+
+    .col_back {
+        @apply bg-gray-200
+    }
+}

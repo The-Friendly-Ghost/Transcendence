@@ -1,0 +1,25 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+@layer base {
+
+.h1_font {
+    @apply font-bold text-6xl font-inter;
+  }
+
+.h2_font {
+    @apply font-bold text-3xl font-inter;
+  }
+  
+.text_font {
+    @apply font-medium text-base font-inter;
+  }
+
+.button_font {
+    @apply font-medium text-base font-inter text-white;
+  }
+
+}

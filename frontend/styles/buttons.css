@@ -1,0 +1,63 @@
+@import "tailwindcss/base";
+@import "colors.css";
+@import "fonts.css";
+
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+
+@layer components {
+
+  /**********
+  Primary button 
+  **********/
+  .main_btn {
+      @apply 
+        col_1 /* defined in colors.css */ 
+        button_font /* defined in fonts.css */
+        w-full /* full width */
+        rounded-md /* rounded corners */
+        py-2 /* padding top and bottom */
+        px-5 /* padding left and right */
+        my-4 /* margin top and bottom */
+        border-0 /* no border */
+        shadow-2xl /* shadow */
+        shadow-transparent /* shadow color */
+        transition-all /* transition on all changes */
+      ;
+    }
+  .main_btn:hover {
+      @apply 
+        col_2 /* defined in colors.css */
+       shadow-violet-400 /* shadow color */
+        transition-all /* transition on all changes */
+      ;
+    }
+
+  /**********
+  Invite button 
+  **********/
+  .invite_btn {
+    @apply 
+      bg-transparent /* defined in colors.css */ 
+      button_font /* defined in fonts.css */
+      w-full /* full width */
+      rounded-md /* rounded corners */
+      transition-all /* transition on all changes */
+      text-violet-900 /* text color */
+      text-left /* text align left */
+    ;
+  }
+  .invite_btn::after {
+    content: " →";
+    @apply
+      text-gray-400 /* text color */
+      ;
+  }
+  .invite_btn:hover.invite_btn::after {
+      @apply
+        text-violet-900 /* text color */
+    ;
+  }
+
+}
