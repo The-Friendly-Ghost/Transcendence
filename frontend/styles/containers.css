@@ -1,0 +1,76 @@
+@import "tailwindcss/base";
+@import "colors.css";
+
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+
+@layer base {
+
+/* Container that's always visible on the background. */
+.container_full_background {
+  @apply 
+    col_back /* background color - defined in colors.css */
+    w-full /* full width */
+    h-screen /* full height */
+    flex-col /* flex direction column */
+  ;
+}
+
+/* Overlay container full width and height.
+Color of this container is transparant */
+.container_full_centered {
+    @apply 
+      flex /* flex */
+      flex-col /* flex direction column */
+      items-center /* center items horizontally */
+      justify-center /* center items vertically */
+      h-screen /* full height */
+      min-h-[300px] /* minimum height of 300px */
+      w-screen /* full width */
+      bg-transparent /* transparent background */
+    ;
+  }
+
+  .dashboard_grid {
+    @apply
+      grid /* grid */
+      sm:grid-cols-1 /* 1 column on smartphone ( < 768px width ) */
+      md:grid-cols-2 /* 2 column on tablet ( > 768px width ) */
+      /* lg:grid-cols-3 3 columns on desktop ( > 1024px width ) */
+      gap-4 /* gap between columns */
+      w-full /* full width */
+      max-w-[1200px] /* maximum width of 1200px */
+      px-5 /* padding left and right of 20px */
+      py-14 /* padding top and bottom of 56px */
+    ;
+  }
+
+  .dashboard_block {
+    @apply
+      bg-white /* white background */
+      rounded-md /* rounded corners */
+      p-7 /* padding of 28px */
+      shadow-md /* shadow */
+    ;
+  }
+
+
+  /* Debugging classes */
+  .debug_red {
+    @apply
+      border-2 /* border of 2px */
+    border-red-600 /* red border */
+  }
+  .debug_green {
+    @apply
+      border-2 /* border of 2px */
+    border-green-600 /* red border */
+  }
+  .debug_blue {
+    @apply
+      border-2 /* border of 2px */
+    border-blue-600 /* red border */
+  }
+
+}
