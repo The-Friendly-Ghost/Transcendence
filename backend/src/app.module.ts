@@ -7,9 +7,10 @@ import { TFAModule } from './2fa/2fa.module';
 import { TFAService } from './2fa/2fa.service';
 import { PrismaTFAService } from './2fa/prisma';
 import { JwtService } from '@nestjs/jwt';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UserModule, TFAModule],
+  imports: [AuthModule, PrismaModule, UserModule, TFAModule, ChatModule],
   providers: [PrismaService, TFAService, PrismaTFAService, JwtService],
 })
 export class AppModule {}
