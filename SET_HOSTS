@@ -1,0 +1,13 @@
+#!/bin/sh
+readarray -d "/" -t strarr <<< "$SESSION_MANAGER"
+addr=${strarr[1]::-2}
+
+# Set backend and frontend host
+command_var=$(echo s/^.*BACKEND_HOST=.*$/BACKEND_HOST=$addr/)
+sed -ie $command_var .env
+
+command_var=$(echo s/^.*FRONTEND_HOST=.*$/FRONTEND_HOST=$addr/)
+sed -ie $command_var .env
+rm -rf .enve
+
+echo $(echo Website hosted at: $addr)
