@@ -1,5 +1,5 @@
 node_modules/
-dist/
+.next/
 package-lock.json
 Dockerfile
 .dockerignore
