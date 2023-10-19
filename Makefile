@@ -20,6 +20,7 @@ clean:
 fclean:
 	docker compose down --volumes --remove-orphans
 	docker system prune -a -f
+	docker system prune -a -f
 
 exec-db:
 	docker exec -it db sh
