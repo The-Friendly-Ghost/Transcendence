@@ -7,4 +7,7 @@ module.exports = nextConfig;
 module.exports = {
   // ... rest of the configuration.
   output: "standalone",
+  env: {
+    BACKEND_URL: `http://${process.env.BACKEND_HOST}:${process.env.BACKEND_PORT}`,
+  },
 };

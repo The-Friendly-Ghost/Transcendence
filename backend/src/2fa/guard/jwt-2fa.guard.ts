@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class Jwt2faAuthGuard extends AuthGuard('jwt-2fa') {
+export class Jwt2faAuthGuard extends AuthGuard('jwt') {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     console.log('Jwt2faAuthGuard.canActivate beginning of function');
     const request = context.switchToHttp().getRequest();
