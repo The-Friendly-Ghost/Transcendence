@@ -55,10 +55,11 @@ export class TFAController {
     });
 
     console.log('TFAController.verify_2facode redirecting to frontend');
-    return {
-      isValid: isCodeValid,
-      loggedUser,
-      message: 'Congratulations! You have been authorized to access this aplication!',
-    };
+    return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
+    // return {
+    //   isValid: isCodeValid,
+    //   loggedUser,
+    //   message: 'Congratulations! You have been authorized to access this aplication!',
+    // };
   }
 }
