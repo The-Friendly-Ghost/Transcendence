@@ -1,43 +1,33 @@
 "use client";
-
 /* Import Components */
-import { FormEvent, useState } from "react";
-
-/* Import Global Variables */
-import { userLoggedIn } from "@app/g_vars";
+import { useState } from "react";
 
 /* Import Styles */
 import "@styles/containers.css";
 import "@styles/fonts.css";
 import "@styles/buttons.css";
+import { useRouter } from "next/navigation";
+import { verifyTfaCode } from "@app/actions";
 
-function onSubmit(event: FormEvent<HTMLFormElement>) {
-  // event.preventDefault();
+export default function tfa_page() {
+  const router = useRouter();
+  const [tfa_code, setTfaCode] = useState("");
 
-  const formData = new FormData(event.currentTarget);
-  const tfa_code = formData.get("tfa_code");
-  // // Voer hier de actie uit die je wilt doen met de ingevoerde waarde
-  console.log(tfa_code);
-  console.log("Submitting 2FA code");
-}
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
 
-const tfa_page = () => {
-  const [inputValue, setInputValue] = useState("");
-
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log("Setting input value");
-    setInputValue(event.target.value);
-    console.log("inputValue:", inputValue);
-  }
+    const isVerified: boolean = await verifyTfaCode(tfa_code);
+    if (isVerified) router.push("/");
+    else alert("Wrong 2FA code");
+  };
 
   return (
     <section className="container_full_centered">
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
-          // name="tfa_code"
-          value={inputValue}
-          onChange={handleChange}
+          required
+          onChange={(e) => setTfaCode(e.target.value)}
           className="p-2 w-full rounded-md text-black"
           placeholder="2FA code"
         />
@@ -47,6 +37,4 @@ const tfa_page = () => {
       </form>
     </section>
   );
-};
-
-export default tfa_page;
+}

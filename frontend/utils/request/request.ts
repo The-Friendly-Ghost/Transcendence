@@ -18,17 +18,19 @@ export async function get(endpoint: string): Promise<Response> {
   return response;
 }
 
-export async function post(endpoint: string, value: string): Promise<Response> {
+export async function post(endpoint: string): Promise<Response> {
   console.log("request post");
 
   const url: string = `${process.env.BACKEND_URL}${endpoint}`;
 
   const response: Response = await fetch(url, {
     method: "POST",
+    mode: "same-origin",
+    redirect: "follow",
+    credentials: "include", // Don't forget to specify this if you need cookies
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(value),
   });
 
   return response;
@@ -37,6 +39,7 @@ export async function post(endpoint: string, value: string): Promise<Response> {
 export async function getJWT(): Promise<string | undefined> {
   const ck = cookies();
   const token = ck.get("jwt");
+  console.log("getCoockie getJWT", token?.value);
 
   return token?.value;
 }
