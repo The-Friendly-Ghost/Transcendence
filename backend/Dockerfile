@@ -9,7 +9,8 @@ RUN npm install
 
 RUN npm install prisma --save-dev && \
   npx prisma && \
-  npx prisma generate
+  npx prisma generate \
+  npx prisma migrate deploy
 
 EXPOSE $BACKEND_PORT
 
