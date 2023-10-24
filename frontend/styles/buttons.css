@@ -22,7 +22,7 @@
         my-4 /* margin top and bottom */
         border-0 /* no border */
         shadow-2xl /* shadow */
-        shadow-slate-600 /* shadow color */
+        shadow-transparent /* shadow color */
         transition-all /* transition on all changes */
       ;
     }

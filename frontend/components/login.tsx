@@ -1,4 +1,3 @@
-"use client";
 
 /* Import Styles */
 import "@styles/containers.css";
@@ -7,6 +6,8 @@ import "@styles/buttons.css";
 
 /* Import Components */
 import React from "react";
+import CustomButton from "@components/utils/customButtom";
+
 
 const loginWith42 = () => {
   console.log("Logging in with 42");
@@ -21,9 +22,12 @@ const login = () => {
       <div className="items-start border-l-4 border-violet-900 pl-8 py-8 min-w-min">
         <p className="text_font">Codam The Last Chapter:</p>
         <h1 className="h1_font">Transcendence</h1>
-        <button type="button" className="main_btn" onClick={loginWith42}>
-          Login
-        </button>
+        <CustomButton 
+          type = "button"
+          title = "Login with 42"
+          styles = "main_btn"
+          handleClick = {loginWith42}
+        />
       </div>
     </section>
   );
