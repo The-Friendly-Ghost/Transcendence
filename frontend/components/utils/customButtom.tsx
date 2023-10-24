@@ -1,17 +1,25 @@
 "use client"
 
-import { CustomButtonProps } from '@types'
+// import { CustomButtonProps } from '@types'
 import React from 'react'
 
-const customButtom = ({ type, title, styles, handleClick }: CustomButtonProps) => {
+// export interface CustomButtonProps {
+//   type: "button" | "submit" | "reset" | undefined;
+//   title: string;
+//   styles?: "main_btn" | "invite_btn" | undefined;
+//   handleClick?: React.MouseEventHandler<HTMLButtonElement>;
+//   }
+
+function customButtom(props: any)
+{
   return (
     <button 
-        type={type}
-        className={styles}
-        onClick={handleClick}
+        type={props.type}
+        className={props.styles}
+        onClick={props.handleClick}
     >
     <span>
-        {title}
+        {props.title}
     </span>
     </button>
   )

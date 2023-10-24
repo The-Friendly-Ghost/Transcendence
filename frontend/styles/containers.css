@@ -35,8 +35,8 @@ Color of this container is transparant */
   .dashboard_grid {
     @apply
       grid /* grid */
-      sm:grid-cols-1 /* 1 column on smartphone ( < 768px width ) */
-      md:grid-cols-2 /* 2 column on tablet ( > 768px width ) */
+      md:grid-cols-1 /* 1 column on smartphone ( < 768px width ) */
+      lg:grid-cols-2 /* 2 column on tablet ( > 768px width ) */
       /* lg:grid-cols-3 3 columns on desktop ( > 1024px width ) */
       gap-4 /* gap between columns */
       w-full /* full width */

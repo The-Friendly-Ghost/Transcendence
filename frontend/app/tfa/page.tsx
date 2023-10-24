@@ -11,7 +11,8 @@ import '@styles/containers.css';
 import '@styles/fonts.css';
 import '@styles/buttons.css';
 
-const tfa_page = () => {
+export default function tfa_page()
+{
 
 	const [inputValue, setInputValue] = useState('');
 	  
@@ -47,5 +48,3 @@ const tfa_page = () => {
 	</div>
   )
 }
-
-export default tfa_page
