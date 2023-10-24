@@ -13,15 +13,11 @@ export class JwtTFAStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: {
-    intraId: number;
-    name: string;
-    is2faAuthenticated: boolean;
-  }): Promise<User> {
+  async validate(payload: { intraId: number; name: string; TfaValidated: boolean }): Promise<User> {
     console.log('JwtTFAStrategy.validate payload', payload);
     console.log('JwtTFAStrategy.validate payload.intraId', payload.intraId);
     console.log('JwtTFAStrategy.validate payload.name', payload.name);
-    console.log('JwtTFAStrategy.validate payload.is2faAuthenticated', payload.is2faAuthenticated);
+    console.log('JwtTFAStrategy.validate payload.TfaValidated', payload.TfaValidated);
 
     const user: User = await this.userService.getUser(payload.intraId);
     return user;

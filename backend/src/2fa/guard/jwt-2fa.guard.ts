@@ -1,14 +1,15 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 import { Observable } from 'rxjs';
 
 @Injectable()
 export class Jwt2faAuthGuard extends AuthGuard('jwt') {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     console.log('Jwt2faAuthGuard.canActivate beginning of function');
-    const request = context.switchToHttp().getRequest();
+    const request: Request = context.switchToHttp().getRequest();
 
-    console.log('Jwt2faAuthGuard.canActivate request.cookies', request.cookies);
+    console.log('Jwt2faAuthGuard.canActivate request.cookies', request.body.cookies);
     if (request.cookies.jwt) {
       console.log('Jwt2faAuthGuard.canActivate request.cookies.jwt', request.cookies.jwt);
       request.headers.authorization = 'Bearer ' + request.cookies.jwt;

@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Post, Response, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Response,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { TFAService } from './2fa.service';
@@ -46,19 +54,30 @@ export class TFAController {
     const loggedUser = await this.tfa.login(intraId, user.name, isCodeValid);
     console.log('loggedUser:', loggedUser);
 
-    // INT HANGS HERE!!!
+    console.log('TFAController.verify_2facode creating coockies');
     res.clearCookie('jwt');
-    console.log('cleared cookie');
     res.cookie('jwt', loggedUser.access_token, {
+      httpOnly: false,
+      secure: false,
+    });
+    res.clearCookie('intraId');
+    res.cookie('intraId', intraId, {
+      httpOnly: false,
+      secure: false,
+    });
+    res.clearCookie('TfaValidated');
+    console.log('iscoevalid:', isCodeValid);
+    res.cookie('TfaValidated', isCodeValid, {
       httpOnly: false,
       secure: false,
     });
 
     console.log('TFAController.verify_2facode redirecting to frontend');
-    return {
-      isValid: isCodeValid,
-      loggedUser,
-      message: 'Congratulations! You have been authorized to access this aplication!',
-    };
+    // return {
+    //   isValid: isCodeValid,
+    //   loggedUser,
+    //   message: 'Congratulations! You have been authorized to access this aplication!',
+    // };
+    return res.status(HttpStatus.CREATED).send('tfa is valid.'); // TODO: redirect to frontend in some way
   }
 }

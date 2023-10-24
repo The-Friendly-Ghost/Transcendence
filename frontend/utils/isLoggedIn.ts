@@ -1,7 +1,16 @@
+import { getCoockie } from "@app/actions";
 import { get } from "./request/request";
 
 export async function isLoggedIn(): Promise<boolean> {
-  return get("auth/validate").then((res) => {
+  const TfaValidated: string = await getCoockie("TfaValidated");
+
+  console.log("isLoggedIn TfaValidated", TfaValidated);
+  if (TfaValidated === "false" || TfaValidated === "undefined") {
+    return false;
+  }
+  return get("/auth/validate").then((res) => {
+    console.log("isLoggedIn res", res.status);
+    console.log("isLoggedIn res.text", res.statusText);
     if (res.status === 200) {
       return true;
     } else {

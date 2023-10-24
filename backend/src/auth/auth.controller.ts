@@ -45,32 +45,31 @@ export class AuthController {
     console.log('AuthController.handleCallback req.user', req.user);
 
     const user: User = await this.userService.getUser(req.user.intraId);
+    const loggedUser: { access_token: string } = await this.authService.login(
+      user.intraId,
+      user.name,
+    );
 
-    // const loggedUser: { access_token: string } = await this.authService.login(
-    //   user.intraId,
-    //   user.name,
-    // );
-    // res.clearCookie('jwt');
-    // res.cookie('jwt', loggedUser.access_token, {
-    //   httpOnly: false,
-    //   secure: false,
-    // });
+    console.log('AuthController.handleCallback creating coockies');
+    console.log('req.cookies', req.cookies);
+    console.log('req.cookies.TfaValidated', req.cookies.TfaValidated);
+    res.clearCookie('jwt');
+    res.cookie('jwt', loggedUser.access_token, {
+      httpOnly: false,
+      secure: false,
+    });
 
-    // console.log('AuthController.handleCallback redirecting to frontend');
-    // return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
+    res.cookie('intraId', user.intraId, {
+      httpOnly: false,
+      secure: false,
+    });
+    res.clearCookie('TfaValidated');
+    res.cookie('TfaValidated', false, {
+      httpOnly: false,
+      secure: false,
+    });
 
-    //If the user has NOT enabled the 2fa, sign the jwt and redirect to the frontend.
     if (!user.twoFAEnabled) {
-      const loggedUser: { access_token: string } = await this.authService.login(
-        user.intraId,
-        user.name,
-      );
-      res.clearCookie('jwt');
-      res.cookie('jwt', loggedUser.access_token, {
-        httpOnly: false,
-        secure: false,
-      });
-
       console.log('AuthController.handleCallback redirecting to frontend');
       return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
     }
@@ -93,12 +92,14 @@ export class AuthController {
     const user: User = await this.userService.getUser(req.user.intraId);
 
     if (user.twoFAEnabled) {
+      console.log('AuthController.validate redirecting to frontend 2FA');
       return res.redirect(
-        `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/auth/2fa`,
+        `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/auth/tfa`,
       );
     }
 
-    return res.status(HttpStatus.OK).send('JWT is valid.');
+    console.log('AuthController.validate redirecting to frontend');
+    return res.status(HttpStatus.OK);
   }
 
   @Get('logout')
@@ -109,7 +110,9 @@ export class AuthController {
   async handleLogout(@Response() res: any) {
     console.log('AuthController.handleLogout');
     res.clearCookie('jwt');
+    res.clearCookie('intraId');
     console.log('cleared cookie');
+    res.clearCookie('TfaValidated');
     return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
   }
 }

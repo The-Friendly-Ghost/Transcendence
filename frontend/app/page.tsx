@@ -8,7 +8,7 @@ import { isLoggedIn } from "@utils/isLoggedIn";
 const Home = async () => {
   return (
     <div className="flex flex-wrap justify-center">
-      {true ? <Dashboard /> : <LoginScreen />}
+      {(await isLoggedIn()) ? <Dashboard /> : <LoginScreen />}
     </div>
   );
 };
