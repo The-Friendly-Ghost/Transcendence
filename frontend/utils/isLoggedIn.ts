@@ -5,9 +5,10 @@ export async function isLoggedIn(): Promise<boolean> {
   const TfaValidated: string = await getCoockie("TfaValidated");
 
   console.log("isLoggedIn TfaValidated", TfaValidated);
-  if (TfaValidated === "false" || TfaValidated === "undefined") {
-    return false;
+  if (TfaValidated === "true") {
+    return true;
   }
+
   return get("/auth/validate").then((res) => {
     console.log("isLoggedIn res", res.status);
     console.log("isLoggedIn res.text", res.statusText);

@@ -1,19 +1,18 @@
 /* Import Components */
 import React from 'react';
-import CustomButton from '@components/utils/customButtom';
-
 const play = () => {
   return (
     <div>
       <h2 className='h2_font'>
         Play
       </h2>
-      <CustomButton 
-          type = "button"
-          title = "Play Now"
-          styles = "main_btn"
-          // handleClick = PLAY FUNCTIE HIER
-        />
+      <button 
+            type="button"
+            className="main_btn"
+            // onClick={loginWith42}
+            >
+            Login with 42
+        </button>
     </div>
   )
 }

@@ -63,14 +63,17 @@ export class AuthController {
       httpOnly: false,
       secure: false,
     });
-    res.clearCookie('TfaValidated');
-    res.cookie('TfaValidated', false, {
+    res.cookie('username', user.name, {
       httpOnly: false,
       secure: false,
     });
-
     if (!user.twoFAEnabled) {
       console.log('AuthController.handleCallback redirecting to frontend');
+      res.clearCookie('TfaValidated');
+      res.cookie('TfaValidated', true, {
+        httpOnly: false,
+        secure: false,
+      });
       return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
     }
 
@@ -91,11 +94,27 @@ export class AuthController {
 
     const user: User = await this.userService.getUser(req.user.intraId);
 
-    if (user.twoFAEnabled) {
-      console.log('AuthController.validate redirecting to frontend 2FA');
-      return res.redirect(
-        `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/auth/tfa`,
-      );
+    /* 
+    Checks if the user has 2FA enabled. 
+    If so, sets TfaValidated to false and redirects to the 2FA page.
+    If not, sets TfaValidated to true and redirects to the home page.
+    */
+    if (user.twoFAEnabled) 
+    {
+      res.cookie('TfaValidated', false, {
+        httpOnly: false,
+        secure: false,
+      }) ;
+      return (res.redirect(
+        `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/auth/tfa`, ));
+    }
+    else {
+      res.cookie('TfaValidated', true, {
+        httpOnly: false,
+        secure: false,
+      }) ;
+      console.log('AuthController.handleCallback redirecting to frontend');
+      return (res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`));
     }
 
     console.log('AuthController.validate redirecting to frontend');
@@ -111,6 +130,7 @@ export class AuthController {
     console.log('AuthController.handleLogout');
     res.clearCookie('jwt');
     res.clearCookie('intraId');
+    res.clearCookie('username');
     console.log('cleared cookie');
     res.clearCookie('TfaValidated');
     return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);

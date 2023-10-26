@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 export async function getCoockie(name: string): Promise<string> {
   const ck = cookies();
+  // console.log("getCoockie", name, ck);
   const coockie_object = ck.get(name);
 
   console.log("getCoockie", name, coockie_object);

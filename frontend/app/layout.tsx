@@ -19,7 +19,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="container_full_background">
-        {true && <Navbar />}
+        {<Navbar />}
         {children}
       </body>
     </html>
