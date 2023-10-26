@@ -1,14 +1,13 @@
 /* import Components */
 import React from 'react'
 import Image from 'next/image'
-import { getCoockie } from '@app/actions'
 
-const userInfo = async () => {
-  const name = await getCoockie('username');
+function userInfo(props: any) 
+{
   return (
     <div>
       <h2 className='h2_font'>
-        User Info {name}
+        User Info {props.info}
       </h2>
       <div className='grid grid-cols-3 mt-4'>
         <div className='col-span-1'>
