@@ -1,19 +1,12 @@
-import {
-  Controller,
-  UseGuards,
-  Request,
-  Response,
-  Get,
-  UnauthorizedException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, UseGuards, Request, Response, Get } from '@nestjs/common';
+import { Response as Res } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { FortyTwoAuthGuard } from './guard';
 import { User } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
-import { TFAService } from 'src/2fa/2fa.service';
 import { Jwt2faAuthGuard } from 'src/2fa/guard';
+import { promises } from 'dns';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -21,7 +14,6 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-    private readonly tfaService: TFAService,
   ) {}
 
   @Get('')
@@ -39,7 +31,7 @@ export class AuthController {
     description:
       'Handles the authentication callback from the OAuth provider and logs in the user.',
   })
-  async handleCallback(@Request() req: any, @Response() res: any) {
+  async handleCallback(@Request() req: any, @Response() res: Res) {
     console.log('AuthController.handleCallback');
     console.log('AuthController.handleCallback req.user.intraId', req.user.intraId);
     console.log('AuthController.handleCallback req.user', req.user);
@@ -88,7 +80,7 @@ export class AuthController {
     summary: 'Validate JWT',
     description: 'Validates the JWT.',
   })
-  async validate(@Request() req: any, @Response() res: any) {
+  async validate(@Request() req: any, @Response() res: Res) {
     console.log('AuthController.validate');
     console.log('AuthController.validate req.user', req.user);
 
@@ -99,26 +91,27 @@ export class AuthController {
     If so, sets TfaValidated to false and redirects to the 2FA page.
     If not, sets TfaValidated to true and redirects to the home page.
     */
-    if (user.twoFAEnabled) 
-    {
+    if (user.twoFAEnabled) {
       res.cookie('TfaValidated', false, {
         httpOnly: false,
         secure: false,
-      }) ;
-      return (res.redirect(
-        `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/auth/tfa`, ));
-    }
-    else {
+      });
+      console.log('AuthController.validate IF redirecting to frontend');
+
+      // res.header('TfaValidated', req.user.twoFAEnabled);
+      res.setHeader('TfaValidated', req.user.twoFAEnabled);
+      console.log('AuthController.validate res.headers', res.getHeaders());
+      return res.redirect(
+        `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/auth/tfa`,
+      );
+    } else {
       res.cookie('TfaValidated', true, {
         httpOnly: false,
         secure: false,
-      }) ;
-      console.log('AuthController.handleCallback redirecting to frontend');
-      return (res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`));
+      });
+      console.log('AuthController.validate ELSE redirecting to frontend');
+      return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
     }
-
-    console.log('AuthController.validate redirecting to frontend');
-    return res.status(HttpStatus.OK);
   }
 
   @Get('logout')
