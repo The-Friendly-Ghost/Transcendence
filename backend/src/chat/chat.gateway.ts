@@ -5,7 +5,8 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
+
 @WebSocketGateway()
 export class ChatGateway implements OnModuleInit {
   @WebSocketServer()
@@ -19,7 +20,7 @@ export class ChatGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('newMessage')
-  handleMessage(@MessageBody() body: any) {
+  handleMessage(body: Socket) {
     // this.server.emit('message', message);
     console.log(body);
     this.server.emit('onMessage', {

@@ -31,15 +31,15 @@ CREATE TABLE "Message" (
 );
 
 -- CreateTable
-CREATE TABLE "ChatRoom" (
+CREATE TABLE "Chatroom" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
 
-    CONSTRAINT "ChatRoom_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Chatroom_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "_ChatRoomToUser" (
+CREATE TABLE "_ChatroomToUser" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
 );
@@ -48,13 +48,13 @@ CREATE TABLE "_ChatRoomToUser" (
 CREATE UNIQUE INDEX "Message_intraId_key" ON "Message"("intraId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ChatRoom_name_key" ON "ChatRoom"("name");
+CREATE UNIQUE INDEX "Chatroom_name_key" ON "Chatroom"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_ChatRoomToUser_AB_unique" ON "_ChatRoomToUser"("A", "B");
+CREATE UNIQUE INDEX "_ChatroomToUser_AB_unique" ON "_ChatroomToUser"("A", "B");
 
 -- CreateIndex
-CREATE INDEX "_ChatRoomToUser_B_index" ON "_ChatRoomToUser"("B");
+CREATE INDEX "_ChatroomToUser_B_index" ON "_ChatroomToUser"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_intraId_key" ON "User"("intraId");
@@ -63,10 +63,10 @@ CREATE UNIQUE INDEX "User_intraId_key" ON "User"("intraId");
 ALTER TABLE "Message" ADD CONSTRAINT "Message_intraId_fkey" FOREIGN KEY ("intraId") REFERENCES "User"("intraId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Message" ADD CONSTRAINT "Message_chatRoomId_fkey" FOREIGN KEY ("chatRoomId") REFERENCES "ChatRoom"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Message" ADD CONSTRAINT "Message_chatRoomId_fkey" FOREIGN KEY ("chatRoomId") REFERENCES "Chatroom"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_ChatRoomToUser" ADD CONSTRAINT "_ChatRoomToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "ChatRoom"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_ChatroomToUser" ADD CONSTRAINT "_ChatroomToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Chatroom"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_ChatRoomToUser" ADD CONSTRAINT "_ChatRoomToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_ChatroomToUser" ADD CONSTRAINT "_ChatroomToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
