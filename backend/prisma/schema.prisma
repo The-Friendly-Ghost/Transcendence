@@ -11,13 +11,21 @@ datasource db {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  intraId      Int     @unique
-  name         String  @unique
-  image_url    String
-  friends      Int[]
-  twoFAEnabled Boolean @default(false)
-  twoFASecret  String?
+  id             Int     @id @default(autoincrement())
+  intraId        Int     @unique
+  name           String  @unique
+  image_url      String
+  friends        Int[]
+  twoFAEnabled   Boolean @default(false)
+  twoFASecret    String?
+  blockedUserIds Int[]
+
+  // Chat
+  messages   Message[]
+  chatrooms  Chatroom[] @relation("banned")
+  adminOf    Chatroom[] @relation("admin")
+  Chatroom   Chatroom?  @relation(fields: [chatroomId], references: [id])
+  chatroomId Int?
 
   // Games
   gamesPlayed Game[]
@@ -31,4 +39,26 @@ model Game {
   score    Int[]
   winnerId Int
   loserId  Int
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  content    String
+  createdAt  DateTime @default(now())
+  intraId    Int      @unique
+  sender     User     @relation(fields: [intraId], references: [intraId])
+  chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
+  chatroomId Int
+}
+
+model Chatroom {
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  private      Boolean   @default(false)
+  pw_hash      String?
+  users        User[]
+  admins       User[]    @relation("admin")
+  messages     Message[]
+  bannedUsers  User[]    @relation("banned")
+  ownerIntraId Int       @unique
 }
