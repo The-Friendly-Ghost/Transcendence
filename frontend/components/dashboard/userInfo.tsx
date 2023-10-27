@@ -2,11 +2,12 @@
 import React from 'react'
 import Image from 'next/image'
 
-const userInfo = () => {
+function userInfo(props: any) 
+{
   return (
     <div>
       <h2 className='h2_font'>
-        User Info
+        User Info {props.info}
       </h2>
       <div className='grid grid-cols-3 mt-4'>
         <div className='col-span-1'>

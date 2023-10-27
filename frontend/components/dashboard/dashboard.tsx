@@ -2,17 +2,25 @@
 import UserInfo from '@components/dashboard/userInfo';
 import Play from '@components/dashboard/play';
 import Friends from '@components/dashboard/friends';
+import { getCoockie } from '@app/actions'
 
 /* Import Styles */
 import '@styles/containers.css';
 import '@styles/fonts.css';
 
+async function dashboard() {
 
-const dashboard = () => {
+  /* Gets a Cookie with user information.
+  This has to be changed so that the cookie contains
+  all information, not just username */
+  const name = await getCoockie('username');
+
   return (
 	<div className='dashboard_grid'>
     <div className='dashboard_block'>
-      <UserInfo /> 
+      <UserInfo
+        info = {name}
+      /> 
     </div>
     <div className='dashboard_block'>
       <Play />

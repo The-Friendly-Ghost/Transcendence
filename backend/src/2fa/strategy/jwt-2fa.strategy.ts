@@ -5,7 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
-export class JwtTFAStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
+export class JwtTFAStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private readonly userService: UserService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -13,28 +13,25 @@ export class JwtTFAStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
     });
   }
 
-  async validate(payload: {
-    intraId: number;
-    name: string;
-    is2faAuthenticated: boolean;
-  }): Promise<User> {
+  async validate(payload: { intraId: number; name: string; TfaValidated: boolean }): Promise<User> {
     console.log('JwtTFAStrategy.validate payload', payload);
     console.log('JwtTFAStrategy.validate payload.intraId', payload.intraId);
     console.log('JwtTFAStrategy.validate payload.name', payload.name);
-    console.log('JwtTFAStrategy.validate payload.is2faAuthenticated', payload.is2faAuthenticated);
+    console.log('JwtTFAStrategy.validate payload.TfaValidated', payload.TfaValidated);
 
     const user: User = await this.userService.getUser(payload.intraId);
+    return user;
 
-    if (!user.twoFAEnabled) {
-      console.log('JwtTFAStrategy.validate !user.twoFAEnabled');
-      return user;
-    }
-    if (payload.is2faAuthenticated) {
-      console.log('JwtTFAStrategy.validate payload.is2faAuthenticated', payload.is2faAuthenticated);
-      return user;
-    }
-    console.log('JwtTFAStrategy.validate NOT AUTHENTICATED');
-    // Instead of raising an error, redirect to the 2fa page!
-    throw new UnauthorizedException('Frontend must redirect to 2fa page: /auth/2fa');
+    // if (!user.twoFAEnabled) {
+    //   console.log('JwtTFAStrategy.validate !user.twoFAEnabled');
+    //   return user;
+    // }
+    // if (payload.is2faAuthenticated) {
+    //   console.log('JwtTFAStrategy.validate payload.is2faAuthenticated', payload.is2faAuthenticated);
+    //   return user;
+    // }
+    // console.log('JwtTFAStrategy.validate NOT AUTHENTICATED');
+    // // Instead of raising an error, redirect to the 2fa page!
+    // throw new UnauthorizedException('Frontend must redirect to 2fa page: /auth/2fa');
   }
 }

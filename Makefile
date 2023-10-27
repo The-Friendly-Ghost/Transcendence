@@ -20,7 +20,18 @@ clean:
 fclean:
 	docker compose down --volumes --remove-orphans
 	docker system prune -a -f
+	docker system prune -a -f
+
+exec-db:
+	docker exec -it db sh
+
+exec-backend:
+	docker exec -it backend sh
+
+exec-frontend:
+	docker exec -it frontend sh
 
 re: stop build start
+
 
 .PHONY: all build start stop clean fclean re

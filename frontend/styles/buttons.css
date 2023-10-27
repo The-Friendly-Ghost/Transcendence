@@ -29,7 +29,7 @@
   .main_btn:hover {
       @apply 
         col_2 /* defined in colors.css */
-       shadow-violet-400 /* shadow color */
+       shadow-violet-500 /* shadow color */
         transition-all /* transition on all changes */
       ;
     }

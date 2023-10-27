@@ -1,19 +1,16 @@
-
 /* Import Components */
-import Dashboard from '@components/dashboard/dashboard';
-import LoginScreen from '@components/login';
+import Dashboard from "@components/dashboard/dashboard";
+import Login from "@components/login";
 
 /* Import Global Variables */
-import { userLoggedIn } from '@app/g_vars';
+import { isLoggedIn } from "@utils/isLoggedIn";
 
-const Home = () => {
+const Home = async () => {
   return (
-	<div className='flex flex-wrap justify-center'>
-		{ userLoggedIn? <Dashboard /> : <LoginScreen /> }
+    <div className="flex flex-wrap justify-center">
+      {(await isLoggedIn()) ? <Dashboard /> : <Login />}
+    </div>
+  );
+};
 
-	</div>
-
-  )
-}
-
-export default Home
+export default Home;

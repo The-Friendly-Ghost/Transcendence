@@ -1,6 +1,5 @@
 /* Import Components */
 import React from 'react';
-
 const play = () => {
   return (
     <div>
@@ -8,10 +7,12 @@ const play = () => {
         Play
       </h2>
       <button 
-          type="button"
-          className="main_btn">
-          Play Now!
-      </button>
+            type="button"
+            className="main_btn"
+            // onClick={loginWith42}
+            >
+            Login with 42
+        </button>
     </div>
   )
 }

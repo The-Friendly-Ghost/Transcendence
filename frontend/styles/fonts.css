@@ -13,6 +13,10 @@
 .h2_font {
     @apply font-bold text-3xl font-inter;
   }
+
+.h3_font {
+    @apply font-bold text-xl font-inter;
+  }
   
 .text_font {
     @apply font-medium text-base font-inter;
