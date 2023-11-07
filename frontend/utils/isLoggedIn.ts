@@ -12,6 +12,7 @@ export async function isLoggedIn(): Promise<boolean> {
   return get("/auth/validate").then((res) => {
     console.log("isLoggedIn res", res.status);
     console.log("isLoggedIn res.text", res.statusText);
+    console.log("isLoggedIn res.headers", res.headers);
     if (res.status === 200) {
       return true;
     } else {

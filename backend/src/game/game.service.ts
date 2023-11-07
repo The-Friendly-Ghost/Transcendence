@@ -12,4 +12,10 @@ export class GameService {
     const game = await this.prismaGameService.findGame({ gameId });
     return game;
   }
+
+  async startGame(p1: string) {
+    // connect to socket
+    
+
+  }
 }
