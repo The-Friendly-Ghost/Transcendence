@@ -32,6 +32,18 @@ Color of this container is transparant */
     ;
   }
 
+  .chat_grid {
+    @apply
+      grid /* grid */
+      md:grid-cols-1
+      gap-4 /* gap between columns */
+      w-full /* full width */
+      max-w-[600px] /* maximum width of 1200px */
+      px-5 /* padding left and right of 20px */
+      py-14 /* padding top and bottom of 56px */
+    ;
+  }
+
   .dashboard_grid {
     @apply
       grid /* grid */
