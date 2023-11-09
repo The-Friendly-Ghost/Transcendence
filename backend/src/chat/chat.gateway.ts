@@ -8,7 +8,11 @@ import {
 import { Server, Socket } from 'socket.io';
 import { chatDto } from './dto';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*'
+  }
+})
 export class ChatGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;

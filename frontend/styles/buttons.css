@@ -60,4 +60,32 @@
     ;
   }
 
+
+  /**********
+  Chat Send button 
+  **********/
+  .main_btn {
+    @apply 
+      col_1 /* defined in colors.css */ 
+      ml-2 /* margin left of 8px */
+      button_font /* defined in fonts.css */
+      w-full /* full width */
+      rounded-md /* rounded corners */
+      py-5 /* padding top and bottom */
+      px-5 /* padding left and right */
+      my-4 /* margin top and bottom */
+      border-0 /* no border */
+      shadow-2xl /* shadow */
+      shadow-transparent /* shadow color */
+      transition-all /* transition on all changes */
+    ;
+  }
+.main_btn:hover {
+    @apply 
+      col_2 /* defined in colors.css */
+     shadow-violet-500 /* shadow color */
+      transition-all /* transition on all changes */
+    ;
+  }
+
 }
