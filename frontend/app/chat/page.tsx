@@ -13,6 +13,24 @@ export default function chat_page() {
     useEffect(() => {
         const socket = io("http://localhost:3000");
         // Use the socket object for your socket.io logic here
+
+        // Log a message when the socket connects
+        socket.on("connect", () => {
+            // alert("connected");
+            console.log("Connected to the socket.io server");
+        });
+
+        // Log a message when the socket disconnects
+        socket.on("disconnect", () => {
+            // alert("disconnected");
+            console.log("Disconnected from the socket.io server");
+        });
+
+        // Log any errors that occur
+        socket.on("connect_error", (error) => {
+            // alert("error");
+            console.log("Connection error", error);
+        });
       }, []);
 
     return (

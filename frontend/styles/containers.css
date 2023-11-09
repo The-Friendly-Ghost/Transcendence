@@ -35,7 +35,7 @@ Color of this container is transparant */
   .chat_grid {
     @apply
       grid /* grid */
-      md:grid-cols-1
+      grid-cols-1 /* 1 column */
       gap-4 /* gap between columns */
       w-full /* full width */
       max-w-[600px] /* maximum width of 1200px */
