@@ -10,15 +10,24 @@ import { useEffect } from "react";
 
 export default function chat_page() {
 
+    let token = "hoi";
     useEffect(() => {
-        const socket = io("http://localhost:3000");
+        const socket = io('http://localhost:3000', {
+            reconnectionDelayMax: 10000,
+            auth: {
+              token: "123"
+            },
+            query: {
+              "my-key": "my-value"
+            }
+          });
         // Use the socket object for your socket.io logic here
 
         // Log a message when the socket connects
-        socket.on("connect", () => {
-            // alert("connected");
-            console.log("Connected to the socket.io server");
-        });
+        // socket.on("connect", () => {
+        //     // alert("connected");
+        //     console.log("Connected to the socket.io server");
+        // });
 
         // Log a message when the socket disconnects
         socket.on("disconnect", () => {
