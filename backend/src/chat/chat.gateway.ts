@@ -13,20 +13,21 @@ import { chatDto } from './dto';
     origin: '*'
   }
 })
-export class ChatGateway implements OnModuleInit {
+export class ChatGateway {
   @WebSocketServer()
   server: Server;
 
-  // async handleConnection(client: Socket) {
-  //   console.log('connected, user: ', client);
-  // }
-
-  onModuleInit() {
-    this.server.on('connection', (socket) => {
-      console.log(socket.id);
-      console.log('connected');
-    });
+  async handleConnection(client: Socket) {
+    console.log('connected, user: ', client);
+    console.log('handshake: ', client.handshake.query.token);
   }
+
+  // onModuleInit() {
+  //   this.server.on('connection', (socket) => {
+  //     console.log(socket.id);
+  //     console.log('connected');
+  //   });
+  // }
 
   @SubscribeMessage('newMessage')
   handleMessage(client: Socket, @MessageBody() body: chatDto) {

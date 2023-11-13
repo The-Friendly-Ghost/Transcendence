@@ -31,7 +31,7 @@ const nav = () => {
         About
       </Link>
 
-      <Link href="/chat" className="px-5">
+      <Link href="/chat" className="px-5" >
         Chat
       </Link>
 
