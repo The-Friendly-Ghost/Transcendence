@@ -15,26 +15,12 @@ import { JwtService } from '@nestjs/jwt';
   }
 })
 export class ChatGateway {
-  constructor(
-    private jwtService: JwtService,
-  ) {}
   @WebSocketServer()
   server: Server;
 
   async handleConnection(client: Socket) {
     console.log('connected, user: ', client);
-    let intraId;
-    console.log('handshake: ', client.handshake.query);
-    // try {
-    //   intraId = await this.jwtService.verify(
-    //     client.handshake.auth.token, { secret: process.env.JWT_SECRET }
-    //   );
-    // } catch(err) {
-    //   console.log('unauthenticated client');
-    //   return ;
-    // }
-    console.log('user ', intraId, ' connected');
-    client.disconnect();
+    console.log('handshake: ', client.handshake.query.token);
   }
 
   // onModuleInit() {

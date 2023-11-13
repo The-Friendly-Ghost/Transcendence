@@ -13,13 +13,13 @@ async function dashboard() {
   /* Gets a Cookie with user information.
   This has to be changed so that the cookie contains
   all information, not just username */
-  const name = await getCoockie('username');
+  const intraName = await getCoockie('username');
 
   return (
 	<div className='dashboard_grid'>
     <div className='dashboard_block'>
       <UserInfo
-        info = {name}
+        info = {intraName}
       /> 
     </div>
     <div className='dashboard_block'>

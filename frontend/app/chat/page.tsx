@@ -7,40 +7,35 @@ import "@styles/buttons.css";
 
 import { io } from "socket.io-client";
 import { useEffect } from "react";
+import { getCoockie } from '@app/actions'
 
 export default function chat_page() {
-
-    let token = "hoi";
     useEffect(() => {
-        const socket = io('http://localhost:3000', {
-            reconnectionDelayMax: 10000,
-            auth: {
-              token: "123"
-            },
-            query: {
-              "my-key": "my-value"
-            }
-          });
-        // Use the socket object for your socket.io logic here
-
+      const fetchData = async () => {
+        const intraName = await getCoockie('username');
+  
+        const socket = io("http://localhost:3000", {
+          query: { token: intraName }
+        });
+  
         // Log a message when the socket connects
-        // socket.on("connect", () => {
-        //     // alert("connected");
-        //     console.log("Connected to the socket.io server");
-        // });
-
+        socket.on("connect", () => {
+          console.log("Connected to the socket.io server");
+        });
+  
         // Log a message when the socket disconnects
         socket.on("disconnect", () => {
-            // alert("disconnected");
-            console.log("Disconnected from the socket.io server");
+          console.log("Disconnected from the socket.io server");
         });
-
+  
         // Log any errors that occur
         socket.on("connect_error", (error) => {
-            // alert("error");
-            console.log("Connection error", error);
+          console.log("Connection error", error);
         });
-      }, []);
+      };
+  
+      fetchData();
+    }, []);
 
     return (
         <section className="container_full_centered">
