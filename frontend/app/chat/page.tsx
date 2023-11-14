@@ -13,7 +13,7 @@ export default function chat_page() {
     useEffect(() => {
       const fetchData = async () => {
         const intraName = await getCoockie('username');
-  
+
         const socket = io("http://localhost:3000", {
           query: { token: intraName }
         });
