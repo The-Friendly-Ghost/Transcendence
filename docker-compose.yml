@@ -52,7 +52,7 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./frontend/app:/usr/src/app/app
+      - ./frontend:/src
     environment:
       - BACKEND_HOST=${BACKEND_HOST}
       - BACKEND_PORT=${BACKEND_PORT}
