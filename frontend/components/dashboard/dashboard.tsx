@@ -2,7 +2,7 @@
 import UserInfo from '@components/dashboard/userInfo';
 import Play from '@components/dashboard/play';
 import Friends from '@components/dashboard/friends';
-import { getCoockie } from '@app/actions'
+import { getCookie } from '@app/actions'
 
 /* Import Styles */
 import '@styles/containers.css';
@@ -13,7 +13,8 @@ async function dashboard() {
   /* Gets a Cookie with user information.
   This has to be changed so that the cookie contains
   all information, not just username */
-  const intraName = await getCoockie('username');
+
+  const intraName = await getCookie('username');
 
   return (
 	<div className='dashboard_grid'>

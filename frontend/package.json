@@ -11,6 +11,7 @@
   "dependencies": {
     "next": "latest",
     "react": "latest",
+    "react-cookie": "^6.1.1",
     "react-dom": "latest",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2"

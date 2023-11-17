@@ -1,35 +1,32 @@
-"use server";
+"use server"
 
 import { post } from "@utils/request/request";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
 
-export async function getCoockie(name: string): Promise<string> {
-  console.log("\n start getCoockie ===========================");
-  const ck = cookies();
-  // console.log("\n\nget all Cookies", ck);
-  const coockie_object = ck.get(name);
-
-  console.log("getCookie", name, coockie_object);
-  let value: string;
-  if (coockie_object) {
-    value = coockie_object.value;
-  } else {
-    value = "";
-  }
-
-  console.log("getCookie\n\n", name, value);
-  console.log("end getCoockie ===========================\n");
-  return value;
+/**
+ * Gets a cookie from the backend API.
+ * @param name the name of the specific cookie to get. 
+ * @returns the value of the cookie with the specified name.
+ */
+export async function getCookie(name: string): Promise<string> 
+{
+  const cookie: RequestCookie | undefined = cookies().get(name);
+  console.log(cookie);
+  return ( cookie ? cookie.value : "" );
 }
 
+/**
+ * 
+ * @param tfa_code 
+ * @returns 
+ */
 export async function verifyTfaCode(tfa_code: string): Promise<boolean> {
-  console.log("\n start verifyTfaCode ===========================");
-  const intraId: string = await getCoockie("intraId");
-  const endpoint: string = `/auth/2fa/verify/${intraId}/${tfa_code}`;
-  console.log("verifyTfaCode endpoint", endpoint);
 
+  const intraId: string = await getCookie("intraId");
+  const endpoint: string = `/auth/2fa/verify/${intraId}/${tfa_code}`;
   const res: Response = await post(endpoint);
-  console.log("verifyTfaCode res", res.status);
+
 
   // get the cookies from the response...
   const my_cookies: string[] = res.headers.getSetCookie();

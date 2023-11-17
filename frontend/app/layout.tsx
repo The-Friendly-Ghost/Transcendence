@@ -5,6 +5,7 @@ import Navbar from "@components/nav";
 
 /* Import Global Variables */
 import { isLoggedIn } from "@utils/isLoggedIn";
+import Login from "@components/login";
 
 export const metadata: Metadata = {
   title: "Transcendence",
@@ -19,8 +20,14 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="container_full_background">
-        {<Navbar />}
-        {children}
+        {await isLoggedIn() ? (
+          <>
+            <Navbar />
+            {children}
+          </>
+        ) : (
+          <Login />
+        )}
       </body>
     </html>
   );

@@ -1,8 +1,8 @@
-import { getCoockie } from "@app/actions";
+import { getCookie } from "@app/actions";
 import { get } from "./request/request";
 
 export async function isLoggedIn(): Promise<boolean> {
-  const TfaValidated: string = await getCoockie("TfaValidated");
+  const TfaValidated: string = await getCookie("TfaValidated");
 
   console.log("isLoggedIn TfaValidated", TfaValidated);
   if (TfaValidated === "true") {

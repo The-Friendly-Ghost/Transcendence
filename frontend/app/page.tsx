@@ -2,15 +2,16 @@
 import Dashboard from "@components/dashboard/dashboard";
 import Login from "@components/login";
 
-/* Import Global Variables */
-import { isLoggedIn } from "@utils/isLoggedIn";
-
-const Home = async () => {
+/**
+ * Function that returns the Home Page.
+ * @returns A JSX Element that represents the Home Page.
+ */
+export default async function Home(): Promise<React.JSX.Element> 
+{
   return (
     <div className="flex flex-wrap justify-center">
-      {(await isLoggedIn()) ? <Dashboard /> : <Login />}
+      <Dashboard />
     </div>
   );
 };
 
-export default Home;

@@ -3,8 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 
 const logout = () => {
   console.log("Logging in with 42");
@@ -13,7 +11,11 @@ const logout = () => {
   window.location.href = authLogoutUrl;
 };
 
-const nav = () => {
+/**
+ * @returns A JSX Element that represents the Navigation Bar.
+ */
+export default function nav() : React.JSX.Element
+{
   return (
     <nav className="flex items-center justify-center w-full pt-3 bg-blue-500 h-14">
       <Link href="/" className="px-5">
@@ -41,5 +43,3 @@ const nav = () => {
     </nav>
   );
 };
-
-export default nav;
