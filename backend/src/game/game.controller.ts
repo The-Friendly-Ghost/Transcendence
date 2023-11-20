@@ -9,7 +9,7 @@ import { Response as Res } from 'express';
 @Controller('game')
 @ApiTags('game')
 export class GameController {
-  constructor(private readonly gameService: GameService) {}
+  constructor(private readonly gameService: GameService) { }
 
   @Get('getGame/:gameId')
   @ApiOperation({
@@ -32,4 +32,3 @@ export class GameController {
     return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/game`);
   }
 }
-
