@@ -20,21 +20,14 @@ export class ChatGateway {
 
   async handleConnection(client: Socket) {
     console.log('connected, user: ', client);
-    console.log('handshake: ', client.handshake.query.token);
+    console.log('intraId: ', client.handshake.query.token);
   }
-
-  // onModuleInit() {
-  //   this.server.on('connection', (socket) => {
-  //     console.log(socket.id);
-  //     console.log('connected');
-  //   });
-  // }
 
   @SubscribeMessage('newMessage')
   handleMessage(client: Socket, @MessageBody() body: chatDto) {
     // this.server.emit('message', message);
-    console.log(body);
-    this.server.emit('onMessage', {
+    console.log("message object:", body);
+    this.server.to(body.destination).emit('onMessage', {
       content: body,
     });
   }
