@@ -21,14 +21,15 @@ export default function chat_page() : React.JSX.Element
   const [chatMessage, setChatMessage] = useState( "" );
   const [intraName, setIntraName] = useState<string | null>(null);
   const [chatSocket, setChatSocket] = useState<Socket | null>(null);
+  const [messageReceived, setMessageReceived] = useState("");
 
   /* The useEffect runs only once on component mount.
   This is because de dependency array is empty. 
   ( the [] at the end ) */
   useEffect( () => {
 
-    let newIntraName: string;
     let socket: Socket;
+    let newIntraName: string;
 
     async function fetchIntraName() : Promise<void> {
       newIntraName = await getCookie( 'username' );
@@ -39,27 +40,42 @@ export default function chat_page() : React.JSX.Element
       socket = io("http://localhost:3000", {
         query: { token: newIntraName }
       });
-      console.log(newIntraName);
       setChatSocket( socket );
     };
 
     fetchIntraName().then( setupWebSocket );
   }, []);
 
+  useEffect( () => {
+    if ( chatSocket ) {
+      chatSocket.on( 'receiveMessage', ( data: string) => {
+        setMessageReceived( data );
+      });
+    }
+  }, [chatSocket]);
+
+  async function sendMessage(event: React.FormEvent<HTMLFormElement>) 
+  {
+    event.preventDefault();
+    console.log(chatSocket);
+    chatSocket?.emit( 'newMessage', {msg: chatMessage, destination: chatSocket.id} );
+    setChatMessage( "" );
+  }
+
   return (
     <section className="container_full_centered">
         <div className="chat_grid">
-          <ul>
-            messages
-          </ul>
-          <form className="">
+           <h1> Message: { messageReceived } </h1>
+          <form 
+          className="" 
+          onSubmit = { sendMessage }
+          >
             <input 
-              type="text" 
-              autoComplete="off"
-              // value={inputValue}
-              // onChange={handleChange}
-              className="p-5 rounded-md text-black w-4/5"
-              placeholder={intraName ? intraName + ":" : ""}
+              type= { "text" }
+              value = { chatMessage }
+              onChange = { e => setChatMessage(e.target.value) }
+              className = { "p-5 rounded-md text-black w-4/5" }
+              placeholder = { "Type message here ..." }
             />
             <button 
               type="submit" 

@@ -19,6 +19,7 @@ model User {
   twoFAEnabled   Boolean @default(false)
   twoFASecret    String?
   blockedUserIds Int[]
+  socket         String?
 
   // Chat
   messages   Message[]
