@@ -4,7 +4,7 @@ import React from 'react'
 
 export async function queue_game() {
     console.log("Queueing for game");
-    const queueGameUrl: string = `/game/getGame/:1`;
+    const queueGameUrl: string = `/game/searchGame`;
     const res: Response = await get(queueGameUrl);
-    console.log(res);
+    console.log(await res.json());
 };

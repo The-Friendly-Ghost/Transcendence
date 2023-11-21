@@ -2,14 +2,28 @@ import { Controller, Get, Param, ParseIntPipe, Post, UseGuards, Response } from 
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Jwt2faAuthGuard } from 'src/2fa/guard';
 import { GameService } from './game.service';
-import { Game } from '@prisma/client';
+import { Game, User } from '@prisma/client';
 import { Response as Res } from 'express';
+import { GetUser } from 'src/auth/decorator';
 
 @UseGuards(Jwt2faAuthGuard)
 @Controller('game')
 @ApiTags('game')
 export class GameController {
   constructor(private readonly gameService: GameService) { }
+
+  @Get('searchGame')
+  @ApiOperation({
+    summary: 'Search game for a game and create one if none exists.',
+    description: 'Searches for an open game.',
+  })
+  async searchGame(@GetUser() user: User): Promise<Game> {
+    console.log('GameController.searchGame');
+    // console.log('GameController.searchGame user', user);
+
+    const game = await this.gameService.searchGame(user.intraId);
+    return game;
+  }
 
   @Get('getGame/:gameId')
   @ApiOperation({

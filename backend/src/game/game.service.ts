@@ -1,9 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaGameService } from './prisma';
+import { Game, User } from '@prisma/client';
+import { create } from 'domain';
 
 @Injectable()
 export class GameService {
-  constructor(private readonly prismaGameService: PrismaGameService) {}
+  constructor(private readonly prismaGameService: PrismaGameService) { }
+
+  async searchGame(userId: number) {
+    console.log('GameService.searchGame');
+    console.log('GameService.searchGame userId', userId);
+
+    let game = await this.prismaGameService.searchGame();
+    // game returns null if no game is found
+    // then create a new one
+    // return that
+    if (game == null)
+      game = await this.create_game(userId);
+    return game;
+  }
 
   async getGame(gameId: number) {
     console.log('GameService.getGame');
@@ -15,7 +30,16 @@ export class GameService {
 
   async startGame(p1: string) {
     // connect to socket
-    
 
+
+  }
+
+  async create_game(userId: number): Promise<Game> {
+    const game = await this.prismaGameService.createGame({
+      p1: userId,
+      p2: -1,
+      state: "PENDING",
+    });
+    return game;
   }
 }
