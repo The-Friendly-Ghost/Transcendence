@@ -15,8 +15,10 @@ export class GameService {
     // game returns null if no game is found
     // then create a new one
     // return that
-    if (game == null)
+    if (game == null) {
+      // let gameroom = await this.create_gameroom();
       game = await this.create_game(userId);
+    }
     return game;
   }
 
@@ -33,6 +35,15 @@ export class GameService {
 
 
   }
+
+  // async create_gameroom(): Promise<GameRoom> {
+  //   const gameroom = await this.prismaGameService.createGameroom({
+  //     p1: -1,
+  //     p2: -1,
+  //     state: "PENDING",
+  //   });
+  //   return gameroom;
+  // }
 
   async create_game(userId: number): Promise<Game> {
     const game = await this.prismaGameService.createGame({

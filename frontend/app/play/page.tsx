@@ -12,7 +12,8 @@ export default function game_page(): React.JSX.Element {
 
     async function click() {
         console.log("Queueing for game front");
-        await queue_game();
+        const res: any = await queue_game();
+        console.log(res);
         console.log("Done with queue");
     }
 
