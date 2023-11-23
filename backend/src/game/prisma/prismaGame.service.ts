@@ -5,9 +5,9 @@ import { findGameDto, updateGameScoreDto } from '../dto';
 
 @Injectable()
 export class PrismaGameService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
-  async insertGame(data: Prisma.GameCreateInput): Promise<Game> {
+  async createGame(data: Prisma.GameCreateInput): Promise<Game> {
     const game: Game = await this.prisma.game
       .create({
         data: data,
@@ -31,6 +31,20 @@ export class PrismaGameService {
         throw new NotFoundException();
       });
     return game;
+  }
+
+  async searchGame(): Promise<Game> {
+    const game: Game[] = await this.prisma.game
+      .findMany({
+        where: {
+          state: "PENDING"
+        },
+      })
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error('PrismaGameService.findGame error reason: ' + e.message + ' code: ' + e.code);
+        throw new NotFoundException();
+      });
+    return game[0];
   }
 
   async updateGameScore(dto: updateGameScoreDto): Promise<Game> {

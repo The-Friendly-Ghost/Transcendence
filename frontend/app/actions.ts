@@ -6,20 +6,19 @@ import { cookies } from "next/headers";
 
 /**
  * Gets a cookie from the backend API.
- * @param name the name of the specific cookie to get. 
+ * @param name the name of the specific cookie to get.
  * @returns the value of the cookie with the specified name.
  */
-export async function getCookie(name: string): Promise<string> 
-{
+export async function getCookie(name: string): Promise<string> {
   const cookie: RequestCookie | undefined = cookies().get(name);
   console.log(cookie);
-  return ( cookie ? cookie.value : "" );
+  return (cookie ? cookie.value : "");
 }
 
 /**
- * 
- * @param tfa_code 
- * @returns 
+ *
+ * @param tfa_code
+ * @returns
  */
 export async function verifyTfaCode(tfa_code: string): Promise<boolean> {
 

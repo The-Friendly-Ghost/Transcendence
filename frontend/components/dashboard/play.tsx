@@ -6,13 +6,12 @@ const play = () => {
       <h2 className='h2_font'>
         Play
       </h2>
-      <button 
-            type="button"
-            className="main_btn"
-            // onClick={loginWith42}
-            >
-            Login with 42
-        </button>
+      <button
+        type="button"
+        className="main_btn"
+      >
+        Play
+      </button>
     </div>
   )
 }

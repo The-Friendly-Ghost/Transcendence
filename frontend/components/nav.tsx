@@ -14,8 +14,7 @@ const logout = () => {
 /**
  * @returns A JSX Element that represents the Navigation Bar.
  */
-export default function nav() : React.JSX.Element
-{
+export default function nav(): React.JSX.Element {
   return (
     <nav className="flex items-center justify-center w-full pt-3 bg-blue-500 h-14">
       <Link href="/" className="px-5">
@@ -31,6 +30,10 @@ export default function nav() : React.JSX.Element
 
       <Link href="#" className="px-5">
         About
+      </Link>
+
+      <Link href="/play" className="px-5">
+        Play Game
       </Link>
 
       <Link href="/chat" className="px-5" >

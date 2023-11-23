@@ -1,5 +1,6 @@
 import { OnModuleInit } from '@nestjs/common';
 import {
+  ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
@@ -24,11 +25,14 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('newMessage')
-  handleMessage(client: Socket, @MessageBody() body: chatDto) {
+  handleMessage(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
     // this.server.emit('message', message);
-    console.log("message object:", body);
-    this.server.to(body.destination).emit('onMessage', {
-      content: body,
+    client.join("hoi");
+    console.log("CLIENT _____________\n" + client.id);
+    console.log("message object:", data);
+    this.server.emit('onMessage', {
+      content: data,
     });
+    // client.broadcast.emit('onMessage', { content: data });
   }
 }
