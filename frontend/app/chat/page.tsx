@@ -17,16 +17,20 @@ export default function chat_page(): React.JSX.Element {
   const [chatMessage, setChatMessage] = useState("");
   const [intraName, setIntraName] = useState<string | null>(null);
   const [chatSocket, setChatSocket] = useState<Socket | null>(null);
-  const [messageReceived, setMessageReceived] = useState("");
+  // const [messageReceived, setMessageReceived] = useState("");
+  const [messageReceived, setMessageReceived] = useState<string[]>([]);
+
   /* The useEffect runs only once on component mount.
   This is because de dependency array is empty.
   ( the [] at the end ) */
   useEffect(() => {
     let socket: Socket;
-    // let newIntraName: string;
+    let newIntraName: string;
+
     async function fetchIntraName(): Promise<void> {
-      // newIntraName = await getCookie('intraId');
-      setIntraName(await getCookie('intraId'));
+      newIntraName = await getCookie('intraId');
+      setIntraName(newIntraName);
+      console.log("INTRA NAME: " + intraName + "| newIntraName: " + newIntraName);
     };
     async function setupWebSocket(): Promise<void> {
       socket = io("http://localhost:3000", {
@@ -40,7 +44,7 @@ export default function chat_page(): React.JSX.Element {
   useEffect(() => {
     if (chatSocket) {
       chatSocket.on('onMessage', (data: any) => {
-        setMessageReceived(data.msg);
+        setMessageReceived(prevMessages => [...prevMessages, data.intraName + " : " + data.msg]);
         console.log(data);
       });
     }
@@ -49,13 +53,15 @@ export default function chat_page(): React.JSX.Element {
   async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     console.log(chatSocket);
-    chatSocket?.emit('newMessage', { msg: chatMessage, destination: chatSocket.id });
+    chatSocket?.emit('newMessage', { msg: chatMessage, destination: chatSocket.id, intraName: intraName });
     setChatMessage("");
   }
   return (
     <section className="container_full_centered">
       <div className="chat_grid">
-        <h1> Message: {messageReceived} </h1>
+        {messageReceived.map((message, index) => (
+          <p className="h-[10px]" key={index}>{message}</p>
+        ))}
         <form
           className=""
           onSubmit={sendMessage}

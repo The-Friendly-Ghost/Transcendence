@@ -27,12 +27,12 @@ export class ChatGateway {
   @SubscribeMessage('newMessage')
   handleMessage(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
     // this.server.emit('message', message);
-    client.join("hoi");
+    // client.join("hoi");
     console.log("CLIENT _____________\n" + client.id);
     console.log("message object:", data);
-    this.server.emit('onMessage', {
-      content: data,
-    });
-    // client.broadcast.emit('onMessage', { content: data });
+    // this.server.emit('onMessage', {
+    //   content: data,
+    // });
+    client.broadcast.emit('onMessage', data );
   }
 }
