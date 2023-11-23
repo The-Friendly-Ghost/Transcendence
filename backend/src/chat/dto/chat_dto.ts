@@ -1,4 +1,4 @@
 export class chatDto {
-  room: number;
+  destination: string;
   msg: string;
 }
