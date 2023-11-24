@@ -93,10 +93,11 @@ export default function chat_page(): React.JSX.Element {
   /* This function sends a message to the server */
   async function sendMessage(event: React.FormEvent<HTMLFormElement>) : Promise<void> 
   {
-    event.preventDefault();
-    console.log(chatSocket);
+    event.preventDefault(); // Prevents the page from reloading
+    if (chatMessage === "") // If the message is empty, return
+      return ;
     chatSocket?.emit('newMessage', { msg: chatMessage, destination: chatSocket.id, userName: userName, intraId: intraId });
-    setChatMessage("");
+    setChatMessage(""); // Clear the message box
   }
 
   // This function is used to create the accordion (later naar component verplaatsen)
