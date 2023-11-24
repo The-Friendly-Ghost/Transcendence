@@ -32,7 +32,7 @@ export default function chat_page() : React.JSX.Element
     let newIntraName: string;
 
     async function fetchIntraName() : Promise<void> {
-      newIntraName = await getCookie( 'username' );
+      newIntraName = await getCookie( 'intraId' );
       setIntraName( newIntraName );
     };
 
@@ -48,7 +48,7 @@ export default function chat_page() : React.JSX.Element
 
   useEffect( () => {
     if ( chatSocket ) {
-      chatSocket.on( 'receiveMessage', ( data: string) => {
+      chatSocket.on( 'onMessage', ( data: string) => {
         setMessageReceived( data );
       });
     }

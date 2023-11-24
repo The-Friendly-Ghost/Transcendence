@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Chatroom, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import * as argon from 'argon2';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class PrismaChatService {
@@ -348,5 +349,25 @@ export class PrismaChatService {
       });
     }
     return 'Password set';
+  }
+
+  async addSocketToUser(intraId: number, client: Socket) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        intraId: intraId,
+      },
+    });
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+    const clientObj = client.handshake as unknown as Prisma.JsonObject
+    await this.prisma.user.update({
+      where: {
+        intraId: intraId,
+      },
+      data: {
+        socket: clientObj,
+      },
+    });
   }
 }
