@@ -27,7 +27,7 @@ export class PrismaChatService {
         },
       });
     }
-    return 'Chatroom already exist';
+    throw new Error('Chatroom already exists');
   }
 
   async getChatroom(name: string): Promise<Chatroom> {

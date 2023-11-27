@@ -17,8 +17,11 @@ export class ChatService {
     if (client === undefined) {
       throw new Error('You are not connected');
     }
+    const chatroom = await this.prisma_chat.createChatroom(intraId, chatroom_name).catch((e: Error) => {
+      throw e;
+    });
     client.join(chatroom_name);
-    return await this.prisma_chat.createChatroom(intraId, chatroom_name);
+    return chatroom;
   }
 
   async deleteChatroom(intraId: number, chatroom_name: string) {
