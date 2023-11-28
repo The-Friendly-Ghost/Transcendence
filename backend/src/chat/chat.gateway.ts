@@ -6,6 +6,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
 import { chatDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
@@ -16,12 +17,20 @@ import { JwtService } from '@nestjs/jwt';
   }
 })
 export class ChatGateway {
+  constructor(
+    private chat: ChatService,
+  ) {}
   @WebSocketServer()
   server: Server;
 
   async handleConnection(client: Socket) {
-    console.log('connected, user: ', client);
+    // console.log('connected, user: ', client);
     console.log('intraId: ', client.handshake.query.token);
+    console.log('socketId: ', client.id);
+    const intraId = Number(client.handshake.query.token);
+    await this.chat.addSocketToUser(intraId, client).catch((err) => {
+      console.log(err);
+    });
   }
 
   @SubscribeMessage('newMessage')

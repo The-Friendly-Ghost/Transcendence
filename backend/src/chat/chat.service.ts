@@ -2,13 +2,26 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaChatService } from './prisma/prisma_chat.service';
 import { Chatroom } from '@prisma/client';
 import * as argon from 'argon2';
+import { Socket } from 'socket.io';
 
+// service for chat endpoints. These functions check permissions 'n stuff
+// and
+// Input validation is done in prisma_chat.service.ts
 @Injectable()
 export class ChatService {
   constructor(private prisma_chat: PrismaChatService) {}
+  private userBySocket = new Map<number, Socket>();
 
   async createChatroom(intraId: number, chatroom_name: string) {
-    return await this.prisma_chat.createChatroom(intraId, chatroom_name);
+    const client = await this.getSocketFromUser(intraId);
+    if (client === undefined) {
+      throw new Error('You are not connected');
+    }
+    const chatroom = await this.prisma_chat.createChatroom(intraId, chatroom_name).catch((e: Error) => {
+      throw e;
+    });
+    client.join(chatroom_name);
+    return chatroom;
   }
 
   async deleteChatroom(intraId: number, chatroom_name: string) {
@@ -186,5 +199,17 @@ export class ChatService {
       return 'You cannot ban an admin';
     }
     return await this.prisma_chat.ban_user(bannedIntraId, chatroom_name).catch((e: Error) => {throw e;});
+  }
+
+  async addSocketToUser(intraId: number, client: Socket) {
+    this.userBySocket.set(intraId, client);
+  }
+
+  async removeSocketFromUser(intraId: number) {
+    this.userBySocket.delete(intraId);
+  }
+
+  async getSocketFromUser(intraId: number): Promise<Socket> {
+    return this.userBySocket.get(intraId);
   }
 }
