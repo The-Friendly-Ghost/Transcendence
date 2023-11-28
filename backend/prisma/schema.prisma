@@ -61,5 +61,5 @@ model Chatroom {
   admins       User[]    @relation("admin")
   messages     Message[]
   bannedUsers  User[]    @relation("banned")
-  ownerIntraId Int       @unique
+  ownerIntraId Int
 }
