@@ -29,17 +29,24 @@ model User {
   chatroomId Int?
 
   // Games
-  gamesPlayed Game[]
-  wins        Int    @default(0)
-  losses      Int    @default(0)
+  // gamesPlayed Game[]
+  wins   Int @default(0)
+  losses Int @default(0)
+}
+
+enum GameState {
+  PENDING
+  IN_PROGRESS
+  FINISHED
 }
 
 model Game {
-  id       Int    @id @default(autoincrement())
-  players  User[]
-  score    Int[]
-  winnerId Int
-  loserId  Int
+  id        Int       @id @default(autoincrement())
+  score     Int[]
+  state     GameState
+  p1        Int       @unique
+  p2        Int       @unique
+  createdAt DateTime  @default(now())
 }
 
 model Message {

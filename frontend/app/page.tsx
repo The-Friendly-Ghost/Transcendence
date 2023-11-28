@@ -1,6 +1,5 @@
 /* Import Components */
 import Dashboard from "@components/dashboard/dashboard";
-import Login from "@components/login";
 
 /**
  * Function that returns the Home Page.
