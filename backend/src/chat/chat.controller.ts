@@ -139,4 +139,12 @@ export class ChatController {
       return e.message;
     });
   }
+
+  @ApiOperation({ summary: 'Connect to chatroom.'})
+  @Put('connect_to_chatroom/:chatroom_name')
+  async connect_to_chatroom(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string): Promise<any> {
+    return await this.chat.connect_to_chatroom(user.intraId, chatroom_name).catch((e: Error) => {
+      return e.message;
+    });
+  }
 }

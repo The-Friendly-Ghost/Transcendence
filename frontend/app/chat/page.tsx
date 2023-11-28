@@ -66,21 +66,9 @@ export default function chat_page(): React.JSX.Element {
     fetchIntraName().then(setupWebSocket);
   }, []);
 
-<<<<<<< HEAD
-  useEffect( () => {
-    if ( chatSocket ) {
-      chatSocket.on( 'onMessage', ( data: string) => {
-        setMessageReceived( data );
-      });
-    }
-  }, [chatSocket]);
-
-  async function sendMessage(event: React.FormEvent<HTMLFormElement>) 
-=======
   /* This useEffect runs when the chatSocket object changes. 
   It will change when a message is received. */
   function checkReceivedMessage(): void
->>>>>>> origin/frontend
   {
       chatSocket?.on('onMessage', (data: any) => {
         setMessageReceived( prevMessages => [...prevMessages, data.userName + " : " + data.msg] );

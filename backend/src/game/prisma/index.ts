@@ -1,1 +1,1 @@
-export * from './prismaGame.service';
+// export * from './prismaGame.service';

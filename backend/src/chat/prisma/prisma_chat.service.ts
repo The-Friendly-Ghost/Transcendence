@@ -36,6 +36,9 @@ export class PrismaChatService {
         where: {
           name: name,
         },
+        include: {
+          messages: true,
+        }
       })
       .catch((e: Prisma.PrismaClientKnownRequestError) => {
         console.error(

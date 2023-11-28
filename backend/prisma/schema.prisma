@@ -53,7 +53,7 @@ model Message {
   id         Int      @id @default(autoincrement())
   content    String
   createdAt  DateTime @default(now())
-  intraId    Int      @unique
+  intraId    Int
   sender     User     @relation(fields: [intraId], references: [intraId])
   chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
   chatroomId Int

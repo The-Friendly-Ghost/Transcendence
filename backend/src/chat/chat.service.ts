@@ -201,6 +201,25 @@ export class ChatService {
     return await this.prisma_chat.ban_user(bannedIntraId, chatroom_name).catch((e: Error) => {throw e;});
   }
 
+  async connect_to_chatroom(intraId: number, chatroom_name: string) {
+    const chatroom = await this.prisma_chat.getChatroom(chatroom_name).catch((e: Error) => {throw e;});
+    if (chatroom.private === true) {
+      const isUserInChatroom = await this.prisma_chat.check_if_user_in_chatroom(intraId, chatroom_name).catch((e: Error) => {throw e;});
+      if (isUserInChatroom === false
+          && await this.prisma_chat.is_private(chatroom_name) === true) {
+        throw new Error('Chatroom is private');
+      }
+    }
+    if (chatroom.pw_hash !== null) {
+      throw new Error('Chatroom is password protected');
+    }
+    const isUserBanned = await this.prisma_chat.is_user_banned(intraId, chatroom_name).catch((e: Error) => {throw e;});
+    if (isUserBanned === true) {
+      throw new Error('You are banned from this chatroom');
+    }
+    return chatroom;
+  }
+
   async addSocketToUser(intraId: number, client: Socket) {
     this.userBySocket.set(intraId, client);
   }
