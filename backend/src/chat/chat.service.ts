@@ -36,7 +36,7 @@ export class ChatService {
     if (is_user_admin === false) {
       return 'You are not an admin';
     }
-    return await this.prisma_chat.add_user_to_chatroom(intraId, chatroom_name);
+    return await this.prisma_chat.add_user_to_chatroom(addedUserIntraId, chatroom_name);
   }
 
   async remove_user_from_chatroom(deleterId: number, chatroom_name: string, userIntraId: number) {

@@ -45,7 +45,7 @@ export class ChatController {
   async add_user_to_chatroom(
     @GetUser() user: User,
     @Param('chatroom_name') chatroom_name: string,
-    @Param('intraId') intraId: number,
+    @Param('intraId', ParseIntPipe) intraId: number,
   ): Promise<any> {
     return await this.chat.add_user_to_chatroom(user.intraId, chatroom_name, intraId).catch((e: Error) => {
       return e.message;
