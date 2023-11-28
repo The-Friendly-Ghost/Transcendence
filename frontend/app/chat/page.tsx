@@ -9,6 +9,10 @@ import "@styles/buttons.css";
 import { useEffect, useState, useRef } from "react";
 import { getCookie } from "@app/actions";
 import { io, Socket } from "socket.io-client";
+import { InputSimple } from "@components/input";
+import StandardButton, { SubmitButton } from "@components/buttons";
+import Accordion from "@components/Accordion";
+import SimpleForm from "@components/Forms";
 
 /**
  * Function that returns the Chat Page.
@@ -24,6 +28,8 @@ export default function chat_page(): React.JSX.Element {
   const [chatMessage, setChatMessage] = useState("");
   // The user name of the user
   const [userName, setUserName] = useState<string | null>(null); 
+  // The New user name of the user
+  const [newUserName, setNewUserName] = useState<string | null>(null);
   // The 42 intraId of the user. This Id will stay the same, even if the user changes his name.
   const [intraId, setIntraId] = useState<string | null>(null);
   // The socket to send and receive messages
@@ -100,21 +106,15 @@ export default function chat_page(): React.JSX.Element {
     setChatMessage(""); // Clear the message box
   }
 
-  // This function is used to create the accordion (later naar component verplaatsen)
-  function Accordion() : React.JSX.Element {
-  return (
-    <>
-    <details>
-        <summary>Change Username</summary>
-        <p>Change username here</p>
-      </details>
-      <details>
-        <summary>Switch room</summary>
-        <p>Switch room</p>
-      </details>
-    </>
-  )
-  };
+  async function changeUserName(event: React.FormEvent<HTMLFormElement>) : Promise<void>
+  {
+    event.preventDefault(); // Prevents the page from reloading
+    if (newUserName === "") // If the message is empty, return
+      return ;
+    setUserName(newUserName);
+    chatSocket?.emit('newMessage', { msg: "changed name to " + "\"" + newUserName + "\"", destination: chatSocket.id, userName: userName, intraId: intraId });
+    setNewUserName(""); // Clear the message box
+  }
 
   /* ***************** */
   /* Return Component */
@@ -123,7 +123,28 @@ export default function chat_page(): React.JSX.Element {
   return (
     <section className="container_full_centered">
       <div className="chat_grid">
-        <Accordion />
+
+        <Accordion 
+          summary={"Change Username"}
+          content={
+            <div>
+              <SimpleForm
+                onSubmit={changeUserName}
+                content={
+                  <div className="border-t flex">
+                    <InputSimple 
+                      input={newUserName} 
+                      setInput={setNewUserName}
+                      placeholder={"Type new username here ..."}
+                    />
+                    <StandardButton text={"Change"} />
+                  </div>
+                }
+              />
+            </div>
+          }
+        />
+
         <div className="chat_messagebox">
           {messageReceived.map((message, index) => (
             <p className="" key={index}>{message}</p>
@@ -131,24 +152,20 @@ export default function chat_page(): React.JSX.Element {
           <div ref={ messagesEndRef } />
         </div>
 
-        <form
-          className=""
+        <SimpleForm
           onSubmit={sendMessage}
-        >
-          <input
-            type={"text"}
-            value={chatMessage}
-            onChange={e => setChatMessage(e.target.value)}
-            className={"p-5 rounded-md text-black w-4/5"}
-            placeholder={"Type message here ..."}
-          />
-          <button
-            type="submit"
-            className="main_btn w-1/6">
-            Send
-          </button>
-        </form>
+          content={
+              <div className="border-t flex">
+              <InputSimple 
+                input={chatMessage} 
+                setInput={setChatMessage}
+                placeholder={"Type message here ..."}
+              />
+              <SubmitButton />
+            </div>
 
+          }
+        />
       </div>
     </section>
   );
