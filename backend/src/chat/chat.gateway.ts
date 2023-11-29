@@ -26,19 +26,22 @@ export class ChatGateway {
   async handleConnection(client: Socket) {
     // console.log('connected, user: ', client);
     console.log('intraId: ', client.handshake.query.token);
-    console.log('socketId: ', client.id);
+    console.log('socketId: ', client);
     const intraId = Number(client.handshake.query.token);
-    await this.chat.addSocketToUser(intraId, client).catch((err) => {
+    await this.chat.add_socket_to_user(intraId, client).catch((err) => {
       console.log(err);
     });
   }
 
   @SubscribeMessage('newMessage')
-     handleMessage(client, body) {
+    async handleMessage(client, body) {
     // this.server.emit('message', message);
     console.log("message object:", body);
     console.log("client:", client);
-    this.chat.addMessage(body.destination, body.msg, body.userName).catch((err) => {throw err;});
+    console.log("ceated chatroom:", await this.chat.create_chatroom(parseInt(body.intraId), body.destination).catch((e: Error) => {
+      throw e.message;
+    }));
+    this.chat.add_message(body.destination, body.msg, body.userName).catch((err) => {throw err;});
     this.server.to(body.destination).emit('onMessage', {
       content: body,
     });

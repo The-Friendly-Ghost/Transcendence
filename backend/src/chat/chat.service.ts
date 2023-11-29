@@ -12,14 +12,14 @@ export class ChatService {
   constructor(private prisma_chat: PrismaChatService) {}
   private userBySocket = new Map<number, Socket>();
 
-  async createChatroom(intraId: number, chatroom_name: string) {
-    const chatroom = await this.prisma_chat.createChatroom(intraId, chatroom_name).catch((e: Error) => {
+  async create_chatroom(intraId: number, chatroom_name: string) {
+    const chatroom = await this.prisma_chat.create_chatroom(intraId, chatroom_name).catch((e: Error) => {
       throw e;
     });
     return chatroom;
   }
 
-  async deleteChatroom(intraId: number, chatroom_name: string) {
+  async delete_chatroom(intraId: number, chatroom_name: string) {
     const is_user_admin = await this.prisma_chat
       .is_user_admin(intraId, chatroom_name)
       .catch((e: Error) => {
@@ -28,7 +28,7 @@ export class ChatService {
     if (is_user_admin === false) {
       return 'You are not an admin';
     }
-    return await this.prisma_chat.deleteChatroom(chatroom_name);
+    return await this.prisma_chat.delete_chatroom(chatroom_name);
   }
 
   async add_user_to_chatroom(intraId: number, chatroom_name: string, addedUserIntraId: number) {
@@ -65,9 +65,9 @@ export class ChatService {
 
   async leave_chatroom(intraId: number, chatroom_name: string) {
     await this.prisma_chat.remove_user_from_chatroom(intraId, chatroom_name).catch((e: Error) => {throw e;});
-    const chatroom = await this.prisma_chat.getChatroom(chatroom_name).catch((e: Error) => {throw e;});
+    const chatroom = await this.prisma_chat.get_chatroom_w_users(chatroom_name).catch((e: Error) => {throw e;});
     if (intraId === chatroom.ownerIntraId) {
-      await this.prisma_chat.deleteChatroom(chatroom_name).catch((e: Error) => {throw e;});
+      await this.prisma_chat.delete_chatroom(chatroom_name).catch((e: Error) => {throw e;});
       return 'You left as channel owner leaving the channel without leader, no captain, no one to guide this ship in these harsh times. Without captain, communication with the ship is impossible. She is probably foating somewhere out on the big digital ocean. Far out of the reach of web crawler, far out of the reach of any search engine. No future but the endless persistance of leaked data. R.I.P to the crewmembers. May their digital souls have ascended to the cloud.';
     }
     return 'You left the chatroom';
@@ -135,7 +135,7 @@ export class ChatService {
   }
 
   async get_chatroom(intraId: number, chatroom_name: string): Promise<Chatroom> {
-    const chatroom = await this.prisma_chat.getChatroom(chatroom_name).catch((e: Error) => {throw e;});
+    const chatroom = await this.prisma_chat.get_chatroom_w_users(chatroom_name).catch((e: Error) => {throw e;});
     if (chatroom.private === true) {
       const isUserInChatroom = await this.prisma_chat.check_if_user_in_chatroom(intraId, chatroom_name).catch((e: Error) => {throw e;});
       if (isUserInChatroom === false) {
@@ -153,7 +153,7 @@ export class ChatService {
   }
 
   async get_protected_chatroom(intraId: number, chatroom_name: string, password: string): Promise<Chatroom> {
-    const chatroom = await this.prisma_chat.getChatroom(chatroom_name).catch((e: Error) => {throw e;});
+    const chatroom = await this.prisma_chat.get_chatroom_w_users(chatroom_name).catch((e: Error) => {throw e;});
     if (chatroom.private === true) {
       const isUserInChatroom = await this.prisma_chat.check_if_user_in_chatroom(intraId, chatroom_name).catch((e: Error) => {throw e;});
       if (isUserInChatroom === false) {
@@ -197,7 +197,7 @@ export class ChatService {
   }
 
   async connect_to_chatroom(intraId: number, chatroom_name: string) {
-    const chatroom = await this.prisma_chat.getChatroom(chatroom_name).catch((e: Error) => {throw e;});
+    const chatroom = await this.prisma_chat.get_chatroom_w_messages(chatroom_name).catch((e: Error) => {throw e;});
     if (chatroom.private === true) {
       const isUserInChatroom = await this.prisma_chat.check_if_user_in_chatroom(intraId, chatroom_name).catch((e: Error) => {throw e;});
       if (isUserInChatroom === false
@@ -212,7 +212,7 @@ export class ChatService {
     if (isUserBanned === true) {
       throw new Error('You are banned from this chatroom');
     }
-    const client = await this.getSocketFromUser(intraId);
+    const client = await this.get_socket_from_user(intraId);
     if (client === undefined) {
       throw new Error('You are not connected');
     }
@@ -220,20 +220,20 @@ export class ChatService {
     return chatroom;
   }
 
-  async addSocketToUser(intraId: number, client: Socket) {
+  async add_socket_to_user(intraId: number, client: Socket) {
     this.userBySocket.set(intraId, client);
   }
 
-  async removeSocketFromUser(intraId: number) {
+  async remove_socket_from_user(intraId: number) {
     this.userBySocket.delete(intraId);
   }
 
-  async getSocketFromUser(intraId: number): Promise<Socket> {
+  async get_socket_from_user(intraId: number): Promise<Socket> {
     return this.userBySocket.get(intraId);
   }
 
-  async addMessage(destination: string, msg: string, userName: string) {
-    return await this.prisma_chat.addMessage(destination, msg, userName).catch((e: Error) => {throw e;});
+  async add_message(destination: string, msg: string, userName: string) {
+    return await this.prisma_chat.add_message(destination, msg, userName).catch((e: Error) => {throw e;});
   }
 
   async get_all_chatrooms(): Promise<Chatroom[]> {

@@ -25,7 +25,7 @@ export default function chat_page(): React.JSX.Element {
   // The user name of the user
   const [userName, setUserName] = useState<string | null>(null); 
   // The 42 intraId of the user. This Id will stay the same, even if the user changes his name.
-  const [intraId, setIntraId] = useState<string | null>(null);
+  const [intraId, setIntraId] = useState<number | undefined>(undefined);
   // The socket to send and receive messages
   const [chatSocket, setChatSocket] = useState<Socket | null>(null);
   // The messages received. Stored in an array of strings.
@@ -42,7 +42,7 @@ export default function chat_page(): React.JSX.Element {
   {
     let socket: Socket; // Temporary socket variable
     let newUserName: string; // Temporary intraName variable
-    let newIntraId: string; // Temporary intraID variable
+    let newIntraId: number; // Temporary intraID variable
 
     /* This function fetches the intraName and intraID 
     from the cookie and sets it to the state variables */
@@ -50,7 +50,7 @@ export default function chat_page(): React.JSX.Element {
     {
       newUserName = await getCookie('username');
       setUserName(newUserName);
-      newIntraId = await getCookie('intraId');
+      newIntraId = await getCookie('intraId') as unknown as number;
       setIntraId(newIntraId);
     };
 
@@ -58,7 +58,7 @@ export default function chat_page(): React.JSX.Element {
     async function setupWebSocket(): Promise<void> 
     {
       socket = io("http://localhost:3000", {
-        query: { token: userName }});
+        query: { token: newIntraId }});
       setChatSocket(socket);
     };
 

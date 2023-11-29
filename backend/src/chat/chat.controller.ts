@@ -27,7 +27,7 @@ export class ChatController {
   @ApiOperation({ summary: 'create chatroom.' })
   @Put('create_chatroom/:chatroom_name')
   async create_chatroom(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string): Promise<any> {
-    return await this.chat.createChatroom(user.intraId, chatroom_name).catch((e: Error) => {
+    return await this.chat.create_chatroom(user.intraId, chatroom_name).catch((e: Error) => {
       return e.message;
     });
   }
@@ -35,7 +35,7 @@ export class ChatController {
   @ApiOperation({ summary: 'delete chatroom.' })
   @Delete('delete_chatroom/:chatroom_name')
   async delete_chatroom(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string): Promise<any> {
-    return await this.chat.deleteChatroom(user.intraId, chatroom_name).catch((e: Error) => {
+    return await this.chat.delete_chatroom(user.intraId, chatroom_name).catch((e: Error) => {
       return e.message;
     });
   }
