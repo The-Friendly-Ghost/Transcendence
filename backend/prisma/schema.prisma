@@ -22,7 +22,6 @@ model User {
   socket         Json?
 
   // Chat
-  messages   Message[]
   chatrooms  Chatroom[] @relation("banned")
   adminOf    Chatroom[] @relation("admin")
   Chatroom   Chatroom?  @relation(fields: [chatroomId], references: [id])
@@ -53,8 +52,9 @@ model Message {
   id         Int      @id @default(autoincrement())
   content    String
   createdAt  DateTime @default(now())
-  intraId    Int
-  sender     User     @relation(fields: [intraId], references: [intraId])
+  senderName String
+  // intraId    Int
+  // sender     User     @relation(fields: [intraId], references: [intraId])
   chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
   chatroomId Int
 }

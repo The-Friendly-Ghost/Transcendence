@@ -38,6 +38,7 @@ export class ChatGateway {
     // this.server.emit('message', message);
     console.log("message object:", body);
     console.log("client:", client);
+    this.chat.addMessage(body.destination, body.msg, body.userName).catch((err) => {throw err;});
     this.server.to(body.destination).emit('onMessage', {
       content: body,
     });

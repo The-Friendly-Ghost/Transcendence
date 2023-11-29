@@ -147,4 +147,13 @@ export class ChatController {
       return e.message;
     });
   }
+
+  @ApiOperation({ summary: 'Get all chatrooms.'})
+  @Get('get_all_chatrooms')
+  async get_all_chatrooms(): Promise<any> {
+    return await this.chat.get_all_chatrooms().catch((e: Error) => {
+      return e.message;
+    });
+  }
+
 }

@@ -13,14 +13,9 @@ export class ChatService {
   private userBySocket = new Map<number, Socket>();
 
   async createChatroom(intraId: number, chatroom_name: string) {
-    const client = await this.getSocketFromUser(intraId);
-    if (client === undefined) {
-      throw new Error('You are not connected');
-    }
     const chatroom = await this.prisma_chat.createChatroom(intraId, chatroom_name).catch((e: Error) => {
       throw e;
     });
-    client.join(chatroom_name);
     return chatroom;
   }
 
@@ -58,13 +53,13 @@ export class ChatService {
     .catch((e: Error) => {
       throw e;
     });
-  if (is_user_admin === false) {
-    return 'You are not an admin';
-  }
-  const is_user_owner = await this.prisma_chat.is_user_owner(userIntraId, chatroom_name).catch((e: Error) => {throw e;});
-  if (is_user_owner === true) {
-    return 'You cannot remove the owner';
-  }
+    if (is_user_admin === false) {
+      return 'You are not an admin';
+    }
+    const is_user_owner = await this.prisma_chat.is_user_owner(userIntraId, chatroom_name).catch((e: Error) => {throw e;});
+    if (is_user_owner === true) {
+      return 'You cannot remove the owner';
+    }
     return await this.prisma_chat.remove_user_from_chatroom(userIntraId, chatroom_name).catch((e: Error) => {throw e;});
   }
 
@@ -217,6 +212,11 @@ export class ChatService {
     if (isUserBanned === true) {
       throw new Error('You are banned from this chatroom');
     }
+    const client = await this.getSocketFromUser(intraId);
+    if (client === undefined) {
+      throw new Error('You are not connected');
+    }
+    client.join(chatroom_name);
     return chatroom;
   }
 
@@ -230,5 +230,13 @@ export class ChatService {
 
   async getSocketFromUser(intraId: number): Promise<Socket> {
     return this.userBySocket.get(intraId);
+  }
+
+  async addMessage(destination: string, msg: string, userName: string) {
+    return await this.prisma_chat.addMessage(destination, msg, userName).catch((e: Error) => {throw e;});
+  }
+
+  async get_all_chatrooms(): Promise<Chatroom[]> {
+    return await this.prisma_chat.get_all_chatrooms().catch((e: Error) => {throw e;});
   }
 }

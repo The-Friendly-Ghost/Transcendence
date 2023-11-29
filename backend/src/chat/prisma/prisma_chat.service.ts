@@ -373,4 +373,22 @@ export class PrismaChatService {
       },
     });
   }
+
+  async get_all_chatrooms(): Promise<Chatroom[]> {
+    return await this.prisma.chatroom.findMany();
+  }
+
+  async addMessage(destination: string, msg: string, userName: string) {
+    const message = await this.prisma.message.create({
+      data: {
+        chatroom: {
+          connect: {
+            name: destination,
+          },
+        },
+        content: msg,
+        senderName: userName,
+      },
+    }).catch((e: Error) => {throw e;});
+  }
 }
