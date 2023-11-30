@@ -25,6 +25,19 @@ export class GameController {
     return game;
   }
 
+  @Get('resetGames')
+  @ApiOperation({
+    summary: 'Reset all games in the database.',
+    description: 'Resets all games in the database.',
+  })
+  async resetGames(@GetUser() user: User): Promise<any> {
+    console.log('GameController.resetGames');
+    // console.log('GameController.resetGames user', user);
+
+    const response = await this.gameService.resetGames(user.intraId);
+    return response;
+  }
+
   @Get('getGame/:gameId')
   @ApiOperation({
     summary: 'Get game by game ID',
