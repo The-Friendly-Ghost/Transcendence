@@ -1,5 +1,4 @@
 @import "tailwindcss/base";
-@import "colors.css";
 
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
@@ -10,7 +9,7 @@
 /* Container that's always visible on the background. */
 .container_full_background {
   @apply 
-    col_back /* background color - defined in colors.css */
+    bg-col5 /* background color - defined in colors.css */
     w-full /* full width */
     h-screen /* full height */
     flex-col /* flex direction column */
@@ -37,9 +36,9 @@ Color of this container is transparant */
       grid /* grid */
       grid-cols-1 /* 1 column */
       gap-4 /* gap between columns */
-      items-end /* align items to the bottom */
+      items-start /* align items to the bottom */
       w-full /* full width */
-      max-w-[600px] /* maximum width of 1200px */
+      max-w-[600px] /* maximum width of 600px */
       h-3/5 /* height of 60% */
       min-h-[500px] /* minimum height of 500px */
       px-5 /* padding left and right of 20px */

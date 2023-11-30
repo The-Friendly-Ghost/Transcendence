@@ -5,14 +5,20 @@ import "@styles/containers.css";
 import "@styles/fonts.css";
 import "@styles/buttons.css";
 
-/* Import functions, components and variables */
+/* Import React capabilities or library objects */
 import { useEffect, useState, useRef } from "react";
-import { getCookie } from "@app/actions";
 import { io, Socket } from "socket.io-client";
+
+/* Import components */
 import { InputSimple } from "@components/input";
 import StandardButton, { SubmitButton } from "@components/buttons";
 import Accordion from "@components/Accordion";
 import SimpleForm from "@components/Forms";
+import { SingleTab, TabsOverview } from "@components/tabs";
+
+/* Import actions */
+import { getCookie } from "@app/actions";
+import { changeUserName, sendMessage, fetchIntraName, setupWebSocket, checkReceivedMessage } from "./actions";
 
 /**
  * Function that returns the Chat Page.
@@ -36,51 +42,24 @@ export default function chat_page(): React.JSX.Element {
   const [chatSocket, setChatSocket] = useState<Socket | null>(null);
   // The messages received. Stored in an array of strings.
   const [messageReceived, setMessageReceived] = useState<string[]>([]);
+  // Set the toggle tab
+  const [toggleTab, setToggleTab] = useState<number>(1);
 
   /* **************** */
   /* UseEffect hooks */
   /* ************** */
 
-  /* This useEffect runs only once on component mount.
-  This is because de dependency array is empty.
-  ( the [] at the end ) */
+  /* This useEffect runs only once on component mount. */
   useEffect(() => 
   {
-    let socket: Socket; // Temporary socket variable
-    let newUserName: string; // Temporary intraName variable
-    let newIntraId: string; // Temporary intraID variable
-
-    /* This function fetches the intraName and intraID 
-    from the cookie and sets it to the state variables */
-    async function fetchIntraName(): Promise<void> 
-    {
-      newUserName = await getCookie('username');
-      setUserName(newUserName);
-      newIntraId = await getCookie('intraId');
-      setIntraId(newIntraId);
-    };
-
-    /* This function sets up the websocket connection */
-    async function setupWebSocket(): Promise<void> 
-    {
-      socket = io("http://localhost:3000", {
-        query: { token: userName }});
-      setChatSocket(socket);
-    };
-
-    /* Execute the functions created above in a chain */
-    fetchIntraName().then(setupWebSocket);
+    fetchIntraName(getCookie, setUserName, setIntraId)
+    .then(() => {setupWebSocket(userName, setChatSocket)});
   }, []);
 
-  /* This useEffect runs when the chatSocket object changes. 
-  It will change when a message is received. */
-  function checkReceivedMessage(): void
-  {
-      chatSocket?.on('onMessage', (data: any) => {
-        setMessageReceived( prevMessages => [...prevMessages, data.userName + " : " + data.msg] );
-      });
-  }
-  useEffect(checkReceivedMessage, [chatSocket]);
+  /* This useEffect runs when the chatSocket changes. */
+  useEffect(() => {
+    checkReceivedMessage(chatSocket, setMessageReceived);
+  }, [chatSocket]);
 
   /* This useEffect runs when the messageReceived array changes. 
   It will scroll to the bottom of the message box so that
@@ -91,45 +70,47 @@ export default function chat_page(): React.JSX.Element {
   }
   useEffect(scrollToBottom, [messageReceived]);
 
-
-  /* ***************** */
-  /* Helper functions */
-  /* *************** */
-
-  /* This function sends a message to the server */
-  async function sendMessage(event: React.FormEvent<HTMLFormElement>) : Promise<void> 
-  {
-    event.preventDefault(); // Prevents the page from reloading
-    if (chatMessage === "") // If the message is empty, return
-      return ;
-    chatSocket?.emit('newMessage', { msg: chatMessage, destination: chatSocket.id, userName: userName, intraId: intraId });
-    setChatMessage(""); // Clear the message box
-  }
-
-  async function changeUserName(event: React.FormEvent<HTMLFormElement>) : Promise<void>
-  {
-    event.preventDefault(); // Prevents the page from reloading
-    if (newUserName === "") // If the message is empty, return
-      return ;
-    setUserName(newUserName);
-    chatSocket?.emit('newMessage', { msg: "changed name to " + "\"" + newUserName + "\"", destination: chatSocket.id, userName: userName, intraId: intraId });
-    setNewUserName(""); // Clear the message box
-  }
-
   /* ***************** */
   /* Return Component */
   /* *************** */
 
   return (
-    <section className="container_full_centered">
-      <div className="chat_grid">
+    <section className="container_full_centered debug_blue">
+      <div className="chat_grid debug_red">
+        <TabsOverview toggleId={"chat_tabs"}>
+          <SingleTab 
+            title={"Groups"} 
+            onClick={ () => setToggleTab(1) } 
+            style="w-1/3" />
+          <SingleTab 
+            title={"Direct"} 
+            onClick={ () => setToggleTab(2) } 
+            style="w-1/3" />
+          <SingleTab 
+            title={"Settings"} 
+            onClick={ () => setToggleTab(3) } 
+            style="w-1/3" />
+        </TabsOverview>
+        
+        <div id="chat_tabs debug_red">
+    <div className={toggleTab === 1 ? "" : "hidden " + "p-4 rounded-lg bg-gray-50 dark:bg-gray-800"} id="Groups" role="tabpanel" aria-labelledby="Groups-tab">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Groups Tab</p>
+    </div>
+    <div className={toggleTab === 2 ? "" : "hidden " + "p-4 rounded-lg bg-gray-50 dark:bg-gray-800"} id="Direct" role="tabpanel" aria-labelledby="Direct-tab">
+        <p className="text-sm text-gray-500 dark:text-gray-400">DM Tab</p>
+    </div>
+    <div className={toggleTab === 3 ? "" : "hidden " + "p-4 rounded-lg bg-gray-50 dark:bg-gray-800"} id="Settings" role="tabpanel" aria-labelledby="Settings-tab">
+        <p className="text-sm text-gray-500 dark:text-gray-400">Settings Tab</p>
+    </div>
+   
+</div>
 
-        <Accordion 
+        {/* <Accordion 
           summary={"Change Username"}
           content={
             <div>
               <SimpleForm
-                onSubmit={changeUserName}
+                onSubmit={(event) => changeUserName(event, newUserName, setUserName, chatSocket, userName, intraId, setNewUserName)}
                 content={
                   <div className="border-t flex">
                     <InputSimple 
@@ -153,7 +134,7 @@ export default function chat_page(): React.JSX.Element {
         </div>
 
         <SimpleForm
-          onSubmit={sendMessage}
+          onSubmit={(event) => sendMessage(event, chatMessage, chatSocket, userName, intraId, setChatMessage)}
           content={
               <div className="border-t flex">
               <InputSimple 
@@ -165,7 +146,7 @@ export default function chat_page(): React.JSX.Element {
             </div>
 
           }
-        />
+        /> */}
       </div>
     </section>
   );
