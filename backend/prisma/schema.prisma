@@ -46,6 +46,7 @@ model Game {
   p1        Int       @unique
   p2        Int       @unique
   createdAt DateTime  @default(now())
+  roomName  String?
 }
 
 model Message {

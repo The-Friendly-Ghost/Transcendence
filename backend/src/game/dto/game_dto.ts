@@ -1,13 +1,14 @@
-// export class findGameDto {
-//   gameId: number;
-// }
+export class gameDto {
+  destination: string;
+  msg: string;
+}
 
-// export class updateGameScoreDto {
-//   gameId: number;
-//   score: number[];
-// }
+export class findGameDto {
+  gameId: number;
+}
 
-// export class gameDto {
-//   destination: string;
-//   msg: string;
-// }
+export class updateGameScoreDto {
+  gameId: number;
+  score: number[];
+}
+
