@@ -61,7 +61,12 @@ export class GameService {
 
   async gameWait(gameInfo: any): Promise<void> {
     let game: Game = await this.prismaGameService.findGame({ gameId: gameInfo.id });
-    if (game.state == "PENDING") {
+    console.log(game);
+    if (game == null) {
+      console.log("Something went wrong");
+      clearInterval(gameInfo.intervalID);
+    }
+    else if (game && game.state == "PENDING") {
       // wait for players to join
       // send game state to players
       // wait for players to send action

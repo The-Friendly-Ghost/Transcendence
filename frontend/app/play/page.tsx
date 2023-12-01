@@ -44,7 +44,7 @@ export default function game_page(): React.JSX.Element {
         // setIntraName(await getCookie('intraId'));
         // };
         async function setupWebSocket(): Promise<void> {
-            socket = io("http://localhost:3000", {
+            socket = io(self.location.hostname + ":3000", {
                 // query: { token: intraName }
             });
             setGameSocket(socket);

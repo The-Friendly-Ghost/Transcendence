@@ -44,14 +44,19 @@ export class PrismaGameService {
   }
 
   async findGame(dto: findGameDto): Promise<Game> {
-    const game: Game = await this.prisma.game
-      .findUniqueOrThrow({
-        where: { id: dto.gameId },
-      })
-      .catch((e: Prisma.PrismaClientKnownRequestError) => {
-        console.error('PrismaGameService.findGame error reason: ' + e.message + ' code: ' + e.code);
-        throw new NotFoundException();
-      });
+    let game: Game = null;
+    try {
+      game = await this.prisma.game
+        .findUniqueOrThrow({
+          where: { id: dto.gameId },
+        })
+        .catch((e: Prisma.PrismaClientKnownRequestError) => {
+          console.error('PrismaGameService.findGame error reason: ' + e.message + ' code: ' + e.code);
+          throw new NotFoundException();
+        });
+    } catch (error) {
+      console.log("Game not found");
+    }
     return game;
   }
 
