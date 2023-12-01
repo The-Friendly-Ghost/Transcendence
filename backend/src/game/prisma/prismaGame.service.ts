@@ -89,20 +89,20 @@ export class PrismaGameService {
     return game[0];
   }
 
-  async updateGameScore(dto: updateGameScoreDto): Promise<Game> {
-    const game: Game = await this.prisma.game
-      .update({
-        data: { score: dto.score },
-        where: { id: dto.gameId || undefined },
-      })
-      .catch((e: Prisma.PrismaClientKnownRequestError) => {
-        console.error(
-          'PrismaGameService.updateGameScore error reason: ' + e.message + ' code: ' + e.code,
-        );
-        throw new InternalServerErrorException();
-      });
-    return game;
-  }
+//   async updateGameScore(dto: updateGameScoreDto): Promise<Game> {
+//     const game: Game = await this.prisma.game
+//       .update({
+//         data: { score: dto.score },
+//         where: { id: dto.gameId || undefined },
+//       })
+//       .catch((e: Prisma.PrismaClientKnownRequestError) => {
+//         console.error(
+//           'PrismaGameService.updateGameScore error reason: ' + e.message + ' code: ' + e.code,
+//         );
+//         throw new InternalServerErrorException();
+//       });
+//     return game;
+//   }
 
   async updateEndGame(data: Prisma.GameUpdateArgs): Promise<Game> {
     const game: Game = await this.prisma.game

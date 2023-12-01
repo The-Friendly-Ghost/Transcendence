@@ -50,12 +50,21 @@ export class GameController {
     return game;
   }
 
-  // temporary endpoint
-  @Post('startGame/:p1')
-  @ApiTags('start_game')
-  async startGame(@Param('p1') p1: string, @Response() res: Res) {
-
-    const game = await this.gameService.startGame(p1);
-    return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/game`);
+  @Post('joinQueue')
+  @ApiOperation({
+    summary: 'Join the queue for a game.',
+    description: 'Joins the queue for a game.',
+  })
+  async joinQueue(@GetUser() user: User): Promise<String> {
+    await this.gameService.joinQueue(user.intraId);
+    return "you joined the queue";
   }
+//   // temporary endpoint
+//   @Post('startGame/:p1')
+//   @ApiTags('start_game')
+//   async startGame(@Param('p1') p1: string, @Response() res: Res) {
+
+//     const game = await this.gameService.startGame(p1);
+//     return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/game`);
+//   }
 }

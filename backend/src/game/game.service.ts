@@ -7,6 +7,7 @@ import { clear } from 'console';
 @Injectable()
 export class GameService {
   constructor(private readonly prismaGameService: PrismaGameService) { }
+  private pendingIntraId: number;
 
   async searchGame(userId: number) {
     console.log('GameService.searchGame');
@@ -48,11 +49,11 @@ export class GameService {
     return game;
   }
 
-  async startGame(p1: string) {
-    // connect to socket
+//   async startGame(p1: string) {
+//     // connect to socket
 
 
-  }
+//   }
 
   async create_gameroom(): Promise<string> {
     const roomName = Math.random().toString().substring(2, 15)
@@ -89,8 +90,8 @@ export class GameService {
       roomName: Math.random().toString().substring(2, 15) // Turn this into a game room
     });
     // this.prismaGameService.findGame({ gameId: game.id });
-    let gameInfo = { id: game.id, intervalID: null };
-    gameInfo.intervalID = setInterval(() => this.gameWait(gameInfo), 1000);
+    // let gameInfo = { id: game.id, intervalID: null };
+    // gameInfo.intervalID = setInterval(() => this.gameWait(gameInfo), 1000);
     return game;
   }
 
@@ -102,5 +103,27 @@ export class GameService {
     //   // send action to game
     //   // update game state
     // }
+  }
+
+  async joinQueue(intraId: number) {
+    console.log('GameService.joinQueue userId', intraId);
+    if (this.pendingIntraId == null) {
+      this.pendingIntraId = intraId;
+    }
+    else {
+      await this.start_game(intraId, this.pendingIntraId);
+      this.pendingIntraId = null;
+    }
+
+  }
+
+  async start_game(p1: number, p2: number) {
+    console.log("Lets get ready to rumble!!");
+  }
+
+  async disconnect_from_game(intraId: number) {
+    if (this.pendingIntraId == intraId) {
+      this.pendingIntraId = null;
+    }
   }
 }

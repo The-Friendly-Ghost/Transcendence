@@ -2,16 +2,24 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaChatService } from './prisma/prisma_chat.service';
 import { Chatroom } from '@prisma/client';
 import * as argon from 'argon2';
+import { Socket } from 'socket.io';
 
+// service for chat endpoints. These functions check permissions 'n stuff
+// and
+// Input validation is done in prisma_chat.service.ts
 @Injectable()
 export class ChatService {
   constructor(private prisma_chat: PrismaChatService) {}
+  private userBySocket = new Map<number, Socket>();
 
-  async createChatroom(intraId: number, chatroom_name: string) {
-    return await this.prisma_chat.createChatroom(intraId, chatroom_name);
+  async create_chatroom(intraId: number, chatroom_name: string) {
+    const chatroom = await this.prisma_chat.create_chatroom(intraId, chatroom_name).catch((e: Error) => {
+      throw e;
+    });
+    return chatroom;
   }
 
-  async deleteChatroom(intraId: number, chatroom_name: string) {
+  async delete_chatroom(intraId: number, chatroom_name: string) {
     const is_user_admin = await this.prisma_chat
       .is_user_admin(intraId, chatroom_name)
       .catch((e: Error) => {
@@ -20,7 +28,7 @@ export class ChatService {
     if (is_user_admin === false) {
       return 'You are not an admin';
     }
-    return await this.prisma_chat.deleteChatroom(chatroom_name);
+    return await this.prisma_chat.delete_chatroom(chatroom_name);
   }
 
   async add_user_to_chatroom(intraId: number, chatroom_name: string, addedUserIntraId: number) {
@@ -36,7 +44,7 @@ export class ChatService {
     if (is_user_admin === false) {
       return 'You are not an admin';
     }
-    return await this.prisma_chat.add_user_to_chatroom(intraId, chatroom_name);
+    return await this.prisma_chat.add_user_to_chatroom(addedUserIntraId, chatroom_name);
   }
 
   async remove_user_from_chatroom(deleterId: number, chatroom_name: string, userIntraId: number) {
@@ -45,21 +53,21 @@ export class ChatService {
     .catch((e: Error) => {
       throw e;
     });
-  if (is_user_admin === false) {
-    return 'You are not an admin';
-  }
-  const is_user_owner = await this.prisma_chat.is_user_owner(userIntraId, chatroom_name).catch((e: Error) => {throw e;});
-  if (is_user_owner === true) {
-    return 'You cannot remove the owner';
-  }
+    if (is_user_admin === false) {
+      return 'You are not an admin';
+    }
+    const is_user_owner = await this.prisma_chat.is_user_owner(userIntraId, chatroom_name).catch((e: Error) => {throw e;});
+    if (is_user_owner === true) {
+      return 'You cannot remove the owner';
+    }
     return await this.prisma_chat.remove_user_from_chatroom(userIntraId, chatroom_name).catch((e: Error) => {throw e;});
   }
 
   async leave_chatroom(intraId: number, chatroom_name: string) {
     await this.prisma_chat.remove_user_from_chatroom(intraId, chatroom_name).catch((e: Error) => {throw e;});
-    const chatroom = await this.prisma_chat.getChatroom(chatroom_name).catch((e: Error) => {throw e;});
+    const chatroom = await this.prisma_chat.get_chatroom_w_users(chatroom_name).catch((e: Error) => {throw e;});
     if (intraId === chatroom.ownerIntraId) {
-      await this.prisma_chat.deleteChatroom(chatroom_name).catch((e: Error) => {throw e;});
+      await this.prisma_chat.delete_chatroom(chatroom_name).catch((e: Error) => {throw e;});
       return 'You left as channel owner leaving the channel without leader, no captain, no one to guide this ship in these harsh times. Without captain, communication with the ship is impossible. She is probably foating somewhere out on the big digital ocean. Far out of the reach of web crawler, far out of the reach of any search engine. No future but the endless persistance of leaked data. R.I.P to the crewmembers. May their digital souls have ascended to the cloud.';
     }
     return 'You left the chatroom';
@@ -127,7 +135,7 @@ export class ChatService {
   }
 
   async get_chatroom(intraId: number, chatroom_name: string): Promise<Chatroom> {
-    const chatroom = await this.prisma_chat.getChatroom(chatroom_name).catch((e: Error) => {throw e;});
+    const chatroom = await this.prisma_chat.get_chatroom_w_users(chatroom_name).catch((e: Error) => {throw e;});
     if (chatroom.private === true) {
       const isUserInChatroom = await this.prisma_chat.check_if_user_in_chatroom(intraId, chatroom_name).catch((e: Error) => {throw e;});
       if (isUserInChatroom === false) {
@@ -145,7 +153,7 @@ export class ChatService {
   }
 
   async get_protected_chatroom(intraId: number, chatroom_name: string, password: string): Promise<Chatroom> {
-    const chatroom = await this.prisma_chat.getChatroom(chatroom_name).catch((e: Error) => {throw e;});
+    const chatroom = await this.prisma_chat.get_chatroom_w_users(chatroom_name).catch((e: Error) => {throw e;});
     if (chatroom.private === true) {
       const isUserInChatroom = await this.prisma_chat.check_if_user_in_chatroom(intraId, chatroom_name).catch((e: Error) => {throw e;});
       if (isUserInChatroom === false) {
@@ -186,5 +194,49 @@ export class ChatService {
       return 'You cannot ban an admin';
     }
     return await this.prisma_chat.ban_user(bannedIntraId, chatroom_name).catch((e: Error) => {throw e;});
+  }
+
+  async connect_to_chatroom(intraId: number, chatroom_name: string) {
+    const chatroom = await this.prisma_chat.get_chatroom_w_messages(chatroom_name).catch((e: Error) => {throw e;});
+    if (chatroom.private === true) {
+      const isUserInChatroom = await this.prisma_chat.check_if_user_in_chatroom(intraId, chatroom_name).catch((e: Error) => {throw e;});
+      if (isUserInChatroom === false
+          && await this.prisma_chat.is_private(chatroom_name) === true) {
+        throw new Error('Chatroom is private');
+      }
+    }
+    if (chatroom.pw_hash !== null) {
+      throw new Error('Chatroom is password protected');
+    }
+    const isUserBanned = await this.prisma_chat.is_user_banned(intraId, chatroom_name).catch((e: Error) => {throw e;});
+    if (isUserBanned === true) {
+      throw new Error('You are banned from this chatroom');
+    }
+    const client = await this.get_socket_from_user(intraId);
+    if (client === undefined) {
+      throw new Error('You are not connected');
+    }
+    client.join(chatroom_name);
+    return chatroom;
+  }
+
+  async add_socket_to_user(intraId: number, client: Socket) {
+    this.userBySocket.set(intraId, client);
+  }
+
+  async remove_socket_from_user(intraId: number) {
+    this.userBySocket.delete(intraId);
+  }
+
+  async get_socket_from_user(intraId: number): Promise<Socket> {
+    return this.userBySocket.get(intraId);
+  }
+
+  async add_message(destination: string, msg: string, userName: string) {
+    return await this.prisma_chat.add_message(destination, msg, userName).catch((e: Error) => {throw e;});
+  }
+
+  async get_all_chatrooms(): Promise<Chatroom[]> {
+    return await this.prisma_chat.get_all_chatrooms().catch((e: Error) => {throw e;});
   }
 }

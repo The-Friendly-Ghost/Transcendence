@@ -37,10 +37,25 @@ Color of this container is transparant */
       grid /* grid */
       grid-cols-1 /* 1 column */
       gap-4 /* gap between columns */
+      items-end /* align items to the bottom */
       w-full /* full width */
       max-w-[600px] /* maximum width of 1200px */
+      h-3/5 /* height of 60% */
+      min-h-[500px] /* minimum height of 500px */
       px-5 /* padding left and right of 20px */
       py-14 /* padding top and bottom of 56px */
+    ;
+  }
+
+  .chat_messagebox {
+    @apply
+      bg-white /* white background */
+      rounded-md /* rounded corners */
+      p-7 /* padding of 28px */
+      w-full /* full width */
+      h-3/5 /* height of 60% */
+      min-h-[500px] /* minimum height of 200px */
+      overflow-y-auto /* overflow on y-axis */
     ;
   }
 
