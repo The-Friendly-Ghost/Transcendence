@@ -7,12 +7,12 @@ import { TFAModule } from './2fa/2fa.module';
 import { TFAService } from './2fa/2fa.service';
 import { PrismaTFAService } from './2fa/prisma';
 import { JwtService } from '@nestjs/jwt';
-// import { GameModule } from './game/game.module';
+import { GameModule } from './game/game.module';
 import { GatewayModule } from './gateway/gateway.modules';
 import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UserModule, TFAModule, ChatModule, GatewayModule],
+  imports: [AuthModule, PrismaModule, UserModule, TFAModule, ChatModule, GatewayModule, GameModule],
   providers: [PrismaService, TFAService, PrismaTFAService, JwtService],
 })
-export class AppModule {}
+export class AppModule { }
