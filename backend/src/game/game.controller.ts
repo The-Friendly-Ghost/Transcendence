@@ -50,6 +50,15 @@ export class GameController {
     return game;
   }
 
+  @Post('joinQueue')
+  @ApiOperation({
+    summary: 'Join the queue for a game.',
+    description: 'Joins the queue for a game.',
+  })
+  async joinQueue(@GetUser() user: User): Promise<String> {
+    await this.gameService.joinQueue(user.intraId);
+    return "you joined the queue";
+  }
 //   // temporary endpoint
 //   @Post('startGame/:p1')
 //   @ApiTags('start_game')

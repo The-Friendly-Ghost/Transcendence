@@ -14,7 +14,8 @@ import { JwtService } from '@nestjs/jwt';
 @WebSocketGateway({
   cors: {
     origin: '*'
-  }
+  },
+  namespace: '/chat'
 })
 export class ChatGateway {
   constructor(

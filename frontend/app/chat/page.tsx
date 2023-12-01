@@ -57,7 +57,7 @@ export default function chat_page(): React.JSX.Element {
     /* This function sets up the websocket connection */
     async function setupWebSocket(): Promise<void> 
     {
-      socket = io("http://localhost:3000", {
+      socket = io("http://localhost:3000/chat", {
         query: { token: newIntraId }});
       setChatSocket(socket);
     };
