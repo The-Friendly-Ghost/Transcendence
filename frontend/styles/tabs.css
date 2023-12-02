@@ -13,14 +13,19 @@
   .tab_div {
       @apply 
         w-full
+        rounded-lg
       ;
     }
   .tab_ul {
-      @apply 
+      @apply
+        p-2
         flex 
-        flex-wrap 
-        -mb-px 
+        -mb-px
+        w-full
         justify-around
+        rounded-lg
+        bg-black/20
+        shadow-inner
       ;
     }
 
@@ -29,27 +34,36 @@
     **********/
     .tab_li {
       @apply 
-        inline-block 
-        border-b-2 
-        border-transparent 
-        rounded-t-lg 
-        hover:text-white 
-        hover:bg-col1
-        hover:border-col1
+        inline-block /* inline block */
+        text-white /* text color white */
+        transition-all /* transition on all changes */
+        duration-75 /* transition duration of 75ms */
       ;
     }
 
-    /* .tab_a {
+    .active_tab {
+      @apply 
+        bg-white /* background color gray 200 */
+        text-slate-900
+        rounded-lg
+      ;
+    }
+
+    .active_tab:hover {
+      @apply 
+        bg-white /* background color gray 200 */
+        text-slate-900
+        rounded-lg
+      ;
+    }
+
+    .tab_a {
     @apply
-      inline-block 
+      font-inter
+      font-semibold
+      w-full
       p-4 
-      border-b-2 
-      border-transparent 
-      rounded-t-lg 
-      hover:text-gray-600 
-      hover:border-gray-300 
-      dark:hover:text-gray-300
-    } */
+    }
 }
 
 

@@ -9,16 +9,14 @@ import "@styles/tabs.css";
  * a.k.a. the id of the div that contains the content of the tabs.
  * @returns A JSX Element that represents the tabs overview.
  */
-export function TabsOverview({ toggleId, children }
-    : { toggleId: string, children: React.ReactNode })
-    : JSX.Element 
+export function TabsOverview({ children }
+    : { children: React.ReactNode })
+    : React.JSX.Element 
 {
   return (
-    <div className="tab_div">
-        <ul className="tab_ul" id="default-tab" data-tabs-toggle={toggleId} role="tablist">
-            {children}
-        </ul>
-    </div>
+    <ul className="tab_ul">
+        {children}
+    </ul>
   )
 }
 
@@ -35,7 +33,7 @@ export function SingleTab( { title, onClick, style }
     <li className={"tab_li " + style } role="presentation">
         <button 
             onClick={onClick}
-            className=".tab_a" 
+            className="tab_a" 
             type="button" 
             role="tab" >
                 {title}

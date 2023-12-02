@@ -16,31 +16,28 @@ const logout = () => {
  */
 export default function nav(): React.JSX.Element {
   return (
-    <nav className="flex items-center justify-center w-full pt-3 bg-blue-500 h-14">
-      <Link href="/" className="px-5">
-        <Image
-          className={"object-contain"}
-          src={"/assets/images/logo.svg"}
-          alt={"Trancendance"}
-          width={50}
-          height={50}
-        />
+    <nav className="flex items-center justify-center w-full bg-transparant h-14">
+      <Link href="/" className="px-5 text-white font-inter font-semibold">
         Home
       </Link>
 
-      <Link href="#" className="px-5">
+      <Link href="#" className="px-5 text-white font-inter font-semibold">
         About
       </Link>
 
-      <Link href="/play" className="px-5">
+      <Link href="/play" className="px-5 pt-4 text-white hover:text-slate-900 font-inter font-semibold 
+      bg-black/30 hover:bg-white
+      shadow-black/50 hover:shadow-col4
+      rounded-b-[100px] transition-bg-gradient transition-all duration-300 hover:duration-100
+      text-center h-full w-[200px] shadow-2xl">
         Play Game
       </Link>
 
-      <Link href="/chat" className="px-5" >
+      <Link href="/chat" className="px-5 text-white font-inter font-semibold" >
         Chat
       </Link>
 
-      <Link href="#" className="px-5" onClick={logout}>
+      <Link href="#" className="px-5 text-white font-inter font-semibold" onClick={logout}>
         LOGOUT
       </Link>
     </nav>

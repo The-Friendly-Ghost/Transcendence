@@ -1,5 +1,4 @@
 @import "tailwindcss/base";
-
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
@@ -9,11 +8,55 @@
 /* Container that's always visible on the background. */
 .container_full_background {
   @apply 
-    bg-col5 /* background color - defined in colors.css */
+    bg-black /* background color - defined in colors.css */
     w-full /* full width */
     h-screen /* full height */
     flex-col /* flex direction column */
+    overflow-hidden /* hide overflow */
+    relative /* position relative */
+    z-10 /* z-index of 10 */
   ;
+}
+
+.auroral_background {
+  position: absolute;
+  left: -50%;
+  top: -50%;
+  width: 200%;
+  height: 200%;
+  animation-name: northern;
+  animation-duration: 10s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  z-index: -1;
+  background: linear-gradient(10deg, rgba(161, 217, 180, 0.8) 20%, rgba(50, 152, 138, 0.8) 40%, rgba(0, 14, 60, 1) 65%);
+}
+
+@keyframes northern {
+  0% {
+    transform: translate(5%, -2%);
+  }
+
+  25% {
+    transform: translate(10%, 7%);
+  }
+
+  40% {
+    transform: rotate(-10deg);
+  }
+
+  60% {
+    transform: translate(7%, -2%);
+  }
+
+  85% {
+    transform: translate(6%, 3%) rotate(12deg);
+  }
+
+  100% {
+    transform: none;
+  }
 }
 
 /* Overlay container full width and height.
@@ -23,7 +66,7 @@ Color of this container is transparant */
       flex /* flex */
       flex-col /* flex direction column */
       items-center /* center items horizontally */
-      justify-center /* center items vertically */
+      content-start /* align items to the top */
       h-screen /* full height */
       min-h-[300px] /* minimum height of 300px */
       w-screen /* full width */
@@ -35,14 +78,15 @@ Color of this container is transparant */
     @apply
       grid /* grid */
       grid-cols-1 /* 1 column */
-      gap-4 /* gap between columns */
+      content-start /* align items to the top */
       items-start /* align items to the bottom */
       w-full /* full width */
       max-w-[600px] /* maximum width of 600px */
       h-3/5 /* height of 60% */
       min-h-[500px] /* minimum height of 500px */
-      px-5 /* padding left and right of 20px */
-      py-14 /* padding top and bottom of 56px */
+      border-0 /* no border */
+      shadow-none /* no shadow */
+      rounded-lg /* rounded corners */
     ;
   }
 
@@ -74,10 +118,9 @@ Color of this container is transparant */
 
   .dashboard_block {
     @apply
-      bg-white /* white background */
-      rounded-md /* rounded corners */
-      p-7 /* padding of 28px */
-      shadow-md /* shadow */
+      p-0 /* padding of 0px */
+      bg-black/20/* white background */
+      rounded-lg /* rounded corners */
     ;
   }
 

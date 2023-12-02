@@ -19,9 +19,10 @@ export async function changeUserName(
   userName: string,
   intraId: string,
   setNewUserName: React.Dispatch<React.SetStateAction<string>>
-): Promise<void> {
+): Promise<void> 
+{
   event.preventDefault(); // Prevents the page from reloading
-  if (newUserName === "") // If the message is empty, return
+  if (newUserName === "" || newUserName === null ) // If the message is empty, return
     return ;
   setUserName(newUserName);
   chatSocket?.emit('newMessage', { msg: "changed name to " + "\"" + newUserName + "\"", destination: chatSocket.id, userName: userName, intraId: intraId });
@@ -61,8 +62,8 @@ export async function sendMessage(
 */
 export async function fetchIntraName(
     getCookie: (name: string) => Promise<string>,
-    setUserName: React.Dispatch<React.SetStateAction<string | null>>,
-    setIntraId: React.Dispatch<React.SetStateAction<string | null>>
+    setUserName: React.Dispatch<React.SetStateAction<string>>,
+    setIntraId: React.Dispatch<React.SetStateAction<string>>
   )
   : Promise<void> 
 {

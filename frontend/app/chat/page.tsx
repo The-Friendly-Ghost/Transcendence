@@ -15,6 +15,7 @@ import StandardButton, { SubmitButton } from "@components/buttons";
 import Accordion from "@components/Accordion";
 import SimpleForm from "@components/Forms";
 import { SingleTab, TabsOverview } from "@components/tabs";
+import { SettingsTab } from "./settings";
 
 /* Import actions */
 import { getCookie } from "@app/actions";
@@ -33,11 +34,9 @@ export default function chat_page(): React.JSX.Element {
   // The message to send
   const [chatMessage, setChatMessage] = useState("");
   // The user name of the user
-  const [userName, setUserName] = useState<string | null>(null); 
-  // The New user name of the user
-  const [newUserName, setNewUserName] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>(""); 
   // The 42 intraId of the user. This Id will stay the same, even if the user changes his name.
-  const [intraId, setIntraId] = useState<string | null>(null);
+  const [intraId, setIntraId] = useState<string>("");
   // The socket to send and receive messages
   const [chatSocket, setChatSocket] = useState<Socket | null>(null);
   // The messages received. Stored in an array of strings.
@@ -75,58 +74,43 @@ export default function chat_page(): React.JSX.Element {
   /* *************** */
 
   return (
-    <section className="container_full_centered debug_blue">
-      <div className="chat_grid debug_red">
-        <TabsOverview toggleId={"chat_tabs"}>
+    <section className="container_full_centered justify-start pt-12">
+      <div className="chat_grid">
+        <ul className="tab_ul">
           <SingleTab 
             title={"Groups"} 
             onClick={ () => setToggleTab(1) } 
-            style="w-1/3" />
+            style={`w-1/3 ${toggleTab === 1 ? " active_tab" : ""}`} />
           <SingleTab 
             title={"Direct"} 
             onClick={ () => setToggleTab(2) } 
-            style="w-1/3" />
+            style={`w-1/3 ${toggleTab === 2 ? " active_tab" : ""}`} />
           <SingleTab 
             title={"Settings"} 
             onClick={ () => setToggleTab(3) } 
-            style="w-1/3" />
-        </TabsOverview>
+            style={`w-1/3 ${toggleTab === 3 ? " active_tab" : ""}`} />
+        </ul>
         
-        <div id="chat_tabs debug_red">
-    <div className={toggleTab === 1 ? "" : "hidden " + "p-4 rounded-lg bg-gray-50 dark:bg-gray-800"} id="Groups" role="tabpanel" aria-labelledby="Groups-tab">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Groups Tab</p>
-    </div>
-    <div className={toggleTab === 2 ? "" : "hidden " + "p-4 rounded-lg bg-gray-50 dark:bg-gray-800"} id="Direct" role="tabpanel" aria-labelledby="Direct-tab">
-        <p className="text-sm text-gray-500 dark:text-gray-400">DM Tab</p>
-    </div>
-    <div className={toggleTab === 3 ? "" : "hidden " + "p-4 rounded-lg bg-gray-50 dark:bg-gray-800"} id="Settings" role="tabpanel" aria-labelledby="Settings-tab">
-        <p className="text-sm text-gray-500 dark:text-gray-400">Settings Tab</p>
-    </div>
-   
-</div>
+        <div className="bg-black/20 h-3/6 min-h-[500px] mt-5 rounded-lg p-5">
+          <div className={toggleTab === 1 ? "" : "hidden "}>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Groups Tab</p>
+          </div>
+          <div className={toggleTab === 2 ? "" : "hidden "}>
+            <p className="text-sm text-gray-500 dark:text-gray-400">DM Tab</p>
+          </div>
+          <div className={toggleTab === 3 ? "" : "hidden "}>
+            <SettingsTab
+              setUserName={setUserName}
+              chatSocket={chatSocket}
+              userName={userName}
+              intraId={intraId}
+            />
+          </div>
+        </div>
 
-        {/* <Accordion 
-          summary={"Change Username"}
-          content={
-            <div>
-              <SimpleForm
-                onSubmit={(event) => changeUserName(event, newUserName, setUserName, chatSocket, userName, intraId, setNewUserName)}
-                content={
-                  <div className="border-t flex">
-                    <InputSimple 
-                      input={newUserName} 
-                      setInput={setNewUserName}
-                      placeholder={"Type new username here ..."}
-                    />
-                    <StandardButton text={"Change"} />
-                  </div>
-                }
-              />
-            </div>
-          }
-        />
 
-        <div className="chat_messagebox">
+
+        {/* <div className="chat_messagebox">
           {messageReceived.map((message, index) => (
             <p className="" key={index}>{message}</p>
           ))}
@@ -146,7 +130,7 @@ export default function chat_page(): React.JSX.Element {
             </div>
 
           }
-        /> */}
+        />  */}
       </div>
     </section>
   );

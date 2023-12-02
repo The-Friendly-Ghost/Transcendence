@@ -18,11 +18,10 @@ module.exports = {
         "col2": "#6d28d9" /* violet 700 */,
         "col3": "#06b6d4" /* cyan 500 */,
         "col4": "#a5f3fc" /* cyan 200 */,
-        "col5": "#e5e7eb" /* gray 200 */,
+        "col5": "#ffffff" /* Full white */,
       }
     },
   },
   plugins: [
-    require("flowbite/plugin")
   ],
 }
