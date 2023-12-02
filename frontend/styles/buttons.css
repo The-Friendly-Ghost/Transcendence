@@ -45,19 +45,19 @@
       w-full /* full width */
       rounded-md /* rounded corners */
       transition-all /* transition on all changes */
-      text-col1 /* text color */
+      text-white /* text color */
       text-left /* text align left */
     ;
   }
   .invite_btn::after {
     content: " →";
     @apply
-      text-gray-400 /* text color */
+      text-white /* text color */
       ;
   }
   .invite_btn:hover.invite_btn::after {
       @apply
-        text-col1 /* text color */
+        text-col3 /* text color */
     ;
   }
 

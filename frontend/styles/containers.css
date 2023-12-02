@@ -5,34 +5,40 @@
 
 @layer base {
 
+/********** */
+/* Globals */
+/******** */
+
 /* Container that's always visible on the background. */
 .container_full_background {
   @apply 
-    bg-black /* background color - defined in colors.css */
+    bg-black /* black background */
     w-full /* full width */
     h-screen /* full height */
     flex-col /* flex direction column */
     overflow-hidden /* hide overflow */
     relative /* position relative */
-    z-10 /* z-index of 10 */
+    z-10 /* z-index of 10.*/
   ;
 }
 
+/* The aurora borealis background effect. */
 .auroral_background {
-  position: absolute;
-  left: -50%;
-  top: -50%;
-  width: 200%;
-  height: 200%;
-  animation-name: northern;
-  animation-duration: 10s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  z-index: -1;
+  position: absolute; /* position absolute */
+  left: -50%; /* left of -50% */
+  top: -50%; /* top of -50% */
+  width: 200%; /* width of 200% */
+  height: 200%; /* height of 200% */
+  animation-name: northern; /* animation name. Animation is defined below in @keyframes */
+  animation-duration: 10s; /* animation duration of 10s. This will make sure the animation takes 10 seconds */
+  animation-timing-function: linear; /* animation timing function linear. This will make sure the animation goes at a constant speed */
+  animation-iteration-count: infinite; /* animation iteration count infinite. This will make sure the animation keeps going */
+  animation-direction: alternate; /* animation direction alternate. This will make sure the animation goes back and forth */
+  z-index: -1; /* z-index of -1. This will make sure the background is always behind the content */
   background: linear-gradient(10deg, rgba(161, 217, 180, 0.8) 20%, rgba(50, 152, 138, 0.8) 40%, rgba(0, 14, 60, 1) 65%);
 }
 
+/* The animation of the aurora borealis background effect. */
 @keyframes northern {
   0% {
     transform: translate(5%, -2%);
@@ -74,6 +80,11 @@ Color of this container is transparant */
     ;
   }
 
+  /************* */
+  /**** Chat ****/
+  /*********** */
+
+  /* the outer container that holds the content on the chat page */
   .chat_grid {
     @apply
       grid /* grid */
@@ -98,10 +109,15 @@ Color of this container is transparant */
       w-full /* full width */
       h-3/5 /* height of 60% */
       min-h-[500px] /* minimum height of 200px */
-      overflow-y-auto /* overflow on y-axis */
+      overflow-y-auto /* overflow on y-axis. This will make sure that the chat box can scroll */
     ;
   }
 
+  /******************* */
+  /* Dashboard / Home */
+  /***************** */
+
+  /* the outer container that holds the content on the dashboard page */
   .dashboard_grid {
     @apply
       grid /* grid */
@@ -116,6 +132,7 @@ Color of this container is transparant */
     ;
   }
 
+  /* a single block on the dashboard page */
   .dashboard_block {
     @apply
       p-0 /* padding of 0px */
@@ -124,8 +141,10 @@ Color of this container is transparant */
     ;
   }
 
-
+  /******************** */
   /* Debugging classes */
+  /****************** */
+
   .debug_red {
     @apply
       border-2 /* border of 2px */
