@@ -1,5 +1,4 @@
 @import "tailwindcss/base";
-@import "colors.css";
 @import "fonts.css";
 
 @import "tailwindcss/components";
@@ -13,13 +12,15 @@
   **********/
   .main_btn {
       @apply 
-        col_1 /* defined in colors.css */ 
+        bg-col1 /* defined in globals.css */ 
+        ml-2 /* margin left of 8px */
+        m-0 /* margin top and bottom */
         button_font /* defined in fonts.css */
-        w-full /* full width */
+        h-12 /* height */
+        w-[120px] /* full width */
         rounded-md /* rounded corners */
         py-2 /* padding top and bottom */
         px-5 /* padding left and right */
-        my-4 /* margin top and bottom */
         border-0 /* no border */
         shadow-2xl /* shadow */
         shadow-transparent /* shadow color */
@@ -28,7 +29,7 @@
     }
   .main_btn:hover {
       @apply 
-        col_2 /* defined in colors.css */
+        bg-col2 /* defined in colors.css */
        shadow-violet-500 /* shadow color */
         transition-all /* transition on all changes */
       ;
@@ -44,19 +45,19 @@
       w-full /* full width */
       rounded-md /* rounded corners */
       transition-all /* transition on all changes */
-      text-violet-900 /* text color */
+      text-white /* text color */
       text-left /* text align left */
     ;
   }
   .invite_btn::after {
     content: " →";
     @apply
-      text-gray-400 /* text color */
+      text-white /* text color */
       ;
   }
   .invite_btn:hover.invite_btn::after {
       @apply
-        text-violet-900 /* text color */
+        text-col3 /* text color */
     ;
   }
 
@@ -64,14 +65,41 @@
   /**********
   Chat Send button 
   **********/
-  .main_btn {
+  .send_btn {
     @apply 
-      col_1 /* defined in colors.css */ 
+      bg-col1 /* defined in colors.css */ 
       ml-2 /* margin left of 8px */
+      m-0 /* margin top and bottom */
+      button_font /* defined in fonts.css */
+      h-12 /* height */
+      w-[120px] /* full width */
+      rounded-md /* rounded corners */
+      py-2 /* padding top and bottom */
+      px-5 /* padding left and right */
+      border-0 /* no border */
+      shadow-2xl /* shadow */
+      shadow-transparent /* shadow color */
+      transition-all /* transition on all changes */
+    ;
+  }
+.send_btn:hover {
+    @apply 
+      bg-col2 /* defined in colors.css */
+     shadow-violet-500 /* shadow color */
+      transition-all /* transition on all changes */
+    ;
+  }
+
+  /**********
+  Disabled button 
+  **********/
+  .disabled_btn {
+    @apply 
+      bg-gray-600
       button_font /* defined in fonts.css */
       w-full /* full width */
       rounded-md /* rounded corners */
-      py-5 /* padding top and bottom */
+      py-2 /* padding top and bottom */
       px-5 /* padding left and right */
       my-4 /* margin top and bottom */
       border-0 /* no border */
@@ -80,12 +108,6 @@
       transition-all /* transition on all changes */
     ;
   }
-.main_btn:hover {
-    @apply 
-      col_2 /* defined in colors.css */
-     shadow-violet-500 /* shadow color */
-      transition-all /* transition on all changes */
-    ;
-  }
+
 
 }

@@ -3,15 +3,17 @@ import React from 'react';
 const play = () => {
   return (
     <div>
-      <h2 className='h2_font'>
+      <h2 className='dashboard-block-title'>
         Play
       </h2>
-      <button
-        type="button"
-        className="main_btn"
-      >
-        Play
-      </button>
+      <div className='dashboard-block-content grid grid-cols-3'>
+        <button
+          type="button"
+          className="main_btn"
+        >
+          Play
+        </button>
+      </div>
     </div>
   )
 }
