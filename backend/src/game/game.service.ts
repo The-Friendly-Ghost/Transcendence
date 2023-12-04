@@ -102,10 +102,10 @@ export class GameService {
 
   async joinQueue(intraId: number) {
     console.log('GameService.joinQueue userId', intraId);
-    if (this.pendingIntraId == null) {
+    if (this.pendingIntraId == null && !Number.isNaN(intraId)) {
       this.pendingIntraId = intraId;
     }
-    else {
+    else if (this.pendingIntraId != intraId && !Number.isNaN(intraId)) {
       await this.start_game(intraId, this.pendingIntraId);
       this.pendingIntraId = null;
     }

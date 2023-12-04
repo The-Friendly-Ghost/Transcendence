@@ -38,18 +38,18 @@ export default function game_page(): React.JSX.Element {
     ( the [] at the end ) */
     useEffect(() => {
         let socket: Socket;
-        // let newIntraName: string;
-        // async function fetchIntraName(): Promise<void> {
-        // newIntraName = await getCookie('intraId');
-        // setIntraName(await getCookie('intraId'));
-        // };
+        let newIntraName: string;
+        async function fetchIntraName(): Promise<void> {
+        newIntraName = await getCookie('intraId');
+        setIntraName(await getCookie('intraId'));
+        };
         async function setupWebSocket(): Promise<void> {
-            socket = io("http://localhost:3000", {
-                // query: { token: intraName }
+            socket = io(process.env.BACKEND_URL, {
+                query: { token: newIntraName }
             });
             setGameSocket(socket);
         };
-        // fetchIntraName().then(setupWebSocket);
+        fetchIntraName().then(setupWebSocket);
         setupWebSocket();
     }, []);
 
