@@ -14,12 +14,13 @@ import { InputSimple } from "@components/input";
 import StandardButton, { SubmitButton } from "@components/buttons";
 import Accordion from "@components/Accordion";
 import SimpleForm from "@components/Forms";
-import { SingleTab, TabsOverview } from "@components/tabs";
+import { SingleTab } from "@components/tabs";
 import { SettingsTab } from "./settings";
 
 /* Import actions */
 import { getCookie } from "@app/actions";
 import { changeUserName, sendMessage, fetchIntraName, setupWebSocket, checkReceivedMessage } from "./actions";
+import GroupsTab from "./groupsTab";
 
 /**
  * Function that returns the Chat Page.
@@ -93,7 +94,11 @@ export default function chat_page(): React.JSX.Element {
         
         <div className="bg-black/20 h-3/6 min-h-[500px] mt-5 rounded-lg p-5">
           <div className={toggleTab === 1 ? "" : "hidden "}>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Groups Tab</p>
+            <GroupsTab 
+              userName={userName}
+              chatSocket={chatSocket}
+              intraId={intraId}
+            />
           </div>
           <div className={toggleTab === 2 ? "" : "hidden "}>
             <p className="text-sm text-gray-500 dark:text-gray-400">DM Tab</p>
