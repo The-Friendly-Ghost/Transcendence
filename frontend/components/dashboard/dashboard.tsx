@@ -7,6 +7,7 @@ import { getCookie } from '@app/actions'
 /* Import Styles */
 import '@styles/containers.css';
 import '@styles/fonts.css';
+import '@styles/dashboard.css'
 
 async function dashboard() {
 

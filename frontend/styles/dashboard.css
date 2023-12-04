@@ -1,0 +1,29 @@
+@import "tailwindcss/base";
+@import "fonts.css";
+
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+
+@layer base {
+
+/* Dashboard block title.
+The black part on top of each block.*/
+.dashboard-block-title {
+    @apply
+		h3_font /* font size of 24px */
+		bg-black/40 /* background */
+		px-10 /* padding left and right of 40px */
+		py-7 /* padding top and bottom of 28px */
+		rounded-t-lg /* rounded top corners */
+	;
+	}
+
+/* Dashboard block content. */
+.dashboard-block-content {
+	@apply
+		px-10 
+		py-7
+	;
+	}
+}

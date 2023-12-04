@@ -4,6 +4,7 @@ module.exports = {
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./node_modules/flowbite-react/**/*.js",
 
   ],
   theme: {
@@ -13,9 +14,14 @@ module.exports = {
         inter: ['Inter', 'sans-serif'],
       },
       colors: {
-        'primary-orange': '#FF5722',
+        "col1": "#4c1d95" /* violet 900 */,
+        "col2": "#6d28d9" /* violet 700 */,
+        "col3": "#06b6d4" /* cyan 500 */,
+        "col4": "#a5f3fc" /* cyan 200 */,
+        "col5": "#ffffff" /* Full white */,
       }
     },
   },
-  plugins: [],
+  plugins: [
+  ],
 }
