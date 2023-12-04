@@ -93,24 +93,24 @@ export default function chat_page(): React.JSX.Element {
         </ul>
         
         <div className="bg-black/20 h-3/6 min-h-[500px] mt-5 rounded-lg p-5">
-          <div className={toggleTab === 1 ? "" : "hidden "}>
-            <GroupsTab 
-              userName={userName}
-              chatSocket={chatSocket}
-              intraId={intraId}
-            />
-          </div>
-          <div className={toggleTab === 2 ? "" : "hidden "}>
-            <p className="text-sm text-gray-500 dark:text-gray-400">DM Tab</p>
-          </div>
-          <div className={toggleTab === 3 ? "" : "hidden "}>
-            <SettingsTab
-              setUserName={setUserName}
-              chatSocket={chatSocket}
-              userName={userName}
-              intraId={intraId}
-            />
-          </div>
+            {toggleTab === 1 && (
+              <GroupsTab 
+                userName={userName}
+                chatSocket={chatSocket}
+                intraId={intraId}
+              />
+            )}
+            {toggleTab === 2 && (
+              <p className="text-sm text-gray-500 dark:text-gray-400">DM Tab</p>
+            )}
+            {toggleTab === 3 && (
+              <SettingsTab
+                setUserName={setUserName}
+                chatSocket={chatSocket}
+                userName={userName}
+                intraId={intraId}
+              />
+            )}
         </div>
 
 
