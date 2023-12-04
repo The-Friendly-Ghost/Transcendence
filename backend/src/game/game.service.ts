@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaGameService } from './prisma';
-import { Game, User } from '@prisma/client';
+import { GameInfo, User } from '@prisma/client';
+import { Game, GameManager } from './game';
 import { create } from 'domain';
 import { clear } from 'console';
 
@@ -8,27 +9,9 @@ import { clear } from 'console';
 export class GameService {
   constructor(private readonly prismaGameService: PrismaGameService) { }
   private pendingIntraId: number;
-
-  async searchGame(userId: number) {
-    console.log('GameService.searchGame');
-    console.log('GameService.searchGame userId', userId);
-
-    let game = await this.prismaGameService.searchGame();
-    // game returns null if no game is found
-    // then create a new one
-    // return that
-    if (game == null) {
-      // let gameroom = await this.create_gameroom();
-      game = await this.create_game(userId);
-    }
-    else if (game.p1 != userId) {
-      console.log("game found")
-      game.p2 = userId;
-      game.state = "IN_PROGRESS";
-      await this.prismaGameService.updateGame(game);
-    }
-    return game;
-  }
+  private gamesInfo: GameInfo[];
+  private gameInterval: NodeJS.Timeout;
+  private gameCount: number = 0;
 
   async resetGames(userId: number) {
     console.log('GameService.resetGames');
@@ -41,76 +24,41 @@ export class GameService {
     return response;
   }
 
-  async getGame(gameId: number) {
-    console.log('GameService.getGame');
-    console.log('GameService.getGame gameId', gameId);
-
-    const game = await this.prismaGameService.findGame({ gameId });
-    return game;
+  async listGames(): Promise<void> {
+    console.log(this.gamesInfo);
   }
 
-//   async startGame(p1: string) {
-//     // connect to socket
-
-
-//   }
-
-  async create_gameroom(): Promise<string> {
-    const roomName = Math.random().toString().substring(2, 15)
-    return roomName;
-  }
-
-  async gameWait(gameInfo: any): Promise<void> {
-    let game: Game = await this.prismaGameService.findGame({ gameId: gameInfo.id });
-    console.log(game);
-    if (game == null) {
-      console.log("Something went wrong");
-      clearInterval(gameInfo.intervalID);
-    }
-    else if (game && game.state == "PENDING") {
-      // wait for players to join
-      // send game state to players
-      // wait for players to send action
-      // send action to game
-      // update game state
-      console.log(game);
-      console.log("waiting for players to join");
-    }
-    else if (game.state == "IN_PROGRESS") {
-      console.log("game ready to start");
-      clearInterval(gameInfo.intervalID);
-    }
-  }
-
-  async create_game(userId: number): Promise<Game> {
+  async create_game(p1: number, p2: number): Promise<GameInfo> {
     const game = await this.prismaGameService.createGame({
-      p1: userId,
-      p2: -1,
+      p1: p1,
+      p2: p2,
       state: "PENDING",
       roomName: Math.random().toString().substring(2, 15) // Turn this into a game room
     });
-    // this.prismaGameService.findGame({ gameId: game.id });
-    // let gameInfo = { id: game.id, intervalID: null };
-    // gameInfo.intervalID = setInterval(() => this.gameWait(gameInfo), 1000);
+    this.gameInterval = setInterval(() => { this.gameLoop(game) }, 1000);
+    this.listGames();
+    this.gamesInfo.push(game);
+    this.gameCount++;
     return game;
   }
 
-  async gameLoop() {
-    // while (game.state == "IN_PROGRESS") {
-    //   // get game state
-    //   // send game state to players
-    //   // wait for players to send action
-    //   // send action to game
-    //   // update game state
-    // }
+  async gameLoop(gameInfo: GameInfo) {
   }
 
   async joinQueue(intraId: number) {
     console.log('GameService.joinQueue userId', intraId);
+    // Check if player is already in game
+    const game = await this.prismaGameService.findGame({ userId: intraId });
+    if (game != null) {
+      console.log(intraId, "is already in a game");
+      return;
+    }
+    // Check if a player is in queue already, if not add player to queue
     if (this.pendingIntraId == null && !Number.isNaN(intraId)) {
       this.pendingIntraId = intraId;
     }
     else if (this.pendingIntraId != intraId && !Number.isNaN(intraId)) {
+      console.log("Found 2 users starting a game");
       await this.start_game(intraId, this.pendingIntraId);
       this.pendingIntraId = null;
     }
@@ -118,7 +66,12 @@ export class GameService {
   }
 
   async start_game(p1: number, p2: number) {
+    let gameInfo: GameInfo;
+
     console.log("Lets get ready to rumble!!");
+    gameInfo = await this.create_game(p1, p2);
+    console.log("game created:");
+    console.log(gameInfo);
   }
 
   async disconnect_from_game(intraId: number) {

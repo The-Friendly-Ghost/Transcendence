@@ -6,7 +6,7 @@ import {
     WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { gameDto } from './dto';
+import { queueGameDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { GameService } from './game.service';
 
@@ -17,7 +17,7 @@ import { GameService } from './game.service';
 })
 export class GameGateway {
     constructor(
-        private game: GameService
+        private gameService: GameService
     ) { }
     @WebSocketServer()
     server: Server;
@@ -25,20 +25,20 @@ export class GameGateway {
     async handleConnection(client: Socket) {
         // console.log('connected, user: ', client);
         console.log('handle connectoin intraId: ', client.handshake.query.token);
-        this.game.joinQueue(parseInt(client.handshake.query.token as unknown as string));
     }
 
     async handleDisconnect(client: Socket) {
         console.log('handle disconnection intraId: ', client.handshake.query.token, " disconnected");
-        this.game.disconnect_from_game(Number(client.handshake.query.token));
+        this.gameService.disconnect_from_game(Number(client.handshake.query.token));
     }
 
-    @SubscribeMessage('newGameMessage')
-    handleMessage(client: Socket, @MessageBody() body: gameDto) {
+    @SubscribeMessage('queueGame')
+    handleMessage(client: Socket, @MessageBody() body: queueGameDto) {
+        this.gameService.joinQueue(parseInt(body.userId as unknown as string));
         // this.server.emit('message', message);
         console.log("message object:", body);
-        this.server.to(body.destination).emit('onGameMessage', {
-            content: "hello",
+        this.server.to(body.destination).emit('queueStatus', {
+            queueStatus: "joined"
         });
     }
 }
