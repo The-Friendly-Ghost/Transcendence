@@ -8,7 +8,7 @@ import { Socket } from 'socket.io';
 export class PrismaChatService {
   constructor(private prisma: PrismaService) {}
 
-  async createChatroom(intraId: number, name: string) {
+  async create_chatroom(intraId: number, name: string) {
     if (!(await this.check_if_chatroom_exists(name))) {
       return await this.prisma.chatroom.create({
         data: {
@@ -30,12 +30,15 @@ export class PrismaChatService {
     throw new Error('Chatroom already exists');
   }
 
-  async getChatroom(name: string): Promise<Chatroom> {
+  async get_chatroom_w_messages(name: string): Promise<Chatroom> {
     return await this.prisma.chatroom
       .findUniqueOrThrow({
         where: {
           name: name,
         },
+        include: {
+          messages: true,
+        }
       })
       .catch((e: Prisma.PrismaClientKnownRequestError) => {
         console.error(
@@ -45,7 +48,7 @@ export class PrismaChatService {
       });
   }
 
-  async deleteChatroom(name: string) {
+  async delete_chatroom(name: string) {
     return await this.prisma.chatroom
       .delete({
         where: {
@@ -211,7 +214,7 @@ export class PrismaChatService {
     );
   }
 
-  async get_chatroom(chatroom_name: string): Promise<Chatroom> {
+  async get_chatroom_w_users(chatroom_name: string): Promise<Chatroom> {
     const chatroom = await this.prisma.chatroom.findUnique({
       where: {
         name: chatroom_name,
@@ -351,7 +354,7 @@ export class PrismaChatService {
     return 'Password set';
   }
 
-  async addSocketToUser(intraId: number, client: Socket) {
+  async add_socket_to_user(intraId: number, client: Socket) {
     const user = await this.prisma.user.findUnique({
       where: {
         intraId: intraId,
@@ -369,5 +372,23 @@ export class PrismaChatService {
         socket: clientObj,
       },
     });
+  }
+
+  async get_all_chatrooms(): Promise<Chatroom[]> {  
+    return await this.prisma.chatroom.findMany();  
+  }
+
+  async add_message(destination: string, msg: string, userName: string) {
+    const message = await this.prisma.message.create({
+      data: {
+        chatroom: {
+          connect: {
+            name: destination,
+          },
+        },
+        content: msg,
+        senderName: userName,
+      },
+    }).catch((e: Error) => {throw e;});
   }
 }

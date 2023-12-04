@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PrismaGameService } from './prisma';
 import { Game, User } from '@prisma/client';
 import { create } from 'domain';
+import { clear } from 'console';
 
 @Injectable()
 export class GameService {
   constructor(private readonly prismaGameService: PrismaGameService) { }
+  private pendingIntraId: number;
 
   async searchGame(userId: number) {
     console.log('GameService.searchGame');
@@ -19,7 +21,24 @@ export class GameService {
       // let gameroom = await this.create_gameroom();
       game = await this.create_game(userId);
     }
+    else if (game.p1 != userId) {
+      console.log("game found")
+      game.p2 = userId;
+      game.state = "IN_PROGRESS";
+      await this.prismaGameService.updateGame(game);
+    }
     return game;
+  }
+
+  async resetGames(userId: number) {
+    console.log('GameService.resetGames');
+    console.log('GameService.resetGames userId', userId);
+
+    const succes = await this.prismaGameService.resetGames();
+    const response = {
+      success: succes,
+    };
+    return response;
   }
 
   async getGame(gameId: number) {
@@ -30,27 +49,76 @@ export class GameService {
     return game;
   }
 
-  async startGame(p1: string) {
-    // connect to socket
+//   async startGame(p1: string) {
+//     // connect to socket
 
 
+//   }
+
+  async create_gameroom(): Promise<string> {
+    const roomName = Math.random().toString().substring(2, 15)
+    return roomName;
   }
 
-  // async create_gameroom(): Promise<GameRoom> {
-  //   const gameroom = await this.prismaGameService.createGameroom({
-  //     p1: -1,
-  //     p2: -1,
-  //     state: "PENDING",
-  //   });
-  //   return gameroom;
-  // }
+  async gameWait(gameInfo: any): Promise<void> {
+    let game: Game = await this.prismaGameService.findGame({ gameId: gameInfo.id });
+    if (game.state == "PENDING") {
+      // wait for players to join
+      // send game state to players
+      // wait for players to send action
+      // send action to game
+      // update game state
+      console.log(game);
+      console.log("waiting for players to join");
+    }
+    else if (game.state == "IN_PROGRESS") {
+      console.log("game ready to start");
+      clearInterval(gameInfo.intervalID);
+    }
+  }
 
   async create_game(userId: number): Promise<Game> {
     const game = await this.prismaGameService.createGame({
       p1: userId,
       p2: -1,
       state: "PENDING",
+      roomName: Math.random().toString().substring(2, 15) // Turn this into a game room
     });
+    // this.prismaGameService.findGame({ gameId: game.id });
+    // let gameInfo = { id: game.id, intervalID: null };
+    // gameInfo.intervalID = setInterval(() => this.gameWait(gameInfo), 1000);
     return game;
+  }
+
+  async gameLoop() {
+    // while (game.state == "IN_PROGRESS") {
+    //   // get game state
+    //   // send game state to players
+    //   // wait for players to send action
+    //   // send action to game
+    //   // update game state
+    // }
+  }
+
+  async joinQueue(intraId: number) {
+    console.log('GameService.joinQueue userId', intraId);
+    if (this.pendingIntraId == null) {
+      this.pendingIntraId = intraId;
+    }
+    else {
+      await this.start_game(intraId, this.pendingIntraId);
+      this.pendingIntraId = null;
+    }
+
+  }
+
+  async start_game(p1: number, p2: number) {
+    console.log("Lets get ready to rumble!!");
+  }
+
+  async disconnect_from_game(intraId: number) {
+    if (this.pendingIntraId == intraId) {
+      this.pendingIntraId = null;
+    }
   }
 }

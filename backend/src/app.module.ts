@@ -12,7 +12,7 @@ import { GatewayModule } from './gateway/gateway.modules';
 import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UserModule, TFAModule, ChatModule, GameModule, GatewayModule],
+  imports: [AuthModule, PrismaModule, UserModule, TFAModule, ChatModule, GatewayModule, GameModule],
   providers: [PrismaService, TFAService, PrismaTFAService, JwtService],
 })
-export class AppModule {}
+export class AppModule { }

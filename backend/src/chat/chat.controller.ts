@@ -27,7 +27,7 @@ export class ChatController {
   @ApiOperation({ summary: 'create chatroom.' })
   @Put('create_chatroom/:chatroom_name')
   async create_chatroom(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string): Promise<any> {
-    return await this.chat.createChatroom(user.intraId, chatroom_name).catch((e: Error) => {
+    return await this.chat.create_chatroom(user.intraId, chatroom_name).catch((e: Error) => {
       return e.message;
     });
   }
@@ -35,7 +35,7 @@ export class ChatController {
   @ApiOperation({ summary: 'delete chatroom.' })
   @Delete('delete_chatroom/:chatroom_name')
   async delete_chatroom(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string): Promise<any> {
-    return await this.chat.deleteChatroom(user.intraId, chatroom_name).catch((e: Error) => {
+    return await this.chat.delete_chatroom(user.intraId, chatroom_name).catch((e: Error) => {
       return e.message;
     });
   }
@@ -139,4 +139,21 @@ export class ChatController {
       return e.message;
     });
   }
+
+  @ApiOperation({ summary: 'Connect to chatroom.'})
+  @Put('connect_to_chatroom/:chatroom_name')
+  async connect_to_chatroom(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string): Promise<any> {
+    return await this.chat.connect_to_chatroom(user.intraId, chatroom_name).catch((e: Error) => {
+      return e.message;
+    });
+  }
+
+  @ApiOperation({ summary: 'Get all chatrooms.'})
+  @Get('get_all_chatrooms')
+  async get_all_chatrooms(): Promise<any> {
+    return await this.chat.get_all_chatrooms().catch((e: Error) => {
+      return e.message;
+    });
+  }
+
 }

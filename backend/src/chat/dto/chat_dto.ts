@@ -1,4 +1,6 @@
 export class chatDto {
-  destination: string;
   msg: string;
+  destination: string;
+  userName: string;
+  intraId: number;
 }

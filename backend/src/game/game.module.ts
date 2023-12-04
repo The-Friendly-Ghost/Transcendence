@@ -4,11 +4,12 @@ import { GameController } from './game.controller';
 import { PrismaClient } from '@prisma/client';
 import { PrismaModule } from 'prisma/prisma.module';
 import { PrismaGameService } from './prisma/prismaGame.service';
+import { GameGateway } from './game.gateway';
 
 @Module({
   imports: [PrismaClient, PrismaModule],
-  providers: [GameService, PrismaGameService],
+  providers: [GameService, PrismaGameService, GameGateway],
   controllers: [GameController],
   exports: [PrismaGameService],
 })
-export class GameModule {}
+export class GameModule { }
