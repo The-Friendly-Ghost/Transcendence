@@ -16,10 +16,10 @@ model User {
   twoFAEnabled   Boolean    @default(false)
   twoFASecret    String?
   blockedUserIds Int[]
-  socket         Json?
   chatroomId     Int?
   wins           Int        @default(0)
   losses         Int        @default(0)
+  socket         Json?
   Chatroom       Chatroom?  @relation(fields: [chatroomId], references: [id])
   adminOf        Chatroom[] @relation("admin")
   chatrooms      Chatroom[] @relation("banned")
@@ -39,8 +39,8 @@ model Message {
   id         Int      @id @default(autoincrement())
   content    String
   createdAt  DateTime @default(now())
-  senderName String
   chatroomId Int
+  senderName String
   chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
 }
 

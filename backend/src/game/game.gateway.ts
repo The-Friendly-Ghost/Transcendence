@@ -34,14 +34,20 @@ export class GameGateway {
 
     @SubscribeMessage('queueGame')
     handleMessage(client: Socket, @MessageBody() body: queueGameDto) {
-        this.gameService.joinQueue(parseInt(body.userId as unknown as string));
+        this.gameService.joinQueue(parseInt(body.userId as unknown as string), this);
         // this.server.emit('message', message);
         console.log("message object:", body);
         this.server.to(body.destination).emit('queueStatus', {
-            queueStatus: "joined"
+            queueStatus: "joined queue"
         });
         this.server.emit(String(body.userId), {
             queueStatus: "hello?"
+        });
+    }
+
+    sendToUser(userId: number, messagetype: string, message: string) {
+        this.server.emit(String(userId), {
+            messagetype: messagetype, message: message
         });
     }
 }

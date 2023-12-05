@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { reset_game } from "./reset_game";
 import { Socket, io } from "socket.io-client";
 import { getCookie } from "@app/actions";
+import { exists } from "fs";
 // import Canvas from './components/game/canvas'
 
 export default function game_page(): React.JSX.Element {
@@ -23,6 +24,7 @@ export default function game_page(): React.JSX.Element {
     const [gameSocket, setGameSocket] = useState<Socket | null>(null);
     const [messageReceived, setMessageReceived] = useState("");
     const [queueStatus, setQueueStatus] = useState(false);
+    const [gameRoom, setGameRoom] = useState<number | null>(null);
     /* The useEffect runs only once on component mount.
     This is because de dependency array is empty.
     ( the [] at the end ) */
@@ -45,7 +47,6 @@ export default function game_page(): React.JSX.Element {
             setGameSocket(socket);
         };
         setupWebSocket();
-        console.log(gameSocket);
     }, [intraName]);
 
     useEffect(() => {
@@ -57,7 +58,18 @@ export default function game_page(): React.JSX.Element {
             gameSocket.on(String(intraName), (data: any) => {
                 // setMessageReceived(data.msg);
                 console.log(data);
+                if (data.messagetype === "gameroom") {
+                    console.log("game room");
+                    console.log(data.message);
+                    setGameRoom(data.message);
+                }
+                // console.log(data.messagetype)
             });
+            if (gameRoom) {
+                gameSocket.on(String(gameRoom), (data: any) => {
+                    console.log(data);
+                });
+            }
         }
     }, [gameSocket]);
 
