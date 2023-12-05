@@ -16,7 +16,6 @@ export default function game_page(): React.JSX.Element {
         const res: any = await reset_game();
         console.log(res);
         console.log("Done with queue");
-
     }
 
     // const [gameMessage, setGameMessage] = useState("");
@@ -32,6 +31,11 @@ export default function game_page(): React.JSX.Element {
         newIntraName = await getCookie('intraId');
         setIntraName(await getCookie('intraId'));
     };
+
+    useEffect(() => {
+        fetchIntraName();
+    }, []);
+
     useEffect(() => {
         let socket: Socket;
         async function setupWebSocket(): Promise<void> {
@@ -40,13 +44,17 @@ export default function game_page(): React.JSX.Element {
             });
             setGameSocket(socket);
         };
-
-        fetchIntraName().then(setupWebSocket);
-    }, []);
+        setupWebSocket();
+        console.log(gameSocket);
+    }, [intraName]);
 
     useEffect(() => {
         if (gameSocket) {
             gameSocket.on('queueStatus', (data: any) => {
+                // setMessageReceived(data.msg);
+                console.log(data);
+            });
+            gameSocket.on(String(intraName), (data: any) => {
                 // setMessageReceived(data.msg);
                 console.log(data);
             });

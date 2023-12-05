@@ -40,5 +40,8 @@ export class GameGateway {
         this.server.to(body.destination).emit('queueStatus', {
             queueStatus: "joined"
         });
+        this.server.emit(String(body.userId), {
+            queueStatus: "hello?"
+        });
     }
 }
