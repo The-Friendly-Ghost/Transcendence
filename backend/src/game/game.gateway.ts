@@ -30,6 +30,7 @@ export class GameGateway {
     async handleDisconnect(client: Socket) {
         console.log('handle disconnection intraId: ', client.handshake.query.token, " disconnected");
         this.gameService.disconnect_from_game(Number(client.handshake.query.token));
+        client.disconnect();
     }
 
     @SubscribeMessage('queueGame')

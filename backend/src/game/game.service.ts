@@ -44,10 +44,12 @@ export class GameService {
 
   async gameLoop(gameInfo: GameInfo, gateway: GameGateway) {
 
-    gateway.sendToUser(Number(gameInfo.roomName), "gamestate", gameInfo.state);
+    gateway.sendToUser(Number(gameInfo.roomName), "gamestate", "gameloop");
     console.log("gameLoop");
     setTimeout(() => { this.gameLoop(gameInfo, gateway) }, 1000)
   }
+
+
 
   async joinQueue(intraId: number, gateway: GameGateway) {
     console.log('GameService.joinQueue userId', intraId);
@@ -71,7 +73,10 @@ export class GameService {
       await this.start_game(intraId, this.pendingIntraId, gateway);
       this.pendingIntraId = null;
     }
-
+    else {
+      console.log("User is already in queue");
+      gateway.sendToUser(intraId, "info", "You are already in queue");
+    }
   }
 
   async start_game(p1: number, p2: number, gateway: GameGateway) {

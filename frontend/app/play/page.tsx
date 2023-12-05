@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { post } from "@utils/request/request";
 // import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import Canvas from '@components/game/canvas';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { reset_game } from "./reset_game";
 import { Socket, io } from "socket.io-client";
 import { getCookie } from "@app/actions";
@@ -19,68 +19,90 @@ export default function game_page(): React.JSX.Element {
         console.log("Done with queue");
     }
 
-    // const [gameMessage, setGameMessage] = useState("");
     const [intraName, setIntraName] = useState<string | null>(null);
-    const [gameSocket, setGameSocket] = useState<Socket | null>(null);
+    const gameSocketRef = useRef<Socket | null>(null);
     const [messageReceived, setMessageReceived] = useState("");
     const [queueStatus, setQueueStatus] = useState(false);
     const [gameRoom, setGameRoom] = useState<number | null>(null);
     /* The useEffect runs only once on component mount.
     This is because de dependency array is empty.
     ( the [] at the end ) */
-    let newIntraName: string;
     async function fetchIntraName(): Promise<void> {
-        newIntraName = await getCookie('intraId');
         setIntraName(await getCookie('intraId'));
     };
 
-    useEffect(() => {
-        fetchIntraName();
-    }, []);
-
+    // Setup websocket if intraName is set
     useEffect(() => {
         let socket: Socket;
+
         async function setupWebSocket(): Promise<void> {
             socket = io(process.env.BACKEND_URL, {
-                query: { token: newIntraName }
+                query: { token: intraName }
             });
-            setGameSocket(socket);
-        };
-        setupWebSocket();
+            gameSocketRef.current = socket;
+        }
+        if (intraName !== null && gameSocketRef.current === null) {
+            console.log("Setting up socket");
+            setupWebSocket();
+        }
+
+        return () => {
+            console.log("unmount");
+            if (gameSocketRef.current) {
+                console.log("Disconnecting socket");
+                gameSocketRef.current.disconnect();
+                gameSocketRef.current.close();
+            }
+        }
+
     }, [intraName]);
 
+    // Fetch intra name on mount
     useEffect(() => {
-        if (gameSocket) {
-            gameSocket.on('queueStatus', (data: any) => {
-                // setMessageReceived(data.msg);
+        async function fetchData(): Promise<void> {
+            if (intraName === null) {
+                console.log("Fetching intra name");
+                await fetchIntraName();
+            }
+        }
+        fetchData();
+    }, []);
+
+    // Setup websocket queue listeners
+    useEffect(() => {
+        if (gameSocketRef.current) {
+            gameSocketRef.current.on('queueStatus', (data: any) => {
                 console.log(data);
             });
-            gameSocket.on(String(intraName), (data: any) => {
-                // setMessageReceived(data.msg);
+            gameSocketRef.current.on(String(intraName), (data: any) => {
                 console.log(data);
                 if (data.messagetype === "gameroom") {
                     console.log("game room");
-                    console.log(data.message);
                     setGameRoom(data.message);
+                    console.log(gameRoom);
                 }
-                // console.log(data.messagetype)
             });
+        }
+    }, [gameSocketRef.current, intraName]);
+
+    // Setup websocket gameroom listeners
+    useEffect(() => {
+        if (gameSocketRef.current) {
             if (gameRoom) {
-                gameSocket.on(String(gameRoom), (data: any) => {
+                console.log("Got gameroom");
+                gameSocketRef.current.on(String(gameRoom), (data: any) => {
                     console.log(data);
                 });
             }
         }
-    }, [gameSocket]);
+    }, [gameRoom, gameSocketRef.current]);
 
-    async function sendMessage(message: string) {
-        console.log(gameSocket);
-        gameSocket?.emit('newGameMessage', { msg: "test", destination: gameSocket.id });
-    }
-
+    // start queue
     async function startQueue() {
-        console.log(gameSocket);
-        gameSocket?.emit('queueGame', { userId: intraName, destination: gameSocket.id });
+        console.log(gameSocketRef.current);
+        if (gameSocketRef.current) {
+            gameSocketRef.current.emit('queueGame', { userId: intraName, destination: gameSocketRef.current.id });
+        }
     }
 
     return (
