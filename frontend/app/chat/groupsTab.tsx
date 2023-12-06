@@ -4,6 +4,7 @@ import InputSimple from '@components/input';
 import { get } from '@utils/request/request';
 import React, { use, useEffect, useState } from 'react'
 import { Socket } from 'socket.io-client'
+import { getChatRoom } from './getChatRooms';
 
 export function GroupsTab({ chatSocket, userName, intraId }
 	: {  chatSocket: Socket | null, userName: string, intraId: string})
@@ -13,14 +14,11 @@ export function GroupsTab({ chatSocket, userName, intraId }
     let ChatRooms: any;
 
     useEffect(() => {
-        // async function getChatRoom(): Promise<void>  {
-        //     const url: string = `/chat/get_all_chatrooms`;
-        //     const res: Response = await get(url);
-        //     let res_json: any = await res.json();
-        //     // console.log(res);
-        //     console.log(res_json);
-        // }
-        // getChatRoom();
+        ChatRooms = getChatRoom();
+        if (ChatRooms) {
+            console.log(ChatRooms);
+            console.log(ChatRooms[0]?.value.name); // Access 'name' of the first object in the array
+        }
     } , []);
 
     // console.log(ChatRoomObj);
@@ -28,8 +26,6 @@ export function GroupsTab({ chatSocket, userName, intraId }
     return (
         <div>
             <h2 className="h4_font font-bold pb-4">Join chat room</h2>
-
-            
 
             <h2 className="h4_font font-bold pb-4">Create new room</h2>
                 <SimpleForm
