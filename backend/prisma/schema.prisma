@@ -29,8 +29,8 @@ model GameInfo {
   id        Int       @id @default(autoincrement())
   score     Int[]
   state     GameState
-  p1        Int       @unique
-  p2        Int       @unique
+  p1        Int
+  p2        Int
   createdAt DateTime  @default(now())
   roomName  String?
 }

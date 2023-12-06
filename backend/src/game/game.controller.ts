@@ -12,11 +12,11 @@ import { GetUser } from 'src/auth/decorator';
 export class GameController {
   constructor(private readonly gameService: GameService) { }
 
-  @Get('resetGames')
   @ApiOperation({
     summary: 'Reset all games in the database.',
     description: 'Resets all games in the database.',
   })
+  @Get('resetGames')
   async resetGames(@GetUser() user: User): Promise<any> {
     console.log('GameController.resetGames');
     // console.log('GameController.resetGames user', user);

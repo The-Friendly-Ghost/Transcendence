@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaGameService } from './prisma';
 import { GameGateway } from './game.gateway';
 import { GameInfo, User } from '@prisma/client';
-import { Game, GameManager } from './game';
+import { GameManager } from './gamemanager';
 import { create } from 'domain';
 import { clear } from 'console';
 
@@ -42,11 +42,19 @@ export class GameService {
     return game;
   }
 
-  async gameLoop(gameInfo: GameInfo, gateway: GameGateway) {
 
-    gateway.sendToUser(Number(gameInfo.roomName), "gamestate", "gameloop");
-    console.log("gameLoop");
-    setTimeout(() => { this.gameLoop(gameInfo, gateway) }, 1000)
+  async gameLoop(gameInfo: GameInfo, gateway: GameGateway, gameManager: GameManager) {
+    gameManager.update();
+    // gateway.sendToUser(Number(gameInfo.roomName), "gamestate", "gameloop");
+    // console.log("gameLoop");
+    if (gameInfo.state == "IN_PROGRESS" || gameInfo.state == "PENDING") {
+      setTimeout(() => { this.gameLoop(gameInfo, gateway, gameManager) }, 10)
+    }
+    else {
+      console.log("game finished");
+      this.prismaGameService.updateGame(gameInfo);
+      // clearTimeout(this.gameInterval);
+    }
   }
 
 
@@ -55,7 +63,7 @@ export class GameService {
     console.log('GameService.joinQueue userId', intraId);
     // Check if player is already in game
     const game = await this.prismaGameService.findGame({ userId: intraId });
-    if (game != null) {
+    if (game != null && game.state != "FINISHED") {
       gateway.sendToUser(intraId, "info", "You are already in a game");
       gateway.sendToUser(intraId, "gameroom", game.roomName);
       console.log(intraId, "is already in a game");
@@ -81,13 +89,15 @@ export class GameService {
 
   async start_game(p1: number, p2: number, gateway: GameGateway) {
     let gameInfo: GameInfo;
+    let gameManager: GameManager;
 
     console.log("Lets get ready to rumble!!");
     gameInfo = await this.create_game(p1, p2);
+    gameManager = new GameManager(gameInfo, gateway);
     console.log("game created:");
     gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
     gateway.sendToUser(p2, "gameroom", gameInfo.roomName);
-    this.gameInterval = setTimeout(() => { this.gameLoop(gameInfo, gateway) }, 1000);
+    this.gameInterval = setTimeout(() => { this.gameLoop(gameInfo, gateway, gameManager) }, 100);
     console.log(gameInfo);
   }
 

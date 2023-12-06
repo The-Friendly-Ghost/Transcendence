@@ -13,10 +13,10 @@ import { exists } from "fs";
 export default function game_page(): React.JSX.Element {
 
     async function resetGames() {
-        console.log("Queueing for game front");
+        console.log("Resetting all games");
         const res: any = await reset_game();
         console.log(res);
-        console.log("Done with queue");
+        // console.log("Resetting games");
     }
 
     const [intraName, setIntraName] = useState<string | null>(null);

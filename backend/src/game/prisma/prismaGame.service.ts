@@ -43,11 +43,11 @@ export class PrismaGameService {
   }
 
   async findGame(dto: findGameDto): Promise<GameInfo> {
-    let game: GameInfo = null;
+    let games: GameInfo[] = null;
     try {
-      game = await this.prisma.gameInfo
-        .findUniqueOrThrow({
-          where: { p1: dto.userId },
+      games = await this.prisma.gameInfo
+        .findMany({
+          where: { OR: [{ p1: dto.userId }, { p2: dto.userId }], AND: [{ OR: [{ state: "PENDING" }, { state: "IN_PROGRESS" }] }] },
         })
         .catch((e: Prisma.PrismaClientKnownRequestError) => {
           // console.error('PrismaGameService.findGame error reason: ' + e.message + ' code: ' + e.code);
@@ -56,19 +56,7 @@ export class PrismaGameService {
     } catch (error) {
       // console.log("Game not found");
     }
-    try {
-      game = await this.prisma.gameInfo
-        .findUniqueOrThrow({
-          where: { p2: dto.userId },
-        })
-        .catch((e: Prisma.PrismaClientKnownRequestError) => {
-          // console.error('PrismaGameService.findGame error reason: ' + e.message + ' code: ' + e.code);
-          throw new NotFoundException();
-        });
-    } catch (error) {
-      console.log("No game found matching userId:", dto.userId);
-    }
-    return game;
+    return games[0];
   }
 
   async findGameById(dto: findGameByIdDto): Promise<GameInfo> {

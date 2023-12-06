@@ -46,7 +46,7 @@ export class GameGateway {
         });
     }
 
-    sendToUser(userId: number, messagetype: string, message: string) {
+    public sendToUser(userId: number, messagetype: string, message: string) {
         this.server.emit(String(userId), {
             messagetype: messagetype, message: message
         });
