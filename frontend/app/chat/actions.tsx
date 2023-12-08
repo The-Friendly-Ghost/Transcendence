@@ -84,7 +84,8 @@ export async function setupWebSocket(
     )
   : Promise<void> 
 {
-    const socket = io("http://localhost:3000", {
+    const url: string = `${process.env.BACKEND_URL}`
+    const socket = io(url , {
       query: { token: userName }
     });
     setChatSocket(socket);

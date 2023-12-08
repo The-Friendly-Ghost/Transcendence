@@ -32,18 +32,16 @@ export default function chat_page(): React.JSX.Element {
   /* Init State Variables */
   /* ******************* */
 
-  // The message to send
-  const [chatMessage, setChatMessage] = useState("");
   // The user name of the user
   const [userName, setUserName] = useState<string>(""); 
   // The 42 intraId of the user. This Id will stay the same, even if the user changes his name.
   const [intraId, setIntraId] = useState<string>("");
   // The socket to send and receive messages
   const [chatSocket, setChatSocket] = useState<Socket | null>(null);
-  // The messages received. Stored in an array of strings.
-  const [messageReceived, setMessageReceived] = useState<string[]>([]);
   // Set the toggle tab
   const [toggleTab, setToggleTab] = useState<number>(1);
+  // The current room the user is in
+  const [currentRoom, setCurrentRoom] = useState<string>("");
 
   /* **************** */
   /* UseEffect hooks */
@@ -55,20 +53,6 @@ export default function chat_page(): React.JSX.Element {
     fetchIntraName(getCookie, setUserName, setIntraId)
     .then(() => {setupWebSocket(userName, setChatSocket)});
   }, []);
-
-  /* This useEffect runs when the chatSocket changes. */
-  useEffect(() => {
-    checkReceivedMessage(chatSocket, setMessageReceived);
-  }, [chatSocket]);
-
-  /* This useEffect runs when the messageReceived array changes. 
-  It will scroll to the bottom of the message box so that
-  the user can always see the latest message. */
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  function scrollToBottom(): void {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-  useEffect(scrollToBottom, [messageReceived]);
 
   /* ***************** */
   /* Return Component */
@@ -95,6 +79,8 @@ export default function chat_page(): React.JSX.Element {
         <div className="bg-black/20 h-3/6 min-h-[500px] mt-5 rounded-lg p-5">
             {toggleTab === 1 && (
               <GroupsTab 
+                setCurrentRoom={setCurrentRoom}
+                currentRoom={currentRoom}
                 userName={userName}
                 chatSocket={chatSocket}
                 intraId={intraId}
@@ -112,30 +98,6 @@ export default function chat_page(): React.JSX.Element {
               />
             )}
         </div>
-
-
-
-        {/* <div className="chat_messagebox">
-          {messageReceived.map((message, index) => (
-            <p className="" key={index}>{message}</p>
-          ))}
-          <div ref={ messagesEndRef } />
-        </div>
-
-        <SimpleForm
-          onSubmit={(event) => sendMessage(event, chatMessage, chatSocket, userName, intraId, setChatMessage)}
-          content={
-              <div className="border-t flex">
-              <InputSimple 
-                input={chatMessage} 
-                setInput={setChatMessage}
-                placeholder={"Type message here ..."}
-              />
-              <SubmitButton />
-            </div>
-
-          }
-        />  */}
       </div>
     </section>
   );
