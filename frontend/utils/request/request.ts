@@ -22,6 +22,7 @@ export async function get(endpoint: string): Promise<Response> {
 export async function post(endpoint: string): Promise<Response> {
   console.log("request post");
 
+  const token: string | undefined = await getJWT();
   const url: string = `${process.env.BACKEND_URL}${endpoint}`;
   console.log("url", url);
 
@@ -31,6 +32,7 @@ export async function post(endpoint: string): Promise<Response> {
     redirect: "follow",
     credentials: "include", // Don't forget to specify this if you need cookies
     headers: {
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
   });

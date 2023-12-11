@@ -6,9 +6,9 @@ import { Socket } from 'socket.io-client'
 import { createChatRoom, getChatRoom } from './serverActions';
 import { checkReceivedMessage, sendMessage } from './actions';
 
-export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, intraId }
+export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId }
 	: {  setCurrentRoom: React.Dispatch<React.SetStateAction<string>>, currentRoom: string, 
-        chatSocket: Socket | null, userName: string, intraId: string})
+        chatSocket: Socket | null, userName: string, myIntraId: string})
 	: React.JSX.Element
 {
     const [chatRooms, setChatRooms] = useState<any>([]);
@@ -51,7 +51,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, i
                     {/* Show this block if there are chatrooms inside the database */}
                     { Array.isArray(chatRooms) && 
                         ( <div>
-                            <h2 className="h4_font font-bold pb-4">Join chat room</h2>
+                            <h2 className="h4_font font-bold pb-4">Joined rooms</h2>
                             {chatRooms.map((room:any, index:number) => (
                                 <StandardButton
                                     onClick={ () => { setCurrentRoom(room.name) } }
