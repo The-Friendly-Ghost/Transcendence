@@ -3,7 +3,7 @@ import StandardButton, { SubmitButton } from '@components/buttons';
 import InputSimple from '@components/input';
 import React, { useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client'
-import { getChatRoom } from './serverActions';
+import { createChatRoom, getChatRoom } from './serverActions';
 import { checkReceivedMessage, sendMessage } from './actions';
 
 export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, intraId }
@@ -16,6 +16,8 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, i
     const [chatMessage, setChatMessage] = useState("");
     // The messages received. Stored in an array of strings.
     const [messageReceived, setMessageReceived] = useState<string[]>([]);
+    // The new room to create
+    const [newRoom, setNewRoom] = useState<string>("");
 
     // This useEffect is used to get the chat rooms from the backend
     useEffect(() => {
@@ -45,23 +47,32 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, i
         {/* If user is not in a Chatroom Show this code */}
             {currentRoom === "" && (
                 <div className='h-full'>
+
+                    {/* Show this block if there are chatrooms inside the database */}
+                    { Array.isArray(chatRooms) && 
+                        ( <div>
+                            <h2 className="h4_font font-bold pb-4">Join chat room</h2>
+                            {chatRooms.map((room:any, index:number) => (
+                                <StandardButton
+                                    onClick={ () => { setCurrentRoom(room.name) } }
+                                    text={room.name}
+                                    buttonStyle={"border-white border-[1px] hover:bg-violet-700/40 m-0 mr-4 mb-4"}
+                                />
+                            ))}
+                        </div> )
+                    }
+
                     <div>
-                        <h2 className="h4_font font-bold pb-4">Join chat room</h2>
-                        {chatRooms.map((room:any, index:number) => (
-                            <StandardButton
-                                onClick={() => {setCurrentRoom(room.name);}}
-                                text={room.name}
-                                buttonStyle={"border-white border-[1px] hover:bg-violet-700/40 m-0 mr-4 mb-4"}
-                            />
-                        ))}
-                    </div>
-                    <div>
-                        <h2 className="h4_font font-bold pb-4">Or create a new room</h2>
+                        <h2 className="h4_font font-bold pb-4">Create a new room</h2>
                         <SimpleForm
-                            // onSubmit={}
+                            onSubmit={() => createChatRoom(newRoom)}
                             content = {
                                 <div className="flex">
-                                    <InputSimple />
+                                    <InputSimple 
+                                        input={newRoom} 
+                                        setInput={setNewRoom}
+                                        placeholder={"Room name ..."}
+                                    />
                                     <StandardButton 
                                         text={"Create"}
                                         buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}

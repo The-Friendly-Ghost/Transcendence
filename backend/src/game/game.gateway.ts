@@ -23,7 +23,7 @@ export class GameGateway {
     server: Server;
 
     async handleConnection(client: Socket) {
-        console.log('connected, user: ', client);
+        // console.log('connected, user: ', client);
         console.log('intraId: ', client.handshake.query.token);
         this.game.joinQueue(Number(client.handshake.query.token));
     }

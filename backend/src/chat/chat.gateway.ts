@@ -27,7 +27,7 @@ export class ChatGateway {
   async handleConnection(client: Socket) {
     // console.log('connected, user: ', client);
     console.log('intraId: ', client.handshake.query.token);
-    console.log('socketId: ', client);
+    // console.log('socketId: ', client);
     const intraId = Number(client.handshake.query.token);
     await this.chat.add_socket_to_user(intraId, client).catch((err) => {
       console.log(err);
