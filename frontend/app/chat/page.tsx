@@ -76,14 +76,14 @@ export default function chat_page(): React.JSX.Element {
             style={`w-1/3 ${toggleTab === 3 ? " active_tab" : ""}`} />
         </ul>
         
-        <div className="bg-black/20 h-3/6 min-h-[500px] mt-5 rounded-lg p-5">
+        <div className="bg-black/20 h-3/6 min-h-[500px] mt-5 rounded-lg p-5 overflow-y-auto">
             {toggleTab === 1 && (
               <GroupsTab 
                 setCurrentRoom={setCurrentRoom}
                 currentRoom={currentRoom}
                 userName={userName}
                 chatSocket={chatSocket}
-                intraId={intraId}
+                myIntraId={intraId}
               />
             )}
             {toggleTab === 2 && (

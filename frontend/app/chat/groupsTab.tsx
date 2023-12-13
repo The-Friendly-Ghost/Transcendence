@@ -1,10 +1,10 @@
 import SimpleForm from '@components/Forms';
 import StandardButton, { SubmitButton } from '@components/buttons';
 import InputSimple from '@components/input';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { use, useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client'
 import { createChatRoom, getChatRoom } from './serverActions';
-import { checkReceivedMessage, sendMessage } from './actions';
+import { checkReceivedMessage, sendMessage, validateChatroom } from './actions';
 
 export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId }
 	: {  setCurrentRoom: React.Dispatch<React.SetStateAction<string>>, currentRoom: string, 
@@ -18,6 +18,8 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
     const [messageReceived, setMessageReceived] = useState<string[]>([]);
     // The new room to create
     const [newRoom, setNewRoom] = useState<string>("");
+    // // Create room error message
+    const [createRoomError, setCreateRoomError] = useState<string>("");
 
     // This useEffect is used to get the chat rooms from the backend
     useEffect(() => {
@@ -55,6 +57,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                             {chatRooms.map((room:any, index:number) => (
                                 <StandardButton
                                     onClick={ () => { setCurrentRoom(room.name) } }
+                                    key={index}
                                     text={room.name}
                                     buttonStyle={"border-white border-[1px] hover:bg-violet-700/40 m-0 mr-4 mb-4"}
                                 />
@@ -62,10 +65,18 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                         </div> )
                     }
 
-                    <div>
+                    <div className='pb-5'>
                         <h2 className="h4_font font-bold pb-4">Create a new room</h2>
                         <SimpleForm
-                            onSubmit={() => createChatRoom(newRoom)}
+                            onSubmit= { (event: any) => { 
+                                if (validateChatroom(newRoom, chatRooms, setCreateRoomError) === true)
+                                {
+                                    setCreateRoomError("");
+                                    createChatRoom(newRoom);
+                                }
+                                else
+                                    event.preventDefault();
+                            }}
                             content = {
                                 <div className="flex">
                                     <InputSimple 
@@ -80,6 +91,9 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                                 </div>
                             }
                         />
+                        { createRoomError !== "" && (
+                            <p className="text-red-500">{createRoomError}</p>
+                        )}
                     </div>
                 </div>
             )}
@@ -109,7 +123,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                         </div>
 
                         <SimpleForm
-                            onSubmit={(event:any) => sendMessage(event, chatMessage, chatSocket, userName, intraId, setChatMessage)}
+                            onSubmit={(event:any) => sendMessage(event, chatMessage, chatSocket, userName, myIntraId, setChatMessage)}
                             content=
                             {
                                 <div className="flex">

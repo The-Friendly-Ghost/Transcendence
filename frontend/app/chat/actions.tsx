@@ -104,3 +104,23 @@ export function checkReceivedMessage(
       setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
     });
   }
+
+
+export function validateChatroom(newRoom: string, chatRooms: any, 
+  setCreateRoomError: React.Dispatch<React.SetStateAction<string>>)
+: boolean
+{
+  // Check if the room name is empty
+  if (newRoom.length < 3 || newRoom.length > 8) {
+    setCreateRoomError("Room name must be between 3 and 8 characters");
+    return false;
+  }
+
+  // Check if the room name is already taken
+  else if (chatRooms.some((room: any) => room.name === newRoom))
+  {
+    setCreateRoomError("Room name already taken");
+    return false;
+  }
+  return true;
+}
