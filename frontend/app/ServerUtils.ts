@@ -1,6 +1,7 @@
 "use server"
 
-import { post } from "@utils/request/request";
+/* Import Functions */
+import { get, post } from "@utils/request/request";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
 
@@ -11,14 +12,13 @@ import { cookies } from "next/headers";
  */
 export async function getCookie(name: string): Promise<string> {
   const cookie: RequestCookie | undefined = cookies().get(name);
-  console.log(cookie);
   return (cookie ? cookie.value : "");
 }
 
 /**
- *
- * @param tfa_code
- * @returns
+ * Sends a request to the backend API to verify the TFA code.
+ * @param tfa_code the TFA code to verify.
+ * @returns true if the TFA code is valid, false otherwise.
  */
 export async function verifyTfaCode(tfa_code: string): Promise<boolean> {
 
@@ -40,14 +40,40 @@ export async function verifyTfaCode(tfa_code: string): Promise<boolean> {
     .forEach((pair) => {
       keyValues[pair[0]] = pair[1];
     });
-  console.log("verifyTfaCode key_values", keyValues);
+  // console.log("verifyTfaCode key_values", keyValues);
 
   // set the cookie to the client side...
-  console.log("end verifyTfaCode ===========================\n");
+  // console.log("end verifyTfaCode ===========================\n");
   if (res.status === 201) {
     const ck = cookies();
     ck.set("TfaValidated", keyValues.TfaValidated);
     return true;
   }
   return false;
+}
+
+/**
+ * Sends a request to the backend to get the user's information.
+ * If no intraId is specified, the request will be made to get 
+ * the current user's information. Otherwise, the request will
+ * be made to get the information of the user with the specified
+ * intraId.
+ * @param intraId the intraId of the user to get information for.
+ * @returns the user's information.
+ */
+export async function getUserInfo(intraId?: number): Promise<any> 
+{
+
+  if (intraId)
+  {
+    const endpoint: string = `/user/getUser/` + intraId;
+    const res: Response = await get(endpoint);
+    return res.json();
+  }
+  else
+  {
+    const endpoint: string = `/user/getMe`;
+    const res: Response = await get(endpoint);
+    return res.json();
+  }
 }

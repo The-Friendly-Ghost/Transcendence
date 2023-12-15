@@ -1,9 +1,13 @@
-import Accordion from '@components/Accordion'
-import SimpleForm from '@components/Forms'
+/* Import Components */
+import SimpleForm from '@components/common/Forms'
+import InputSimple from '@components/common/Input'
+import StandardButton from '@components/common/Buttons'
+
+/* Import functions */
+import { changeUserName } from '../../../app/chat/utils'
+
+/* Import React or Library functions */
 import React from 'react'
-import { changeUserName } from './actions'
-import InputSimple from '@components/input'
-import StandardButton from '@components/buttons'
 import { Socket } from 'socket.io-client'
 import { useState } from 'react'
 

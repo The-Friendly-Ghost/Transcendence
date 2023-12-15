@@ -6,8 +6,10 @@ import { useState } from "react";
 import "@styles/containers.css";
 import "@styles/fonts.css";
 import "@styles/buttons.css";
+
+/* Import Functions */
 import { useRouter } from "next/navigation";
-import { verifyTfaCode } from "@app/actions";
+import { verifyTfaCode } from "@app/ServerUtils";
 
 export default function tfa_page() {
   const router = useRouter();

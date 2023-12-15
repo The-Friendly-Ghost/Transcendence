@@ -6,21 +6,17 @@ import "@styles/fonts.css";
 import "@styles/buttons.css";
 
 /* Import React capabilities or library objects */
-import { useEffect, useState, useRef } from "react";
-import { io, Socket } from "socket.io-client";
+import { useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
 
-/* Import components */
-import { InputSimple } from "@components/input";
-import StandardButton, { SubmitButton } from "@components/buttons";
-import Accordion from "@components/Accordion";
-import SimpleForm from "@components/Forms";
-import { SingleTab } from "@components/tabs";
-import { SettingsTab } from "./settings";
+/* Import Components */
+import { SingleTab } from "@components/common/Tabs";
+import { SettingsTab } from "@components/chat/SettingsTab/settings";
+import { GroupsTab } from "@components/chat/Groups/GroupsTab";
 
-/* Import actions */
-import { getCookie } from "@app/actions";
-import { changeUserName, sendMessage, fetchIntraName, setupWebSocket, checkReceivedMessage } from "./actions";
-import GroupsTab from "./groupsTab";
+/* Import Functions */
+import { getCookie } from "@app/ServerUtils";
+import { fetchIntraName, setupWebSocket } from "./utils";
 
 /**
  * Function that returns the Chat Page.

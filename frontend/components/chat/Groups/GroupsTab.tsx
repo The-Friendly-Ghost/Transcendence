@@ -1,16 +1,27 @@
-import SimpleForm from '@components/Forms';
-import StandardButton, { SubmitButton } from '@components/buttons';
-import InputSimple from '@components/input';
-import React, { use, useEffect, useRef, useState } from 'react'
-import { Socket } from 'socket.io-client'
-import { createChatRoom, getChatRoom } from './serverActions';
-import { checkReceivedMessage, sendMessage, validateChatroom } from './actions';
+/* Import Components */
+import SimpleForm from '@components/common/Forms';
+import StandardButton, { SubmitButton } from '@components/common/Buttons';
+import InputSimple from '@components/common/Input';
 
-export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId }
-	: {  setCurrentRoom: React.Dispatch<React.SetStateAction<string>>, currentRoom: string, 
-        chatSocket: Socket | null, userName: string, myIntraId: string})
+/* Import functions */
+import { createChatRoom, getChatRoom } from '../../../app/chat/serverUtils';
+import { checkReceivedMessage, sendMessage, validateChatroom } from '../../../app/chat/utils';
+
+/* Import React or Library functions */
+import React, { useEffect, useRef, useState } from 'react';
+import ChatRoomOverview from './ChatRoomOverview';
+import { ChatProps } from '@types';
+import SmallAccordion from '@components/common/Accordion';
+
+export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId } 
+    : ChatProps)
 	: React.JSX.Element
 {
+
+    /* ********************* */
+    /* Init State Variables */
+    /* ******************* */
+
     const [chatRooms, setChatRooms] = useState<any>([]);
     // The message to send
     const [chatMessage, setChatMessage] = useState("");
@@ -18,8 +29,12 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
     const [messageReceived, setMessageReceived] = useState<string[]>([]);
     // The new room to create
     const [newRoom, setNewRoom] = useState<string>("");
-    // // Create room error message
+    // Create room error message
     const [createRoomError, setCreateRoomError] = useState<string>("");
+
+    /* ********************* */
+    /* UseEffect Hooks      */
+    /* ******************* */
 
     // This useEffect is used to get the chat rooms from the backend
     useEffect(() => {
@@ -30,7 +45,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
 
     /* This useEffect runs when the chatSocket changes. */
     useEffect(() => {
-        checkReceivedMessage(chatSocket, setMessageReceived);
+        checkReceivedMessage(chatSocket || null, setMessageReceived);
     }, [chatSocket]);
 
     /* This useEffect runs when the messageReceived array changes. 
@@ -42,8 +57,9 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
     }
     useEffect(scrollToBottom, [messageReceived]);
 
-    // console.log(ChatRoomObj);
-
+    /* ********************* */
+    /* Return JSX           */
+    /* ******************* */
     return (
         <React.Fragment>
         {/* If user is not in a Chatroom Show this code */}
@@ -52,21 +68,31 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
 
                     {/* Show this block if there are chatrooms inside the database */}
                     { Array.isArray(chatRooms) && 
-                        ( <div>
-                            <h2 className="h4_font font-bold pb-4">Joined rooms</h2>
-                            {chatRooms.map((room:any, index:number) => (
-                                <StandardButton
-                                    onClick={ () => { setCurrentRoom(room.name) } }
-                                    key={index}
-                                    text={room.name}
-                                    buttonStyle={"border-white border-[1px] hover:bg-violet-700/40 m-0 mr-4 mb-4"}
-                                />
-                            ))}
-                        </div> )
+                        (
+                            <details>
+                                <summary className="h4_font font-bold pb-4 w-full cursor-pointer">
+                                    Chatrooms
+                                </summary>
+                                <div className='grid grid-cols-2 gap-5'>
+                                    {chatRooms.filter(room => room.ownerIntraId === (myIntraId ? +myIntraId : null)).map((room:any, index:number) => (
+                                        <ChatRoomOverview 
+                                            setCurrentRoom={setCurrentRoom}
+                                            key={index}
+                                            room={room}
+                                            myIntraId={myIntraId}
+                                            userName={userName}
+                                            chatSocket={chatSocket}
+                                        />
+                                    ))}
+                                </div>
+                            </details>
+                        )
                     }
 
-                    <div className='pb-5'>
-                        <h2 className="h4_font font-bold pb-4">Create a new room</h2>
+                    <details>
+                        <summary className="h4_font font-bold pb-4 w-full cursor-pointer">
+                            Create new chatroom
+                        </summary>
                         <SimpleForm
                             onSubmit= { (event: any) => { 
                                 if (validateChatroom(newRoom, chatRooms, setCreateRoomError) === true)
@@ -94,7 +120,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                         { createRoomError !== "" && (
                             <p className="text-red-500">{createRoomError}</p>
                         )}
-                    </div>
+                    </details>
                 </div>
             )}
 

@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { queue_game } from "./queue_game";
 import { reset_game } from "./reset_game";
 import { Socket, io } from "socket.io-client";
-import { getCookie } from "@app/actions";
+import { getCookie } from "@app/ServerUtils";
 // import Canvas from './components/game/canvas'
 
 
