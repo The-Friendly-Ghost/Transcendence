@@ -55,11 +55,7 @@ export class UserController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  // @UsePipes(new FileTypeValidationPipe())
   uploadFile(@UploadedFile() file: Express.Multer.File, @GetUser() user: User) {
-    // console.log("avatar:\n", file);
-    // console.log("user:\n", user);
-    // console.log("intraId:\n", user.intraId);
     return (this.userService.setAvatar(user.intraId, file).catch((e) => {return {message: e.message}}));
   }
 
@@ -75,13 +71,13 @@ export class UserController {
     return user;
   }
 
-  @Put('setUserName/:userName')
+  @Post('setUserName/:userName')
   @ApiOperation({
     summary: 'Set the name of the user',
     description:
       'Updates the name of the user with the authenticated intra ID to the specified name.',
   })
-  async setUserName(@Param('username') userName: string, @GetUser('intraId') intraId: number) {
+  async setUserName(@GetUser('intraId') intraId: number, @Param('userName') userName: string) {
     console.log('UserController.setUserName intraId', intraId);
     console.log('UserController.setUserName userName', userName);
 
