@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaUserService } from 'src/user/prisma/prismaUser.service';
+import { FileTypeValidationPipe } from './decorator';
 
 @Injectable()
 export class UserService {
@@ -36,6 +37,13 @@ export class UserService {
 
     console.log('UserService.getUser returning user');
     return user;
+  }
+
+  async setAvatar(intraId: number, avatar: any): Promise<any> {
+    if (avatar.mimetype === 'image/jpeg' || avatar.mimetype === 'image/png')
+      return this.prismaUserService.updateAvatar(intraId, avatar).catch((e) => {throw new Error(e.message)});
+    
+    throw new Error('only jpeg and png file are accepted');
   }
 
   async addFriend(intraId: number, intraIdFriend: number): Promise<User> {
