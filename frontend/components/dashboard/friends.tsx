@@ -5,7 +5,7 @@ import '@styles/containers.css';
 import '@styles/fonts.css';
 import '@styles/buttons.css';
 import InputSimple from '@components/common/Input';
-import { getUserInfo } from '@app/ServerUtils';
+import { addNewFriend, getUserInfo } from '@app/ServerUtils';
 import Image from 'next/image';
 import StandardButton from '@components/common/Buttons';
 import SimpleForm from '@components/common/Forms';
@@ -50,13 +50,13 @@ export function Friends(props: any)
           <p className='pb-3 font-bold'>Add new friends</p>
           
           <SimpleForm
-            // onSubmit= {}
+            onSubmit= {() => addNewFriend(newFriend)}
             content = 
             {
               <div className="flex">
                 <InputSimple 
-                  // input={newRoom} 
-                  // setInput={setNewRoom}
+                  input={newFriend} 
+                  setInput={setNewFriend}
                   placeholder={"Intra-ID"}
                 />
                 <StandardButton 

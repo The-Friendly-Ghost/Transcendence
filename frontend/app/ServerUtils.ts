@@ -77,3 +77,11 @@ export async function getUserInfo(intraId?: number): Promise<any>
     return res.json();
   }
 }
+
+export async function addNewFriend( intraID: string )
+: Promise<any> {
+    const url: string = `/user/addFriend/` + intraID;
+    const res: Response = await post(url);
+    let res_json: any = await res.json();
+    return res_json;
+}
