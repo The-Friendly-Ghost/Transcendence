@@ -1,4 +1,4 @@
-import { OnModuleInit } from '@nestjs/common';
+import { OnModuleInit, ParseIntPipe } from '@nestjs/common';
 import {
     MessageBody,
     SubscribeMessage,
@@ -24,12 +24,12 @@ export class GameGateway {
 
     async handleConnection(client: Socket) {
         // console.log('connected, user: ', client);
-        console.log('intraId: ', client.handshake.query.token);
-        this.game.joinQueue(Number(client.handshake.query.token));
+        console.log('handle connectoin intraId: ', client.handshake.query.token);
+        this.game.joinQueue(parseInt(client.handshake.query.token as unknown as string));
     }
 
     async handleDisconnect(client: Socket) {
-        console.log('intraId: ', client.handshake.query.token, " disconnected");
+        console.log('handle disconnection intraId: ', client.handshake.query.token, " disconnected");
         this.game.disconnect_from_game(Number(client.handshake.query.token));
     }
 
