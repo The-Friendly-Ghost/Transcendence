@@ -15,6 +15,7 @@ import React from 'react';
 import '@styles/containers.css';
 import '@styles/fonts.css';
 import '@styles/dashboard.css'
+import Settings from './Settings';
 
 export function dashboard() {
 
@@ -57,7 +58,7 @@ export function dashboard() {
       />
     </div>
     <div className='dashboard_block'>
-      <p>LEADERBOARD</p>
+      <Settings />
     </div>
     <div className='dashboard_block'>
       <p>2FA</p>

@@ -85,3 +85,11 @@ export async function addNewFriend( intraID: string )
     let res_json: any = await res.json();
     return res_json;
 }
+
+export async function changeUsername( newUsername: string )
+: Promise<any> {
+    const url: string = `/user/setUserName/` + newUsername;
+    const res: Response = await post(url);
+    let res_json: any = await res.json();
+    return res_json;
+}
