@@ -1,5 +1,5 @@
-import Game from "./game.ts";
-import Sizes from "./utils/sizes.ts";
+import Game from "./game";
+import Sizes from "./utils/sizes";
 import * as THREE from 'three';
 
 

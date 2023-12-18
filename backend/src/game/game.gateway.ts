@@ -46,6 +46,18 @@ export class GameGateway {
         });
     }
 
+    @SubscribeMessage('testGame')
+    testGame(client: Socket, @MessageBody() body: queueGameDto) {
+        this.gameService.testGame(parseInt(body.userId as unknown as string), this);
+        console.log("message object:", body);
+        this.server.to(body.destination).emit(String(body.userId), {
+            queueStatus: "starting test game"
+        });
+        this.server.emit(String(body.userId), {
+            queueStatus: "hello?"
+        });
+    }
+
     public sendToUser(userId: number, messagetype: string, message: string) {
         this.server.emit(String(userId), {
             messagetype: messagetype, message: message

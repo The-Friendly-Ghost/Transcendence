@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as Matter from 'matter-js';
-import Game from './game.ts';
+import Game from './game';
 // import * as CANNON from 'cannon-es';
 
 export default class Ball {

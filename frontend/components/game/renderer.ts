@@ -1,11 +1,11 @@
 import * as THREE from 'three';
-import Camera from './camera.ts';
-import Sizes from './utils/sizes.ts';
-import Game from './game.ts';
+import Camera from './camera';
+import Sizes from './utils/sizes';
+import Game from './game';
 
 export default class Renderer {
     game: Game;
-    canvas: any;
+    canvas: HTMLCanvasElement;
     sizes: Sizes;
     scene: THREE.Scene;
     camera: Camera;

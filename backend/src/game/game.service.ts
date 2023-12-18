@@ -57,6 +57,20 @@ export class GameService {
     }
   }
 
+  async testGame(p1: number, gateway: GameGateway) {
+    let gameInfo: GameInfo;
+    let gameManager: GameManager;
+
+    console.log("Lets get ready to rumble!!");
+    gameInfo = await this.create_game(p1, p1);
+    gameManager = new GameManager(gameInfo, gateway);
+    console.log("game created:");
+    gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
+    // gateway.sendToUser(p2, "gameroom", gameInfo.roomName);
+    this.gameInterval = setTimeout(() => { this.gameLoop(gameInfo, gateway, gameManager) }, 100);
+    console.log(gameInfo);
+  };
+
 
 
   async joinQueue(intraId: number, gateway: GameGateway) {

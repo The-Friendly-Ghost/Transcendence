@@ -1,4 +1,4 @@
-import EventEmitter from './eventEmitter.js';
+import EventEmitter from './eventEmitter';
 
 export default class Time extends EventEmitter {
     public start: number;

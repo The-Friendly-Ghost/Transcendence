@@ -8,22 +8,21 @@ import { reset_game } from "./reset_game";
 import { Socket, io } from "socket.io-client";
 import { getCookie } from "@app/actions";
 import { exists } from "fs";
+import Player from '@components/game/player';
+import Settings from '@components/game/settings';
+import GameComponent, { Game } from "@components/game/game";
 // import Canvas from './components/game/canvas'
 
 export default function game_page(): React.JSX.Element {
-
-    async function resetGames() {
-        console.log("Resetting all games");
-        const res: any = await reset_game();
-        console.log(res);
-        // console.log("Resetting games");
-    }
-
+    // const
     const [intraName, setIntraName] = useState<string | null>(null);
     const gameSocketRef = useRef<Socket | null>(null);
     const [messageReceived, setMessageReceived] = useState("");
     const [queueStatus, setQueueStatus] = useState(false);
     const [gameRoom, setGameRoom] = useState<number | null>(null);
+    const canvasRef = useRef(null);
+    const [game, setGame] = useState<Game | null>(null);
+    const settings = new Settings();
     /* The useEffect runs only once on component mount.
     This is because de dependency array is empty.
     ( the [] at the end ) */
@@ -31,6 +30,12 @@ export default function game_page(): React.JSX.Element {
         setIntraName(await getCookie('intraId'));
     };
 
+    async function resetGames() {
+        console.log("Resetting all games");
+        const res: any = await reset_game();
+        console.log(res);
+        // console.log("Resetting games");
+    }
     // Setup websocket if intraName is set
     useEffect(() => {
         let socket: Socket;
@@ -56,6 +61,14 @@ export default function game_page(): React.JSX.Element {
         }
 
     }, [intraName]);
+
+    useEffect(() => {
+        if (canvasRef.current) {
+            const canvas = canvasRef.current;
+            // You can now use the canvas reference here
+            setGame(new Game(canvasRef.current, settings));
+        }
+    }, []);
 
     // Fetch intra name on mount
     useEffect(() => {
@@ -105,6 +118,13 @@ export default function game_page(): React.JSX.Element {
         }
     }
 
+    async function testGame() {
+        console.log(gameSocketRef.current);
+        if (gameSocketRef.current) {
+            gameSocketRef.current.emit('testGame', { userId: intraName, destination: gameSocketRef.current.id });
+        }
+    }
+
     return (
         <section>
             <button
@@ -121,7 +141,15 @@ export default function game_page(): React.JSX.Element {
             >
                 resetGames
             </button>
-            <Canvas className="webgl" />
+            <button
+                type="button"
+                className="main_btn w-1/2"
+                onClick={() => testGame()}
+            >
+                Test game
+            </button>
+            <canvas ref={canvasRef} className="webgl" />
+            {/* <GameComponent className="webgl" /> */}
         </section>
     );
 }

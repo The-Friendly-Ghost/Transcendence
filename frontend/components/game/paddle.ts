@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import Game from './game.ts';
+import Game from './game';
 import * as Matter from 'matter-js';
 
 export default class Paddle {
