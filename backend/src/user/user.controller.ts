@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -101,5 +102,20 @@ export class UserController {
 
     const user: User = await this.userService.addFriend(intraId, Number(friendId));
     return user;
+  }
+
+  @Delete('removeFriend/:friendId')
+  @ApiOperation({
+    summary: 'Remove a friend from the user',
+    description:
+      'Removes a friend with the specified ID from the user with the authenticated intra ID.',
+  })
+  async deleteFriend(
+    @Param('friendId', ParseIntPipe) friendId: number,
+    @GetUser('intraId') intraId: number,
+  ) {
+    console.log('UserController.deleteFriend intraId', friendId);
+
+    return await this.userService.removeFriend(intraId, Number(friendId)).catch((e) => {return {message: e.message}});
   }
 }

@@ -60,4 +60,20 @@ export class UserService {
     console.log('UserService.addFriend returning user');
     return user;
   }
+
+  async removeFriend(intraId: number, intraIdFriend: number){
+    console.log('UserService.removeFriend');
+    console.log('intraId: ', intraId);
+    console.log('intraIdFriend: ', intraIdFriend);
+
+    // Check if the user is in the database. Throws NotFoundException if not found
+    // const user: User = await this.prismaUserService.findUser({ intraId: intraIdFriend });
+    // if (!user)
+    //   throw new Error('User not found');
+
+    await this.prismaUserService.removeFriend(intraId, intraIdFriend).catch((e) => {throw new Error(e.message)});
+
+    console.log('UserService.removeFriend returning user');
+    return "User removed from friend list";
+  }
 }
