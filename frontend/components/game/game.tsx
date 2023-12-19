@@ -12,23 +12,42 @@ import Paddle from './paddle';
 import Settings from './settings';
 import Level from './level/level';
 import UserInput from './input';
+import { Socket } from 'socket.io-client';
 // import GUI from 'lil-gui';
 
-function GameComponent(props: any) {
+interface GameComponentProps {
+    socket: Socket;
+    gameRoom: string;
+}
 
+function GameComponent({ socket, gameRoom }: GameComponentProps) {
+
+    const gameSocketRef = useRef<Socket | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [game, setGame] = useState<Game | null>(null);
     const settings = new Settings();
 
     useEffect(() => {
-        if (canvasRef.current === null) {
-            return;
+        if (canvasRef.current && !game) {
+            setGame(new Game(canvasRef.current, settings));
         }
-        setGame(new Game(canvasRef.current, settings));
-    }, [canvasRef]);
+    }, [canvasRef, game, settings]);
+
+    useEffect(() => {
+        console.log('gameRoom: ' + gameRoom);
+        console.log('socket: ' + socket);
+        if (gameRoom && socket && game) {
+            socket.on(String(gameRoom), (data: any) => {
+                // console.log(data);
+                if (data.messagetype == 'ballpos') {
+                    game.ball.setPos(Matter.Vector.create(data.message.x, data.message.y));
+                }
+            });
+        }
+    }, [socket, gameRoom, game]);
 
     return (
-        < canvas ref={canvasRef} {...props} />
+        < canvas ref={canvasRef} />
     );
 }
 
@@ -71,7 +90,9 @@ Player sees other entities in the past
 export class Game {
     // player1: Player;
     // player2: Player;
+    socketData: any;
     canvas: HTMLCanvasElement;
+    // socket: Socket;
     settings: Settings;
     camera: Camera;
     renderer: Renderer;
@@ -94,6 +115,7 @@ export class Game {
         this.paused = true;
         // this.player1 = p1;
         // this.player2 = p2;
+        // this.socket = socket;
         this.settings = settings;
         this.canvas = canvas;
         this.input = new UserInput(this);
@@ -122,6 +144,7 @@ export class Game {
 
         // Time tick event
         this.time = new Time();
+
         this.time.on('tick', this.update.bind(this));
 
         this.ball = new Ball(this,);

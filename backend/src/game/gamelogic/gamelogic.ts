@@ -82,11 +82,11 @@ export default class Game {
 
         // paddle 1
         this.paddle1 = new Paddle(
-            this, Matter.Vector.create(this.settings.fieldWidth / 2, 0));
+            this, Matter.Vector.create(this.settings.fieldWidth / 2 * 10, 0));
 
         // paddle 2
         this.paddle2 = new Paddle(
-            this, Matter.Vector.create(-this.settings.fieldWidth / 2, 0));
+            this, Matter.Vector.create(-this.settings.fieldWidth / 2 * 10, 0));
 
         // this.time.tick();
         console.log('game created');
@@ -100,12 +100,12 @@ export default class Game {
         this.ball.update();
         this.paddle1.update();
         this.paddle2.update();
-        if (this.ball.position.x > this.settings.fieldWidth / 2 + 1) {
+        if (this.ball.position.x > (this.settings.fieldWidth / 2 + 1) * 10) {
             this.score(1);
             this.reset();
             this.countdown();
         }
-        else if (this.ball.position.x < -this.settings.fieldWidth / 2 - 1) {
+        else if (this.ball.position.x < (-this.settings.fieldWidth / 2 - 1) * 10) {
             this.score(2);
             this.reset();
             this.countdown();
@@ -118,7 +118,7 @@ export default class Game {
     }
 
     start(): void {
-        let velocity: Matter.Vector = Matter.Vector.normalise(Matter.Vector.create(((Math.random() - 0.5) * 2), (Math.random() - 0.5) * 2))
+        let velocity: Matter.Vector = Matter.Vector.normalise(Matter.Vector.create(((Math.random() - 0.5) * 2), 0));
         this.ball.setVelocity(Matter.Vector.mult(velocity, this.settings.ballBaseSpeed));
         this.paused = false;
     };

@@ -20,9 +20,8 @@ export default function game_page(): React.JSX.Element {
     const [messageReceived, setMessageReceived] = useState("");
     const [queueStatus, setQueueStatus] = useState(false);
     const [gameRoom, setGameRoom] = useState<number | null>(null);
-    const canvasRef = useRef(null);
-    const [game, setGame] = useState<Game | null>(null);
-    const settings = new Settings();
+    // const canvasRef = useRef(null);
+    // const [game, setGame] = useState<Game | null>(null);
     /* The useEffect runs only once on component mount.
     This is because de dependency array is empty.
     ( the [] at the end ) */
@@ -62,14 +61,6 @@ export default function game_page(): React.JSX.Element {
 
     }, [intraName]);
 
-    useEffect(() => {
-        if (canvasRef.current) {
-            const canvas = canvasRef.current;
-            // You can now use the canvas reference here
-            setGame(new Game(canvasRef.current, settings));
-        }
-    }, []);
-
     // Fetch intra name on mount
     useEffect(() => {
         async function fetchData(): Promise<void> {
@@ -104,7 +95,7 @@ export default function game_page(): React.JSX.Element {
             if (gameRoom) {
                 console.log("Got gameroom");
                 gameSocketRef.current.on(String(gameRoom), (data: any) => {
-                    console.log(data);
+                    // console.log(data);
                 });
             }
         }
@@ -148,8 +139,8 @@ export default function game_page(): React.JSX.Element {
             >
                 Test game
             </button>
-            <canvas ref={canvasRef} className="webgl" />
-            {/* <GameComponent className="webgl" /> */}
+            {/* <canvas ref={canvasRef} className="webgl" /> */}
+            <GameComponent className="webgl" socket={gameSocketRef.current} gameRoom={gameRoom} />
         </section>
     );
 }

@@ -16,11 +16,12 @@ export default class Paddle {
         this.game = game;
         this.settings = game.settings;
 
-        this.desiredPos = Matter.Vector.create(0, 0);
+        this.desiredPos = startPos;
         this.desiredAngle = 0;
-        this.startPos = Matter.Vector.create(0, 0);
-        this.startPos.x = 0;
-        this.startPos.y = 0;
+        // this.startPos = Matter.Vector.create(0, 0);
+        this.startPos = startPos;
+        // this.startPos.x = 0;
+        // this.startPos.y = 0;
 
         this.body = this.create_body(Matter.Vector.create(this.settings.paddleWidth, this.settings.paddleHeight), this.startPos);
     };

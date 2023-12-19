@@ -31,7 +31,7 @@ export class GameManager {
 
     updateClients() {
         // this.gateway.sendToUser(Number(this.gameInfo.roomName), "gamestate", "update");
-        this.gateway.sendToUser(Number(this.gameInfo.roomName), "ballpos", String(this.game.ball.position.x) + "," + String(this.game.ball.position.y));
+        this.gateway.sendToUser(Number(this.gameInfo.roomName), "ballpos", { x: this.game.ball.position.x, y: this.game.ball.position.y });
         if (this.gameInfo.state == "FINISHED") {
             this.gateway.sendToUser(Number(this.gameInfo.roomName), "gamestate", "finished");
         }
