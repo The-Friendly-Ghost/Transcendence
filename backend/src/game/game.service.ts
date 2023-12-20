@@ -12,6 +12,8 @@ export class GameService {
   private pendingIntraId: number;
   private gamesInfo: GameInfo[];
   private gameInterval: NodeJS.Timeout;
+
+  private gameManagers: Map<string, GameManager> = new Map();
   private gameCount: number = 0;
 
   async resetGames(userId: number) {
@@ -71,9 +73,10 @@ export class GameService {
     console.log(gameInfo);
   };
 
-  // async userInput(input: any) {
-  //   // console.log("userInput", input);
-  // };
+  async userInput(input: any) {
+
+    // console.log("userInput", input);
+  };
 
 
   async joinQueue(intraId: number, gateway: GameGateway) {
@@ -115,6 +118,7 @@ export class GameService {
     gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
     gateway.sendToUser(p2, "gameroom", gameInfo.roomName);
     this.gameInterval = setTimeout(() => { this.gameLoop(gameInfo, gateway, gameManager) }, 100);
+    this.gameManagers.set(gameInfo.roomName, gameManager);
     console.log(gameInfo);
   }
 
