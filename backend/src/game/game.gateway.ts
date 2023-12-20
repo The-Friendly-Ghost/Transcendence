@@ -58,6 +58,13 @@ export class GameGateway {
         });
     }
 
+    // @SubscribeMessage('userInput')
+    // userInput(client: Socket, @MessageBody() body: any) {
+    //     // this.gameService.userInput(body);
+    //     // this.server.emit('message', message);
+    //     console.log("message object:", body);
+    // }
+
     public sendToUser(userId: number, messagetype: string, message: any) {
         this.server.emit(String(userId), {
             messagetype: messagetype, message: message

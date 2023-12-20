@@ -13,7 +13,7 @@ export default class Paddle {
     constructor(game: Game, dimensions: THREE.Vector3, position: THREE.Vector3) {
         // Game stuff
         this.game = game;
-        this.desiredPos = Matter.Vector.create(position.x * 10, position.y * 10);
+        this.desiredPos = Matter.Vector.create(position.x, position.y);
         this.desiredAngle = 0;
         this.startPos = Matter.Vector.create(0, 0);
         this.startPos.x = position.x;
@@ -23,18 +23,18 @@ export default class Paddle {
     };
 
     update_visuals(): void {
-        this.mesh.position.set(this.body.position.x / 10, this.body.position.y / 10, 0);
+        this.mesh.position.set(this.body.position.x, this.body.position.y, 0);
         this.mesh.rotation.z = this.body.angle;
     };
 
     update_logic(): void {
-        Matter.Body.setVelocity(this.body, Matter.Vector.mult(Matter.Vector.sub(this.desiredPos, this.body.position), 0.1));
+        Matter.Body.setVelocity(this.body, Matter.Vector.sub(this.desiredPos, this.body.position));
         Matter.Body.setAngle(this.body, this.desiredAngle + this.body.angle * 0.9);
     };
 
     create_body(dimensions: THREE.Vector3, position: THREE.Vector3): Matter.Body {
         // MatterJS (Physics) Body. Also add to world.
-        let body = Matter.Bodies.rectangle(position.x * 10, position.y * 10, dimensions.x * 10, dimensions.y * 10, { isStatic: false });
+        let body = Matter.Bodies.rectangle(position.x, position.y, dimensions.x, dimensions.y, { isStatic: false });
         body.mass = 0.1;
         body.friction = 1;
         body.frictionAir = 0.1;
@@ -68,8 +68,8 @@ export default class Paddle {
     };
 
     setPos(pos: Matter.Vector): void {
-        Matter.Body.setPosition(this.body, Matter.Vector.mult(pos, 10));
-        this.desiredPos = Matter.Vector.mult(pos, 10);
+        Matter.Body.setPosition(this.body, pos);
+        this.desiredPos = pos;
         this.mesh.position.set(pos.x, 0, pos.y);
     };
 

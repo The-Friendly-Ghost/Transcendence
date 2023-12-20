@@ -16,11 +16,12 @@ import { Socket } from 'socket.io-client';
 // import GUI from 'lil-gui';
 
 interface GameComponentProps {
-    socket: Socket;
-    gameRoom: string;
+    user: string | null;
+    socket: Socket | null;
+    gameRoom: number | null;
 }
 
-function GameComponent({ socket, gameRoom }: GameComponentProps) {
+function GameComponent({ user, socket, gameRoom }: GameComponentProps) {
 
     const gameSocketRef = useRef<Socket | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -28,23 +29,20 @@ function GameComponent({ socket, gameRoom }: GameComponentProps) {
     const settings = new Settings();
 
     useEffect(() => {
-        if (canvasRef.current && !game) {
-            setGame(new Game(canvasRef.current, settings));
+        console.log('user: ' + user + ' socket: ' + socket + ' gameRoom: ' + gameRoom);
+        if (canvasRef.current && !game && user && socket && gameRoom) {
+            console.log('creating game');
+            setGame(new Game(canvasRef.current, settings, user, socket, gameRoom));
         }
-    }, [canvasRef, game, settings]);
+        if (game && user && socket && gameRoom) {
+            game.setGameRoom(gameRoom);
+        }
+    }, [canvasRef, game, settings, user, socket, gameRoom]);
 
-    useEffect(() => {
-        console.log('gameRoom: ' + gameRoom);
-        console.log('socket: ' + socket);
-        if (gameRoom && socket && game) {
-            socket.on(String(gameRoom), (data: any) => {
-                // console.log(data);
-                if (data.messagetype == 'ballpos') {
-                    game.ball.setPos(Matter.Vector.create(data.message.x, data.message.y));
-                }
-            });
-        }
-    }, [socket, gameRoom, game]);
+    // useEffect(() => {
+    //     console.log('gameRoom: ' + gameRoom);
+    //     console.log('socket: ' + socket);
+    // }, [socket, gameRoom, game]);
 
     return (
         < canvas ref={canvasRef} />
@@ -90,9 +88,11 @@ Player sees other entities in the past
 export class Game {
     // player1: Player;
     // player2: Player;
+    user: string;
+    gameRoom: number;
     socketData: any;
     canvas: HTMLCanvasElement;
-    // socket: Socket;
+    socket: Socket;
     settings: Settings;
     camera: Camera;
     renderer: Renderer;
@@ -111,11 +111,13 @@ export class Game {
     p2_points: number;
     paused: boolean;
 
-    constructor(canvas: HTMLCanvasElement, settings: Settings) {
+    constructor(canvas: HTMLCanvasElement, settings: Settings, user: string, socket: Socket, gameRoom: number) {
         this.paused = true;
         // this.player1 = p1;
         // this.player2 = p2;
-        // this.socket = socket;
+        this.user = user;
+        this.gameRoom = gameRoom;
+        this.socket = socket;
         this.settings = settings;
         this.canvas = canvas;
         this.input = new UserInput(this);
@@ -128,40 +130,36 @@ export class Game {
         this.p2_points = 0;
         // Scene
         this.scene = new THREE.Scene();
-
         // Camera
         this.camera = new Camera(this);
-
         // Renderer
         this.renderer = new Renderer(this);
-
         // MatterJS physics
         this.engine = Matter.Engine.create();
         this.engine.gravity.y = 0;
-
         // Level
         this.level = new Level(this);
-
         // Time tick event
         this.time = new Time();
-
         this.time.on('tick', this.update.bind(this));
-
+        // Ball
         this.ball = new Ball(this,);
 
         // paddle 1
         this.paddle1 = new Paddle(
             this,
-            new THREE.Vector3(this.settings.paddleWidth, this.settings.paddleHeight, 1),
+            new THREE.Vector3(this.settings.paddleWidth, this.settings.paddleHeight, 10),
             new THREE.Vector3(- this.settings.fieldWidth / 2, 0, 0)
         );
 
         // paddle 2
         this.paddle2 = new Paddle(
             this,
-            new THREE.Vector3(this.settings.paddleWidth, this.settings.paddleHeight, 1),
+            new THREE.Vector3(this.settings.paddleWidth, this.settings.paddleHeight, 10),
             new THREE.Vector3(this.settings.fieldWidth / 2, 0, 0)
         );
+
+        this.setGameRoom(this.gameRoom);
 
         // this.gui = new GUI();
         // this.gui.add(this, 'reset');
@@ -173,7 +171,7 @@ export class Game {
 
     update_logic(): void {
         if (!this.paused) {
-            this.input.update();
+            // this.input.update();
             Matter.Engine.update(this.engine, this.time.delta);
         }
         this.ball.update();
@@ -196,12 +194,24 @@ export class Game {
         this.renderer.update();
         this.paddle1.update_visuals();
         this.paddle2.update_visuals();
+        this.ball.update_visuals();
     }
 
 
     update(): void {
-        this.update_logic();
+        this.input.update();
+        // this.update_logic();
         this.update_visuals();
+    }
+
+    setGameRoom(gameRoom: number): void {
+        this.gameRoom = gameRoom;
+        this.socket.on(String(gameRoom), (data: any) => {
+            // console.log(data);
+            if (data.messagetype == 'ballpos') {
+                this.ball.setPos(Matter.Vector.create(data.message.x, data.message.y));
+            }
+        });
     }
 
     resize(): void {

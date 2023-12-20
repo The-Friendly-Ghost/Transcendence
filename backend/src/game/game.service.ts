@@ -71,6 +71,9 @@ export class GameService {
     console.log(gameInfo);
   };
 
+  // async userInput(input: any) {
+  //   // console.log("userInput", input);
+  // };
 
 
   async joinQueue(intraId: number, gateway: GameGateway) {

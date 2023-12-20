@@ -1,5 +1,6 @@
-import Game from './game';
+"use client";
 import * as Matter from 'matter-js';
+import { Game } from './game';
 
 export default class UserInput {
     up: boolean;
@@ -27,32 +28,35 @@ export default class UserInput {
     };
 
     update(): void {
+        // console.log("w: " + this.w + " a: " + this.a + " s: " + this.s + " d: " + this.d);
+        this.game.socket.emit('userInput', { user: this.game.user, up: this.game.input.w, down: this.game.input.s, left: this.game.input.a, right: this.game.input.d });
         let pos1: Matter.Vector = this.game.paddle1.body.position;
         let pos2: Matter.Vector = this.game.paddle2.body.position;
-        if (this.w) {
-            this.game.paddle1.desiredPos.y += this.game.settings.paddleSpeed;
-        }
-        if (this.s) {
-            this.game.paddle1.desiredPos.y -= this.game.settings.paddleSpeed;
-        }
-        if (this.a) {
-            this.game.paddle1.desiredAngle += this.game.settings.paddleRotationSpeed;
-        }
-        if (this.d) {
-            this.game.paddle1.desiredAngle -= this.game.settings.paddleRotationSpeed;
-        }
-        if (this.up) {
-            this.game.paddle2.desiredPos.y += this.game.settings.paddleSpeed;
-        }
-        if (this.down) {
-            this.game.paddle2.desiredPos.y -= this.game.settings.paddleSpeed;
-        }
-        if (this.left) {
-            this.game.paddle2.desiredAngle += this.game.settings.paddleRotationSpeed;
-        }
-        if (this.right) {
-            this.game.paddle2.desiredAngle -= this.game.settings.paddleRotationSpeed;
-        }
+        // if (this.w) {
+        //     console.log("w");
+        //     this.game.paddle1.desiredPos.y += this.game.settings.paddleSpeed;
+        // }
+        // if (this.s) {
+        //     this.game.paddle1.desiredPos.y -= this.game.settings.paddleSpeed;
+        // }
+        // if (this.a) {
+        //     this.game.paddle1.desiredAngle += this.game.settings.paddleRotationSpeed;
+        // }
+        // if (this.d) {
+        //     this.game.paddle1.desiredAngle -= this.game.settings.paddleRotationSpeed;
+        // }
+        // if (this.up) {
+        //     this.game.paddle2.desiredPos.y += this.game.settings.paddleSpeed;
+        // }
+        // if (this.down) {
+        //     this.game.paddle2.desiredPos.y -= this.game.settings.paddleSpeed;
+        // }
+        // if (this.left) {
+        //     this.game.paddle2.desiredAngle += this.game.settings.paddleRotationSpeed;
+        // }
+        // if (this.right) {
+        //     this.game.paddle2.desiredAngle -= this.game.settings.paddleRotationSpeed;
+        // }
     };
 
     init(): void {

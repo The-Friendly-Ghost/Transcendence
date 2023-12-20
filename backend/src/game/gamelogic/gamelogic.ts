@@ -6,7 +6,7 @@ import Ball from './ball';
 import Paddle from './paddle';
 import Settings from './settings';
 import Level from './level/level';
-// import UserInput from './input';
+import UserInput from './input';
 
 /*
 The game class should only have the logic.
@@ -52,10 +52,11 @@ export default class Game {
     // time: Time;
     level: Level;
     engine: Matter.Engine;
-    // input: UserInput;
+    input: UserInput;
     p1_points: number;
     p2_points: number;
     paused: boolean;
+
 
     constructor(p1: number, p2: number, settings: Settings) {
         this.paused = true;
@@ -79,14 +80,13 @@ export default class Game {
         // this.time.on('tick', this.update.bind(this));
 
         this.ball = new Ball(this, Matter.Vector.create(0, 0));
-
         // paddle 1
         this.paddle1 = new Paddle(
-            this, Matter.Vector.create(this.settings.fieldWidth / 2 * 10, 0));
+            this, Matter.Vector.create(this.settings.fieldWidth / 2, 0));
 
         // paddle 2
         this.paddle2 = new Paddle(
-            this, Matter.Vector.create(-this.settings.fieldWidth / 2 * 10, 0));
+            this, Matter.Vector.create((-this.settings.fieldWidth / 2), 0));
 
         // this.time.tick();
         console.log('game created');
@@ -100,12 +100,12 @@ export default class Game {
         this.ball.update();
         this.paddle1.update();
         this.paddle2.update();
-        if (this.ball.position.x > (this.settings.fieldWidth / 2 + 1) * 10) {
+        if (this.ball.position.x > (this.settings.fieldWidth / 2 + 1)) {
             this.score(1);
             this.reset();
             this.countdown();
         }
-        else if (this.ball.position.x < (-this.settings.fieldWidth / 2 - 1) * 10) {
+        else if (this.ball.position.x < (-this.settings.fieldWidth / 2 - 1)) {
             this.score(2);
             this.reset();
             this.countdown();
@@ -118,7 +118,7 @@ export default class Game {
     }
 
     start(): void {
-        let velocity: Matter.Vector = Matter.Vector.normalise(Matter.Vector.create(((Math.random() - 0.5) * 2), 0));
+        let velocity: Matter.Vector = Matter.Vector.normalise(Matter.Vector.create(((Math.random() - 0.5) * 2), ((Math.random() - 0.5) * 2)));
         this.ball.setVelocity(Matter.Vector.mult(velocity, this.settings.ballBaseSpeed));
         this.paused = false;
     };

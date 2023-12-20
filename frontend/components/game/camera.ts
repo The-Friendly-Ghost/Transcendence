@@ -17,7 +17,7 @@ export default class Camera {
         this.canvas = this.game.canvas
 
         // Base camera
-        this.instance = new THREE.PerspectiveCamera(75, this.sizes.width / this.sizes.height, 0.1, 100);
+        this.instance = new THREE.PerspectiveCamera(75, this.sizes.width / this.sizes.height, 0.1, 1000);
         if (this.instance.aspect > 1.5) {
             this.instance.position.z = this.game.settings.cameraDistance / 1.5;
         }

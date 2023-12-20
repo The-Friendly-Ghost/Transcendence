@@ -19,7 +19,7 @@ export default class Ball {
         this.ballspeed = game.settings.ballBaseSpeed;
 
         //THREEJS (Render)
-        var radius = 0.5;
+        var radius = 5;
         var position = new THREE.Vector3(0, 0, 0);
         const material = new THREE.MeshStandardMaterial({
             color: this.game.settings.ballColor,
@@ -36,12 +36,12 @@ export default class Ball {
         this.light = new THREE.PointLight(0xff0000, 3, 0);
         this.light.castShadow = true
         this.light.shadow.mapSize.set(1024, 1024)
-        this.light.shadow.camera.far = 40
+        this.light.shadow.camera.far = 400
         this.light.position.copy(this.mesh.position);
         this.game.scene.add(this.light)
 
         // MatterJS (Physics)
-        this.body = Matter.Bodies.circle(position.x * 10, position.y * 10, radius * 10);
+        this.body = Matter.Bodies.circle(position.x, position.y, radius);
         // this.body.mass = 100;
         this.body.friction = 0;
         this.body.frictionAir = 0;
@@ -54,13 +54,18 @@ export default class Ball {
         Matter.Composite.add(this.engine.world, this.body);
 
         // Game stuff
-        this.position = Matter.Vector.create(position.x * 10, position.y * 10);
+        this.position = Matter.Vector.create(position.x, position.y);
     };
 
     public update(): void {
-        this.mesh.position.set(this.body.position.x / 10, this.body.position.y / 10, 0);
-        this.light.position.set(this.body.position.x / 10, this.body.position.y / 10, 0);
-        this.position = Matter.Vector.mult(this.body.position, 0.1);
+        this.update_visuals();
+        this.position = this.body.position;
+    };
+
+
+    public update_visuals(): void {
+        this.mesh.position.set(this.body.position.x, this.body.position.y, 0);
+        this.light.position.set(this.body.position.x, this.body.position.y, 0);
     };
 
     getReflection(event: any): void {
@@ -111,8 +116,8 @@ export default class Ball {
 
 
     setPos(pos: Matter.Vector): void {
-        this.mesh.position.set(pos.x, 0, pos.y);
-        this.light.position.set(pos.x, 0, pos.y);
+        this.mesh.position.set(pos.x, pos.y, 0);
+        this.light.position.set(pos.x, pos.y, 0);
         Matter.Body.setPosition(this.body, pos);
     };
 

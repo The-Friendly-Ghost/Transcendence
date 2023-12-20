@@ -67,6 +67,7 @@ export default function game_page(): React.JSX.Element {
             if (intraName === null) {
                 console.log("Fetching intra name");
                 await fetchIntraName();
+                console.log(intraName);
             }
         }
         fetchData();
@@ -140,7 +141,7 @@ export default function game_page(): React.JSX.Element {
                 Test game
             </button>
             {/* <canvas ref={canvasRef} className="webgl" /> */}
-            <GameComponent className="webgl" socket={gameSocketRef.current} gameRoom={gameRoom} />
+            <GameComponent className="webgl" user={intraName} socket={gameSocketRef.current} gameRoom={gameRoom} />
         </section>
     );
 }
