@@ -11,7 +11,7 @@ export default class Settings {
     public paddleHeight: number = 40;
     public paddleWidth: number = 10;
     // public paddleColor: THREE.Color = new THREE.Color();
-    public paddleSpeed: number = 20;
+    public paddleSpeed: number = 1;
     public paddleRotationSpeed: number = 0.005;
 
     // Camera

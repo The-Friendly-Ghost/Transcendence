@@ -70,7 +70,7 @@ export default class Paddle {
     setPos(pos: Matter.Vector): void {
         Matter.Body.setPosition(this.body, pos);
         this.desiredPos = pos;
-        this.mesh.position.set(pos.x, 0, pos.y);
+        this.mesh.position.set(pos.x, pos.y, 0);
     };
 
     setAngle(angle: number): void {

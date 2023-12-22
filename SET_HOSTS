@@ -1,7 +1,11 @@
 #!/bin/sh
 readarray -d "/" -t strarr <<< "$SESSION_MANAGER"
 addr=${strarr[1]::-2}
-
+if [ -z "$addr"]
+then
+    addr=192.168.178.148
+fi
+echo $addr
 # Set backend and frontend host
 command_var=$(echo s/^.*BACKEND_HOST=.*$/BACKEND_HOST=$addr/)
 sed -ie $command_var .env

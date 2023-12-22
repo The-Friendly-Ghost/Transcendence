@@ -25,20 +25,34 @@ export class PlayerInput {
     }
 }
 
-export default class inputHandler {
+export default class InputHandler {
     p1Input: PlayerInput;
-    p2input: PlayerInput;
+    p2Input: PlayerInput;
     game: Game;
 
     constructor(game: Game) {
         this.p1Input = new PlayerInput(game.player1);
-        this.p2input = new PlayerInput(game.player2);
+        this.p2Input = new PlayerInput(game.player2);
         this.game = game;
     };
 
     update(): void {
         let pos1: Matter.Vector = this.game.paddle1.body.position;
         let pos2: Matter.Vector = this.game.paddle2.body.position;
+
+        if (this.p1Input.up) {
+            // console.log("up");
+            this.game.paddle1.desiredPos.y += this.game.settings.paddleSpeed;
+        }
+        if (this.p1Input.down) {
+            this.game.paddle1.desiredPos.y -= this.game.settings.paddleSpeed;
+        }
+        if (this.p2Input.up) {
+            this.game.paddle1.desiredPos.y += this.game.settings.paddleSpeed;
+        }
+        if (this.p2Input.down) {
+            this.game.paddle1.desiredPos.y -= this.game.settings.paddleSpeed;
+        }
     };
 
     updateInput(input: any): void {
@@ -46,7 +60,7 @@ export default class inputHandler {
             this.p1Input.setInput(input);
         }
         if (input.user == this.game.player2) {
-            this.p2input.setInput(input);
+            this.p2Input.setInput(input);
         }
     };
 

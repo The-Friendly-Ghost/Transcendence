@@ -55,6 +55,7 @@ export class GameService {
     else {
       console.log("game finished");
       this.prismaGameService.updateGame(gameInfo);
+      this.gameManagers.delete(gameInfo.roomName);
       // clearTimeout(this.gameInterval);
     }
   }
@@ -70,12 +71,18 @@ export class GameService {
     gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
     // gateway.sendToUser(p2, "gameroom", gameInfo.roomName);
     this.gameInterval = setTimeout(() => { this.gameLoop(gameInfo, gateway, gameManager) }, 100);
+    this.gameManagers.set(gameInfo.roomName, gameManager);
     console.log(gameInfo);
   };
 
   async userInput(input: any) {
+    let gameManager: GameManager;
 
-    // console.log("userInput", input);
+    gameManager = this.gameManagers.get(input.gameRoom);
+    // gameManager.userInput(input);
+    // console.log(gameManager);
+    if (gameManager)
+      gameManager.userInput(input);
   };
 
 

@@ -18,10 +18,7 @@ export default class Paddle {
 
         this.desiredPos = startPos;
         this.desiredAngle = 0;
-        // this.startPos = Matter.Vector.create(0, 0);
         this.startPos = startPos;
-        // this.startPos.x = 0;
-        // this.startPos.y = 0;
 
         this.body = this.create_body(Matter.Vector.create(this.settings.paddleWidth, this.settings.paddleHeight), this.startPos);
     };
@@ -33,7 +30,7 @@ export default class Paddle {
 
     create_body(dimensions: Matter.Vector, position: Matter.Vector): Matter.Body {
         // MatterJS (Physics) Body. Also add to world.
-        let body = Matter.Bodies.rectangle(position.x * 10, position.y * 10, dimensions.x * 10, dimensions.y * 10, { isStatic: false });
+        let body = Matter.Bodies.rectangle(position.x, position.y, dimensions.x, dimensions.y, { isStatic: false });
         body.mass = 0.1;
         body.friction = 1;
         body.frictionAir = 0.1;
@@ -52,8 +49,8 @@ export default class Paddle {
     };
 
     setPos(pos: Matter.Vector): void {
-        Matter.Body.setPosition(this.body, Matter.Vector.mult(pos, 10));
-        this.desiredPos = Matter.Vector.mult(pos, 10);
+        Matter.Body.setPosition(this.body, pos);
+        this.desiredPos = pos
         // this.mesh.position.set(pos.x, 0, pos.y);
     };
 

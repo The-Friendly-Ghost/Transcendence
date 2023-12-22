@@ -3,6 +3,7 @@ import { GameGateway } from './game.gateway';
 import Game from './gamelogic/gamelogic';
 import Settings from './gamelogic/settings';
 import { PlayerInput } from './gamelogic/input';
+// import { GameService } from './game.service';
 
 // import * as Matter from 'matter-js';
 // import Time from './utils/time';
@@ -28,16 +29,16 @@ export class GameManager {
         this.elapsedTime = 0;
         this.deltaTime = 16;
         this.game = new Game(gameInfo.p1, gameInfo.p2, new Settings());
-        gateway.server.addListener('userInput', (input: any) => {
-            console.log("userInput");
-            this.game.input.updateInput(input);
-        });
         this.game.countdown();
     }
 
     updateClients() {
         // this.gateway.sendToUser(Number(this.gameInfo.roomName), "gamestate", "update");
-        this.gateway.sendToUser(Number(this.gameInfo.roomName), "ballpos", { x: this.game.ball.position.x, y: this.game.ball.position.y });
+        this.gateway.sendToUser(Number(this.gameInfo.roomName), "gameUpdate", {
+            ballpos: { x: this.game.ball.position.x, y: this.game.ball.position.y },
+            p1: { pos: this.game.paddle1.body.position, angle: this.game.paddle1.body.angle },
+            p2: { pos: this.game.paddle2.body.position, angle: this.game.paddle2.body.angle }
+        });
         if (this.gameInfo.state == "FINISHED") {
             this.gateway.sendToUser(Number(this.gameInfo.roomName), "gamestate", "finished");
         }
@@ -56,6 +57,12 @@ export class GameManager {
         this.game.update(this.deltaTime);
         this.updateClients();
     }
+
+    userInput(body: any) {
+        // console.log("Game input: ");
+        // console.log(body);
+        this.game.input.updateInput(body);
+    };
 
 }
 

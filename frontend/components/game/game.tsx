@@ -208,8 +208,13 @@ export class Game {
         this.gameRoom = gameRoom;
         this.socket.on(String(gameRoom), (data: any) => {
             // console.log(data);
-            if (data.messagetype == 'ballpos') {
-                this.ball.setPos(Matter.Vector.create(data.message.x, data.message.y));
+            if (data.messagetype == 'gameUpdate') {
+                console.log(data.message);
+                this.ball.setPos(data.message.ballpos);
+                this.paddle1.setPos(data.message.p1.pos);
+                this.paddle2.setPos(data.message.p2.pos);
+                this.paddle1.setAngle(data.message.p1.angle);
+                this.paddle2.setAngle(data.message.p2.angle);
             }
         });
     }

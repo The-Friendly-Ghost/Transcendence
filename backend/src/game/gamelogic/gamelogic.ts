@@ -6,7 +6,7 @@ import Ball from './ball';
 import Paddle from './paddle';
 import Settings from './settings';
 import Level from './level/level';
-import UserInput from './input';
+import InputHandler from './input';
 
 /*
 The game class should only have the logic.
@@ -52,7 +52,7 @@ export default class Game {
     // time: Time;
     level: Level;
     engine: Matter.Engine;
-    input: UserInput;
+    input: InputHandler;
     p1_points: number;
     p2_points: number;
     paused: boolean;
@@ -63,7 +63,7 @@ export default class Game {
         this.player1 = p1;
         this.player2 = p2;
         this.settings = settings;
-        // this.input = new UserInput(this);
+        this.input = new InputHandler(this);
         this.p1_points = 0;
         this.p2_points = 0;
 
@@ -94,7 +94,7 @@ export default class Game {
 
     update_logic(deltaTime: number): void {
         if (!this.paused) {
-            // this.input.update();
+            this.input.update();
             Matter.Engine.update(this.engine, deltaTime);
         }
         this.ball.update();
