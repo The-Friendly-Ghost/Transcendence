@@ -126,9 +126,9 @@ export default class Game {
     reset(): void {
         this.ball.setPos(Matter.Vector.create(0, 0));
         this.ball.ballspeed = this.settings.ballBaseSpeed;
+        this.ball.setVelocity(Matter.Vector.create(0, 0));
         this.paddle1.reset();
         this.paddle2.reset();
-        this.ball.setVelocity(Matter.Vector.create(0, 0));
         this.paused = true;
     };
 

@@ -177,16 +177,16 @@ export class Game {
         this.ball.update();
         this.paddle1.update_logic();
         this.paddle2.update_logic();
-        if (this.ball.position.x > this.settings.fieldWidth / 2 + 1) {
-            this.score(1);
-            this.reset();
-            this.countdown();
-        }
-        else if (this.ball.position.x < -this.settings.fieldWidth / 2 - 1) {
-            this.score(2);
-            this.reset();
-            this.countdown();
-        }
+        // if (this.ball.position.x > this.settings.fieldWidth / 2 + 1) {
+        //     this.score(1);
+        //     this.reset();
+        //     // this.countdown();
+        // }
+        // else if (this.ball.position.x < -this.settings.fieldWidth / 2 - 1) {
+        //     this.score(2);
+        //     this.reset();
+        //     // this.countdown();
+        // }
     }
 
     update_visuals(): void {
@@ -239,17 +239,17 @@ export class Game {
         this.paused = true;
     };
 
-    countdown(): void {
-        let count: number = 3;
-        let countDown: any = setInterval(() => {
-            console.log(count);
-            count -= 1;
-            if (count < 0) {
-                clearInterval(countDown);
-                this.start();
-            }
-        }, 1000);
-    };
+    // countdown(): void {
+    //     let count: number = 3;
+    //     let countDown: any = setInterval(() => {
+    //         console.log(count);
+    //         count -= 1;
+    //         if (count < 0) {
+    //             clearInterval(countDown);
+    //             this.start();
+    //         }
+    //     }, 1000);
+    // };
 
     score(who: number): void {
         if (who == 1)

@@ -16,9 +16,9 @@ export default class Paddle {
         this.game = game;
         this.settings = game.settings;
 
-        this.desiredPos = startPos;
-        this.desiredAngle = 0;
         this.startPos = startPos;
+        this.desiredPos = Matter.Vector.clone(startPos);
+        this.desiredAngle = 0;
 
         this.body = this.create_body(Matter.Vector.create(this.settings.paddleWidth, this.settings.paddleHeight), this.startPos);
     };
@@ -42,6 +42,7 @@ export default class Paddle {
     };
 
     reset(): void {
+        console.log(this.startPos);
         this.setPos(this.startPos);
         this.setAngle(0);
         this.update();
@@ -49,6 +50,7 @@ export default class Paddle {
     };
 
     setPos(pos: Matter.Vector): void {
+        console.log(pos);
         Matter.Body.setPosition(this.body, pos);
         this.desiredPos = pos
         // this.mesh.position.set(pos.x, 0, pos.y);
