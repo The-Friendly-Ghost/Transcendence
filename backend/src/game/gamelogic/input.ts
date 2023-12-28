@@ -48,10 +48,10 @@ export default class InputHandler {
             this.game.paddle1.desiredPos.y -= this.game.settings.paddleSpeed;
         }
         if (this.p2Input.up) {
-            this.game.paddle1.desiredPos.y += this.game.settings.paddleSpeed;
+            this.game.paddle2.desiredPos.y += this.game.settings.paddleSpeed;
         }
         if (this.p2Input.down) {
-            this.game.paddle1.desiredPos.y -= this.game.settings.paddleSpeed;
+            this.game.paddle2.desiredPos.y -= this.game.settings.paddleSpeed;
         }
     };
 
