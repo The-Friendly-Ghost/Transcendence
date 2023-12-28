@@ -53,7 +53,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
     the user can always see the latest message. */
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     function scrollToBottom(): void {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        messagesEndRef.current?.scrollIntoView({ behavior: "instant", block: "end" });
     }
     useEffect(scrollToBottom, [messageReceived]);
 
@@ -150,7 +150,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                             {messageReceived.map((message, index) => (
                             <p className="text-white" key={index}>{message}</p>
                             ))}
-                            <div ref={ messagesEndRef } />
+                            
                         </div>
 
                         <SimpleForm
@@ -166,7 +166,9 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                                     <SubmitButton />
                                 </div>
                             }
+                            
                         />
+                        <div ref={ messagesEndRef } />
                     </div>
                 </div>
             )}

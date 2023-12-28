@@ -221,7 +221,6 @@ export class ChatService {
   }
 
   async add_socket_to_user(intraId: number, client: Socket) {
-    console.log('add_socket_to_user map: ', this.userBySocket);
     this.userBySocket.set(intraId, client);
   }
 

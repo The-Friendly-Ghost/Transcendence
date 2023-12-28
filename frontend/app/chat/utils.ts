@@ -51,9 +51,6 @@ export async function sendMessage(
     event.preventDefault(); // Prevents the page from reloading
     if (chatMessage === "") // If the message is empty, return
       return ;
-    // console.log(typeof chatSocket);
-    console.log(chatSocket?.id);
-    console.log("Sending message: " + chatMessage);
     chatSocket?.emit('newMessage', { msg: chatMessage, destination: roomName, userName: userName, intraId: intraId });
     setChatMessage(""); // Clear the message box
   }
@@ -74,7 +71,6 @@ export async function fetchIntraName(
     const newUserName = await getCookie('username');
     setUserName(newUserName);
     const newIntraId = await getCookie('intraId');
-    console.log("intraId in fetchIntraName: " + newIntraId);
     setIntraId(newIntraId);
     return (newIntraId);
   }
@@ -110,7 +106,6 @@ export function checkReceivedMessage(
     setMessageReceived: React.Dispatch<React.SetStateAction<string[]>>
   ): void {
     chatSocket?.on('onMessage', (data: any) => {
-      console.log("received message: ",  data.msg);
       setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
     });
   }

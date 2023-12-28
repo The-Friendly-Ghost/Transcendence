@@ -1,5 +1,6 @@
 import React from 'react'
 import { ChatProps } from '@types'
+import { put } from '@utils/request/request';
 
 export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId, userName, chatSocket } 
 : ChatProps )
@@ -8,7 +9,7 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 	const IntraIdNum = Number(myIntraId);
 
   return (
-	<div className='p-5 border rounded-lg hover:bg-violet-700/40 cursor-pointer' key={key} onClick={() => setCurrentRoom(room.name)}>
+	<div className='p-5 border rounded-lg hover:bg-violet-700/40 cursor-pointer' key={key} onClick={() => put(`/chat/connect_to_chatroom/${room.name}`).then(() => setCurrentRoom(room.name))}>
 	  {room.name}
 
 	  {room.private === true ? 
