@@ -12,6 +12,10 @@ build:
 start:
 	docker compose up -d --remove-orphans
 
+# prisma:
+# reset prisma
+# @cd backend && npx prisma generate && npx prisma db push --force-reset && npx prisma generate
+
 stop:
 	docker compose down
 

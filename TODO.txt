@@ -1,0 +1,8 @@
+Game:
+- Add a visual start countdown.
+- Proper position interpolation.
+- Visuals?
+- Better game UI.
+- Clearer que indicators.
+- Sound effects?
+- Fix game after merge
