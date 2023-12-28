@@ -12,6 +12,7 @@ import { cookies } from "next/headers";
  */
 export async function getCookie(name: string): Promise<string> {
   const cookie: RequestCookie | undefined = cookies().get(name);
+  console.log("getCookie cookie", cookie ? cookie.value : "");
   return (cookie ? cookie.value : "");
 }
 

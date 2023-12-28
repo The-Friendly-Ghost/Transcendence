@@ -8,7 +8,7 @@ import { createChatRoom, getChatRoom } from '../../../app/chat/serverUtils';
 import { checkReceivedMessage, sendMessage, validateChatroom } from '../../../app/chat/utils';
 
 /* Import React or Library functions */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import ChatRoomOverview from './ChatRoomOverview';
 import { ChatProps } from '@types';
 import SmallAccordion from '@components/common/Accordion';
@@ -74,7 +74,12 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                                     Chatrooms
                                 </summary>
                                 <div className='grid grid-cols-2 gap-5'>
-                                    {chatRooms.filter(room => room.ownerIntraId === (myIntraId ? +myIntraId : null)).map((room:any, index:number) => (
+                                    {chatRooms
+                                    // .filter(room => 
+                                    // room.ownerIntraId !== (myIntraId ? +myIntraId : null))
+                                    // room.users.includes(myIntraId))
+                                    // room.users.map((user:any) => user.intra_id) === myIntraId ? false : true)
+                                    .map((room:any, index:number) => (
                                         <ChatRoomOverview 
                                             setCurrentRoom={setCurrentRoom}
                                             key={index}
@@ -149,7 +154,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                         </div>
 
                         <SimpleForm
-                            onSubmit={(event:any) => sendMessage(event, chatMessage, chatSocket, userName, myIntraId, setChatMessage)}
+                            onSubmit={(event:any) => sendMessage(currentRoom, event, chatMessage, chatSocket, userName, myIntraId, setChatMessage)}
                             content=
                             {
                                 <div className="flex">

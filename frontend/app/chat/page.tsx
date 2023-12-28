@@ -47,7 +47,7 @@ export default function chat_page(): React.JSX.Element {
   useEffect(() => 
   {
     fetchIntraName(getCookie, setUserName, setIntraId)
-    .then(() => {setupWebSocket(userName, setChatSocket)});
+    .then((intraId) => {setupWebSocket(intraId, setChatSocket)});
   }, []);
 
   /* ***************** */
