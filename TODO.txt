@@ -6,3 +6,4 @@ Game:
 - Clearer que indicators.
 - Sound effects?
 - Fix game after merge
+- Fix ball hitbox
