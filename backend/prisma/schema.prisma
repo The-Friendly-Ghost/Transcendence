@@ -67,9 +67,3 @@ model Chatroom {
   admins       User[]    @relation("admin")
   bannedUsers  User[]    @relation("banned")
 }
-
-enum GameState {
-  PENDING
-  IN_PROGRESS
-  FINISHED
-}
