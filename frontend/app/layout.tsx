@@ -1,11 +1,10 @@
 /* Import Components */
-import { Root } from "postcss";
 import { Metadata } from "next";
-import Navbar from "@components/nav";
+import Navbar from "@components/navbar/Nav";
+import Login from "@components/login/Login";
 
-/* Import Global Variables */
+/* Import Functions */
 import { isLoggedIn } from "@utils/isLoggedIn";
-import Login from "@components/login";
 
 /* import styles */
 import "@styles/containers.css";
@@ -13,31 +12,42 @@ import "@styles/fonts.css";
 import "@styles/buttons.css";
 import "@styles/stars.css";
 
+/* Import React or Library functions */
+import React from "react";
+
+// Metadata for the page
 export const metadata: Metadata = {
   title: "Transcendence",
   description: "The Pong Experience",
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout (
+  { children }
+  : { children: React.ReactNode } ) 
+  : Promise<React.JSX.Element>
+{
   return (
     <html lang="en" className="text-white">
       <body className="container_full_background">
+
+        {/* Animated Gradient Background with static stars */}
         <div className="auroral_background"></div>
         <div id="stars"></div>
-        <div className="z-10">
-          {await isLoggedIn() ? (
-            <>
+
+        {/* If the user is logged in, render the Navbar and the children.
+        If the user is not logged in, render the Login page */}
+        { await isLoggedIn() ? 
+          (
+            <React.Fragment>
               <Navbar />
               {children}
-            </>
-          ) : (
-            <Login />
-            )}
-            </div>
+            </React.Fragment> 
+          ) 
+          : 
+          ( 
+            <Login /> 
+          )
+        }
       </body>
     </html>
   );

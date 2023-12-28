@@ -40,6 +40,7 @@ export async function changeUserName(
  * @returns Void
  */
 export async function sendMessage(
+    roomName: any,
     event: React.FormEvent<HTMLFormElement>,
     chatMessage: string,
     chatSocket: Socket | null,
@@ -50,7 +51,7 @@ export async function sendMessage(
     event.preventDefault(); // Prevents the page from reloading
     if (chatMessage === "") // If the message is empty, return
       return ;
-    chatSocket?.emit('newMessage', { msg: chatMessage, destination: chatSocket.id, userName: userName, intraId: intraId });
+    chatSocket?.emit('newMessage', { msg: chatMessage, destination: roomName, userName: userName, intraId: intraId });
     setChatMessage(""); // Clear the message box
   }
 
@@ -65,28 +66,33 @@ export async function fetchIntraName(
     setUserName: React.Dispatch<React.SetStateAction<string>>,
     setIntraId: React.Dispatch<React.SetStateAction<string>>
   )
-  : Promise<void> 
+  : Promise<string> 
 {
     const newUserName = await getCookie('username');
     setUserName(newUserName);
     const newIntraId = await getCookie('intraId');
     setIntraId(newIntraId);
+    return (newIntraId);
   }
 
 /**
  * 
- * @param userName The user name of the user
+ * @param intraId The user name of the user
  * @param setChatSocket The function to set the socket
  */
 export async function setupWebSocket(
-    userName: string | null,
+    intraId: string | null,
     setChatSocket: React.Dispatch<React.SetStateAction<Socket | null>>
     )
   : Promise<void> 
 {
-    const socket = io("http://localhost:3000", {
-      query: { token: userName }
+    const url: string = `${process.env.BACKEND_URL}` + '/chat';
+    console.log("intraId in setupWebSocket: " + intraId);
+    const socket = io(url , {
+      query: { token: intraId }
     });
+    console.log("socket : " + socket);
+    console.log("url : " + url);
     setChatSocket(socket);
   }
 
@@ -103,3 +109,23 @@ export function checkReceivedMessage(
       setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
     });
   }
+
+
+export function validateChatroom(newRoom: string, chatRooms: any, 
+  setCreateRoomError: React.Dispatch<React.SetStateAction<string>>)
+: boolean
+{
+  // Check if the room name is empty
+  if (newRoom.length < 3 || newRoom.length > 8) {
+    setCreateRoomError("Room name must be between 3 and 8 characters");
+    return false;
+  }
+
+  // Check if the room name is already taken
+  else if (chatRooms.some((room: any) => room.name === newRoom))
+  {
+    setCreateRoomError("Room name already taken");
+    return false;
+  }
+  return true;
+}

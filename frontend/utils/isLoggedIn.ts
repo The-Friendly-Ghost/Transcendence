@@ -1,4 +1,4 @@
-import { getCookie } from "@app/actions";
+import { getCookie } from "@app/ServerUtils";
 import { get } from "./request/request";
 
 export async function isLoggedIn(): Promise<boolean> {

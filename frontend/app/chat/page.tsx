@@ -6,21 +6,17 @@ import "@styles/fonts.css";
 import "@styles/buttons.css";
 
 /* Import React capabilities or library objects */
-import { useEffect, useState, useRef } from "react";
-import { io, Socket } from "socket.io-client";
+import { useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
 
-/* Import components */
-import { InputSimple } from "@components/input";
-import StandardButton, { SubmitButton } from "@components/buttons";
-import Accordion from "@components/Accordion";
-import SimpleForm from "@components/Forms";
-import { SingleTab } from "@components/tabs";
-import { SettingsTab } from "./settings";
+/* Import Components */
+import { SingleTab } from "@components/common/Tabs";
+import { SettingsTab } from "@components/chat/SettingsTab/settings";
+import { GroupsTab } from "@components/chat/Groups/GroupsTab";
 
-/* Import actions */
-import { getCookie } from "@app/actions";
-import { changeUserName, sendMessage, fetchIntraName, setupWebSocket, checkReceivedMessage } from "./actions";
-import GroupsTab from "./groupsTab";
+/* Import Functions */
+import { getCookie } from "@app/ServerUtils";
+import { fetchIntraName, setupWebSocket } from "./utils";
 
 /**
  * Function that returns the Chat Page.
@@ -32,18 +28,16 @@ export default function chat_page(): React.JSX.Element {
   /* Init State Variables */
   /* ******************* */
 
-  // The message to send
-  const [chatMessage, setChatMessage] = useState("");
   // The user name of the user
   const [userName, setUserName] = useState<string>(""); 
   // The 42 intraId of the user. This Id will stay the same, even if the user changes his name.
   const [intraId, setIntraId] = useState<string>("");
   // The socket to send and receive messages
   const [chatSocket, setChatSocket] = useState<Socket | null>(null);
-  // The messages received. Stored in an array of strings.
-  const [messageReceived, setMessageReceived] = useState<string[]>([]);
   // Set the toggle tab
   const [toggleTab, setToggleTab] = useState<number>(1);
+  // The current room the user is in
+  const [currentRoom, setCurrentRoom] = useState<string>("");
 
   /* **************** */
   /* UseEffect hooks */
@@ -53,22 +47,8 @@ export default function chat_page(): React.JSX.Element {
   useEffect(() => 
   {
     fetchIntraName(getCookie, setUserName, setIntraId)
-    .then(() => {setupWebSocket(userName, setChatSocket)});
+    .then((intraId) => {setupWebSocket(intraId, setChatSocket)});
   }, []);
-
-  /* This useEffect runs when the chatSocket changes. */
-  useEffect(() => {
-    checkReceivedMessage(chatSocket, setMessageReceived);
-  }, [chatSocket]);
-
-  /* This useEffect runs when the messageReceived array changes. 
-  It will scroll to the bottom of the message box so that
-  the user can always see the latest message. */
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  function scrollToBottom(): void {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-  useEffect(scrollToBottom, [messageReceived]);
 
   /* ***************** */
   /* Return Component */
@@ -92,50 +72,28 @@ export default function chat_page(): React.JSX.Element {
             style={`w-1/3 ${toggleTab === 3 ? " active_tab" : ""}`} />
         </ul>
         
-        <div className="bg-black/20 h-3/6 min-h-[500px] mt-5 rounded-lg p-5">
-          <div className={toggleTab === 1 ? "" : "hidden "}>
-            <GroupsTab 
-              userName={userName}
-              chatSocket={chatSocket}
-              intraId={intraId}
-            />
-          </div>
-          <div className={toggleTab === 2 ? "" : "hidden "}>
-            <p className="text-sm text-gray-500 dark:text-gray-400">DM Tab</p>
-          </div>
-          <div className={toggleTab === 3 ? "" : "hidden "}>
-            <SettingsTab
-              setUserName={setUserName}
-              chatSocket={chatSocket}
-              userName={userName}
-              intraId={intraId}
-            />
-          </div>
-        </div>
-
-
-
-        {/* <div className="chat_messagebox">
-          {messageReceived.map((message, index) => (
-            <p className="" key={index}>{message}</p>
-          ))}
-          <div ref={ messagesEndRef } />
-        </div>
-
-        <SimpleForm
-          onSubmit={(event) => sendMessage(event, chatMessage, chatSocket, userName, intraId, setChatMessage)}
-          content={
-              <div className="border-t flex">
-              <InputSimple 
-                input={chatMessage} 
-                setInput={setChatMessage}
-                placeholder={"Type message here ..."}
+        <div className="bg-black/20 h-3/6 min-h-[500px] mt-5 rounded-lg p-5 overflow-y-auto">
+            {toggleTab === 1 && (
+              <GroupsTab 
+                setCurrentRoom={setCurrentRoom}
+                currentRoom={currentRoom}
+                userName={userName}
+                chatSocket={chatSocket}
+                myIntraId={intraId}
               />
-              <SubmitButton />
-            </div>
-
-          }
-        />  */}
+            )}
+            {toggleTab === 2 && (
+              <p className="text-sm text-gray-500 dark:text-gray-400">DM Tab</p>
+            )}
+            {toggleTab === 3 && (
+              <SettingsTab
+                setUserName={setUserName}
+                chatSocket={chatSocket}
+                userName={userName}
+                intraId={intraId}
+              />
+            )}
+        </div>
       </div>
     </section>
   );

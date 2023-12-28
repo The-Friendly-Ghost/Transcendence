@@ -25,6 +25,7 @@
 /* The aurora borealis background effect. */
 .auroral_background {
   position: absolute; /* position absolute */
+  overflow: hidden; /* hide overflow */
   left: -50%; /* left of -50% */
   top: -50%; /* top of -50% */
   width: 200%; /* width of 200% */
@@ -103,12 +104,7 @@ Color of this container is transparant */
 
   .chat_messagebox {
     @apply
-      bg-white /* white background */
-      rounded-md /* rounded corners */
-      p-7 /* padding of 28px */
       w-full /* full width */
-      h-3/5 /* height of 60% */
-      min-h-[500px] /* minimum height of 200px */
       overflow-y-auto /* overflow on y-axis. This will make sure that the chat box can scroll */
     ;
   }

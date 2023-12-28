@@ -27,6 +27,7 @@ export class ChatController {
   @ApiOperation({ summary: 'create chatroom.' })
   @Put('create_chatroom/:chatroom_name')
   async create_chatroom(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string): Promise<any> {
+    console.log("create_chatroom ACTIVATED -----------------------");
     return await this.chat.create_chatroom(user.intraId, chatroom_name).catch((e: Error) => {
       return e.message;
     });
