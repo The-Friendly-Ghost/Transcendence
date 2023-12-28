@@ -375,7 +375,7 @@ export class PrismaChatService {
   }
 
   async get_all_chatrooms(): Promise<Chatroom[]> {  
-    return await this.prisma.chatroom.findMany();  
+    return await this.prisma.chatroom.findMany({include: {users: true, admins: true, bannedUsers: true, messages: true}});  
   }
 
   async add_message(destination: string, msg: string, userName: string) {

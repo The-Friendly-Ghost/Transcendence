@@ -6,19 +6,27 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
+  UsePipes,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { UserService } from './user.service';
 import { Jwt2faAuthGuard } from 'src/2fa/guard';
+import { Express } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileTypeValidationPipe } from './decorator';
+import { PrismaUserService } from 'src/user/prisma/prismaUser.service';
 
 @UseGuards(Jwt2faAuthGuard)
 @Controller('user')
 @ApiTags('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService) {}
   @Get('getMe')
   @ApiOperation({
     summary: 'Get the authenticated user',
@@ -27,6 +35,28 @@ export class UserController {
   async getMe(@GetUser() user: User) {
     console.info('UserController.getMe intraId');
     return user;
+  }
+
+  @Post('upload_avatar/:img')
+  @ApiOperation({
+    summary: 'Upload avatar',
+    description: 'Upload avatar',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(@UploadedFile() file: Express.Multer.File, @GetUser() user: User) {
+    return (this.userService.setAvatar(user.intraId, file).catch((e) => {return {message: e.message}}));
   }
 
   @Get('getUser/:intraId')
@@ -41,13 +71,13 @@ export class UserController {
     return user;
   }
 
-  @Put('setUserName/:userName')
+  @Post('setUserName/:userName')
   @ApiOperation({
     summary: 'Set the name of the user',
     description:
       'Updates the name of the user with the authenticated intra ID to the specified name.',
   })
-  async setUserName(@Param('username') userName: string, @GetUser('intraId') intraId: number) {
+  async setUserName(@GetUser('intraId') intraId: number, @Param('userName') userName: string) {
     console.log('UserController.setUserName intraId', intraId);
     console.log('UserController.setUserName userName', userName);
 

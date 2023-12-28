@@ -6,6 +6,7 @@ import Canvas from '@components/game/canvas';
 import React, { useEffect, useRef, useState } from 'react'
 import { reset_game } from "./reset_game";
 import { Socket, io } from "socket.io-client";
+import { getCookie } from "@app/ServerUtils";
 import { getCookie } from "@app/actions";
 import { exists } from "fs";
 import Player from '@components/game/player';

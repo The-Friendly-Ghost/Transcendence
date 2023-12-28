@@ -8,24 +8,36 @@ datasource db {
 }
 
 model User {
-  id             Int        @id @default(autoincrement())
-  intraId        Int        @unique
-  name           String     @unique
+  id             Int     @id @default(autoincrement())
+  intraId        Int     @unique
+  name           String  @unique
   image_url      String
   friends        Int[]
-  twoFAEnabled   Boolean    @default(false)
+  twoFAEnabled   Boolean @default(false)
   twoFASecret    String?
   blockedUserIds Int[]
-  chatroomId     Int?
-  wins           Int        @default(0)
-  losses         Int        @default(0)
   socket         Json?
-  Chatroom       Chatroom?  @relation(fields: [chatroomId], references: [id])
-  adminOf        Chatroom[] @relation("admin")
-  chatrooms      Chatroom[] @relation("banned")
+  avatar         Json?
+
+  // Chat
+  chatrooms  Chatroom[] @relation("banned")
+  adminOf    Chatroom[] @relation("admin")
+  Chatroom   Chatroom?  @relation(fields: [chatroomId], references: [id])
+  chatroomId Int?
+
+  // Games
+  // gamesPlayed Game[]
+  wins   Int @default(0)
+  losses Int @default(0)
 }
 
-model GameInfo {
+enum GameState {
+  PENDING
+  IN_PROGRESS
+  FINISHED
+}
+
+model Game {
   id        Int       @id @default(autoincrement())
   score     Int[]
   state     GameState

@@ -21,7 +21,7 @@ export function InputSimple( props: any ) : React.JSX.Element
             type={"text"}
             value={input}
             onChange={e => setInput(e.target.value)}
-            className={"w-full px-3 h-12 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-bg-violet-700"}
+            className={"w-full px-3 h-12 bg-transparent border rounded-md text-white focus:outline-none"}
             placeholder={placeholder}
         />
     )

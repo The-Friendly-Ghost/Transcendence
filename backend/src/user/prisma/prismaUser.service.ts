@@ -65,6 +65,17 @@ export class PrismaUserService {
     return user;
   }
 
+  async updateAvatar(intraId: number, avatar: any) {
+    await this.prisma.user.update({
+      where: { intraId: intraId },
+      data: { avatar: avatar },
+    }).catch((e: Prisma.PrismaClientKnownRequestError) => {
+      console.error('PrismaUserService.updateAvatar error reason: ' + e.message + ' code: ' + e.code);
+      throw new Error('failed to update avatar in database');
+    });
+    return {message: 'avatar updated'};
+  }
+
   /**
    * Adds a friend with the specified intra ID to the user with the authenticated intra ID.
    * If the user already has the friend as a friend, returns the friend.

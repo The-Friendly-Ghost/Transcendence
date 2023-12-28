@@ -1,40 +1,64 @@
+"use client"
+
 /* Import Components */
 import UserInfo from '@components/dashboard/userInfo';
 import Play from '@components/dashboard/play';
 import Friends from '@components/dashboard/friends';
-import { getCookie } from '@app/actions'
+import Stats from './Stats';
+
+/* Import functions and library */
+import { getCookie, getUserInfo } from '@app/ServerUtils'
+import { useEffect, useState } from 'react';
+import React from 'react';
 
 /* Import Styles */
 import '@styles/containers.css';
 import '@styles/fonts.css';
 import '@styles/dashboard.css'
+import Settings from './Settings';
 
-async function dashboard() {
+export function dashboard() {
 
-  /* Gets a Cookie with user information.
-  This has to be changed so that the cookie contains
-  all information, not just username */
+  /* ********************* */
+  /* Init State Variables */
+  /* ******************* */
 
-  const intraName = await getCookie('username');
+  const [userInfo, setUserInfo] = useState<any>([]);
+  
+  
+  /* ********************* */
+  /* UseEffect Hooks      */
+  /* ******************* */
+  
+  // This useEffect is used to get the chat rooms from the backend
+  useEffect(() => {
+    getUserInfo().then((userInfo) => { 
+      setUserInfo(userInfo);
+    });
+  }, []);
 
   return (
 	<div className='dashboard_grid'>
     <div className='dashboard_block'>
       <UserInfo
-        info = {intraName}
+        info = {userInfo.name}
+        avatar = {userInfo.image_url}
+        intraId = {userInfo.intraId}
       /> 
     </div>
-    <div className='dashboard_block'>
-      <Play />
+    <div className='dashboard_block h-full'>
+      <Stats 
+        wins = {userInfo.wins}
+        losses = {userInfo.losses}
+      />
     </div>
     <div className='dashboard_block'>
-      <Friends />
+      <Friends 
+        friends = {userInfo.friends}
+      />
     </div>
     <div className='dashboard_block'>
-      <p>STATS</p>
-    </div>
-    <div className='dashboard_block'>
-      <p>LEADERBOARD</p>
+      <Settings />
     </div>
     <div className='dashboard_block'>
       <p>2FA</p>

@@ -1,4 +1,7 @@
+/* Import React or Library functions */
 import React from 'react'
+
+/* Import Styles */
 import "@styles/buttons.css";
 
 /**
