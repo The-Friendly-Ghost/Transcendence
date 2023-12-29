@@ -3,6 +3,9 @@ import { GameGateway } from './game.gateway';
 import Game from './gamelogic/gamelogic';
 import Settings from './gamelogic/settings';
 import { PlayerInput } from './gamelogic/input';
+import { gameStateDto } from './dto';
+import { from } from 'rxjs';
+import { log } from 'console';
 // import { GameService } from './game.service';
 
 // import * as Matter from 'matter-js';
@@ -19,7 +22,6 @@ export class GameManager {
     p1Input: PlayerInput;
     p2Input: PlayerInput;
 
-
     constructor(gameInfo: GameInfo, gateway: GameGateway) {
         this.gameInfo = gameInfo;
         this.gateway = gateway;
@@ -29,44 +31,35 @@ export class GameManager {
         this.elapsedTime = 0;
         this.deltaTime = 16;
         this.game = new Game(gameInfo.p1, gameInfo.p2, new Settings());
-        this.game.countdown();
+        this.game.on('update', this.update.bind(this));
+        this.game.on('gameover', this.gameOver.bind(this));
+        // this.game.on('startgame', this.startGame.bind(this));
+        this.startGame();
     }
 
+
     updateClients() {
-        // this.gateway.sendToUser(Number(this.gameInfo.roomName), "gamestate", "update");
-        this.gateway.sendToUser(Number(this.gameInfo.roomName), "gameUpdate", {
-            ballpos: { x: this.game.ball.position.x, y: this.game.ball.position.y },
-            p1: { pos: this.game.paddle1.body.position, angle: this.game.paddle1.body.angle },
-            p2: { pos: this.game.paddle2.body.position, angle: this.game.paddle2.body.angle }
-        });
-        if (this.gameInfo.state == "FINISHED") {
-            this.gateway.sendToUser(Number(this.gameInfo.roomName), "gamestate", "finished");
-        }
+        this.gateway.updateClients(Number(this.gameInfo.roomName), this.game.state);
     }
 
     update() {
-        const currentTime = Date.now();
-        this.deltaTime = currentTime - this.currentTime;
-        this.currentTime = currentTime;
-        this.elapsedTime = this.currentTime - this.startTime;
-        // console.log(this.elapsedTime, this.game.ball.position);
-        if (this.elapsedTime > 1000000 || this.game.p1_points > 1 || this.game.p2_points > 1) {
-            this.gameInfo.state = "FINISHED";
-        }
-        // this.game.input.updateInput();
-        this.game.update(this.deltaTime);
         this.updateClients();
     }
 
+    gameOver() {
+        this.gameInfo.state = "FINISHED";
+        this.gateway.sendToUser(Number(this.gameInfo.roomName), "gamestate", "finished");
+    }
+
+    startGame() {
+        console.log("start game" + this.gameInfo);
+        this.gateway.sendToUser(Number(this.gameInfo.roomName), "gameStart", "started");
+        this.game.countdown(3);
+        this.gameInfo.state = "IN_PROGRESS";
+    }
+
     userInput(body: any) {
-        // console.log("Game input: ");
-        // console.log(body);
         this.game.input.updateInput(body);
     };
 
 }
-
-
-// export class GameManager {
-
-// }

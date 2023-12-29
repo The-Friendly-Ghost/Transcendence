@@ -13,7 +13,7 @@ export default class Time extends EventEmitter {
         this.start = Date.now();
         this.current = this.start;
         this.elapsed = 0;
-        this.delta = 16;
+        this.delta = 10;
     };
 
     tick(): void {
@@ -26,6 +26,6 @@ export default class Time extends EventEmitter {
 
         // console.log('tick');
 
-        // window.requestAnimationFrame(this.tick.bind(this));
+        setTimeout(() => { this.tick() }, 10);
     }
 }

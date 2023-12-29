@@ -67,6 +67,14 @@ export default class Paddle {
         this.update_visuals();
     };
 
+    setDesiredPos(pos: Matter.Vector): void {
+        this.desiredPos = pos;
+    }
+
+    setDesiredAngle(angle: number): void {
+        this.desiredAngle = angle;
+    }
+
     setPos(pos: Matter.Vector): void {
         Matter.Body.setPosition(this.body, pos);
         this.desiredPos = pos;

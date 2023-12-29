@@ -6,7 +6,7 @@ import {
     WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { queueGameDto } from './dto';
+import { gameStateDto, queueGameDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { GameService } from './game.service';
 
@@ -64,6 +64,12 @@ export class GameGateway {
         // this.server.emit('message', message);
         // console.log("message object:", body);
         this.gameService.userInput(body);
+    }
+
+    public updateClients(gameId: number, message: gameStateDto) {
+        this.server.emit(String(gameId), {
+            messagetype: "gameUpdate", message: message
+        });
     }
 
     public sendToUser(userId: number, messagetype: string, message: any) {

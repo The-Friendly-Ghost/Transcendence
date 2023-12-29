@@ -17,7 +17,7 @@ export default class Ball {
 
         // Initialize ball properties
         this.ballspeed = game.settings.ballBaseSpeed;
-        this.radius = 0.5;
+        this.radius = game.settings.ballRadius;
         this.position = Matter.Vector.create(position.x, position.y);
 
         // MatterJS (Physics)
@@ -91,6 +91,10 @@ export default class Ball {
 
     setVelocity(vec: Matter.Vector): void {
         Matter.Body.setVelocity(this.body, vec);
+    };
+
+    getVelocity(): Matter.Vector {
+        return this.body.velocity;
     };
 
 };

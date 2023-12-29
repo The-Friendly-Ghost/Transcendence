@@ -18,6 +18,7 @@ export default class Settings {
     public cameraDistance: number = 220;
 
     // Ball
+    public ballRadius: number = 5;
     // public ballColor: THREE.Color = new THREE.Color(0xff0000);
 
     public ballBaseSpeed: number = 1;

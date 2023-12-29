@@ -39,25 +39,8 @@ export class GameService {
       roomName: Math.random().toString().substring(2, 15) // Turn this into a game room
     });
     this.listGames();
-    // this.gamesInfo.push(game);
     this.gameCount++;
     return game;
-  }
-
-
-  async gameLoop(gameInfo: GameInfo, gateway: GameGateway, gameManager: GameManager) {
-    gameManager.update();
-    // gateway.sendToUser(Number(gameInfo.roomName), "gamestate", "gameloop");
-    // console.log("gameLoop");
-    if (gameInfo.state == "IN_PROGRESS" || gameInfo.state == "PENDING") {
-      setTimeout(() => { this.gameLoop(gameInfo, gateway, gameManager) }, 10)
-    }
-    else {
-      console.log("game finished");
-      this.prismaGameService.updateGame(gameInfo);
-      this.gameManagers.delete(gameInfo.roomName);
-      // clearTimeout(this.gameInterval);
-    }
   }
 
   async testGame(p1: number, gateway: GameGateway) {
@@ -66,11 +49,10 @@ export class GameService {
 
     console.log("Lets get ready to rumble!!");
     gameInfo = await this.create_game(p1, p1);
-    gameManager = new GameManager(gameInfo, gateway);
-    console.log("game created:");
     gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
-    // gateway.sendToUser(p2, "gameroom", gameInfo.roomName);
-    this.gameInterval = setTimeout(() => { this.gameLoop(gameInfo, gateway, gameManager) }, 100);
+    console.log("game created:");
+    gameManager = new GameManager(gameInfo, gateway);
+    console.log("game initialized.");
     this.gameManagers.set(gameInfo.roomName, gameManager);
     console.log(gameInfo);
   };
@@ -79,8 +61,6 @@ export class GameService {
     let gameManager: GameManager;
 
     gameManager = this.gameManagers.get(input.gameRoom);
-    // gameManager.userInput(input);
-    // console.log(gameManager);
     if (gameManager)
       gameManager.userInput(input);
   };
@@ -94,7 +74,6 @@ export class GameService {
       gateway.sendToUser(intraId, "info", "You are already in a game");
       gateway.sendToUser(intraId, "gameroom", game.roomName);
       console.log(intraId, "is already in a game");
-
       return;
     }
     // Check if a player is in queue already, if not add player to queue
@@ -124,7 +103,6 @@ export class GameService {
     console.log("game created:");
     gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
     gateway.sendToUser(p2, "gameroom", gameInfo.roomName);
-    this.gameInterval = setTimeout(() => { this.gameLoop(gameInfo, gateway, gameManager) }, 100);
     this.gameManagers.set(gameInfo.roomName, gameManager);
     console.log(gameInfo);
   }

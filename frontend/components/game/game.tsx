@@ -200,23 +200,32 @@ export class Game {
 
     update(): void {
         this.input.update();
-        // this.update_logic();
+        this.update_logic();
         this.update_visuals();
+    }
+
+    setListeners(gameRoom: number): void {
+        this.socket.on(String(gameRoom), (data: any) => {
+            // console.log(data);
+            if (data.messagetype == 'gameUpdate') {
+                // console.log(data.message);
+                this.ball.setPos(data.message.ball.pos);
+                this.ball.setVelocity(data.message.ball.vel);
+                this.paddle1.setDesiredPos(data.message.p1.pos);
+                this.paddle2.setDesiredPos(data.message.p2.pos);
+                this.paddle1.setDesiredAngle(data.message.p1.angle);
+                this.paddle2.setDesiredAngle(data.message.p2.angle);
+            }
+            if (data.messagetype == 'gameStart') {
+                console.log(data.message);
+                this.start();
+            }
+        });
     }
 
     setGameRoom(gameRoom: number): void {
         this.gameRoom = gameRoom;
-        this.socket.on(String(gameRoom), (data: any) => {
-            // console.log(data);
-            if (data.messagetype == 'gameUpdate') {
-                console.log(data.message);
-                this.ball.setPos(data.message.ballpos);
-                this.paddle1.setPos(data.message.p1.pos);
-                this.paddle2.setPos(data.message.p2.pos);
-                this.paddle1.setAngle(data.message.p1.angle);
-                this.paddle2.setAngle(data.message.p2.angle);
-            }
-        });
+        this.setListeners(gameRoom);
     }
 
     resize(): void {
@@ -225,8 +234,8 @@ export class Game {
     }
 
     start(): void {
-        let velocity: Matter.Vector = Matter.Vector.normalise(Matter.Vector.create(((Math.random() - 0.5) * 2), (Math.random() - 0.5) * 2))
-        this.ball.setVelocity(Matter.Vector.mult(velocity, this.settings.ballBaseSpeed));
+        // let velocity: Matter.Vector = Matter.Vector.normalise(Matter.Vector.create(((Math.random() - 0.5) * 2), (Math.random() - 0.5) * 2))
+        // this.ball.setVelocity(Matter.Vector.mult(velocity, this.settings.ballBaseSpeed));
         this.paused = false;
     };
 
@@ -239,17 +248,17 @@ export class Game {
         this.paused = true;
     };
 
-    // countdown(): void {
-    //     let count: number = 3;
-    //     let countDown: any = setInterval(() => {
-    //         console.log(count);
-    //         count -= 1;
-    //         if (count < 0) {
-    //             clearInterval(countDown);
-    //             this.start();
-    //         }
-    //     }, 1000);
-    // };
+    countdown(count: number): void {
+        let countDown: any = setTimeout(() => {
+            console.log(count);
+            count -= 1;
+            if (count < 0) {
+                this.start();
+            }
+            else
+                this.countdown(count - 1);
+        }, 1000);
+    };
 
     score(who: number): void {
         if (who == 1)
