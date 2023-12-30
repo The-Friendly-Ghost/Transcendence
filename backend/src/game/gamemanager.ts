@@ -32,7 +32,7 @@ export class GameManager {
         this.deltaTime = 16;
         this.game = new Game(gameInfo.p1, gameInfo.p2, new Settings());
         this.game.on('update', this.update.bind(this));
-        this.game.on('gameover', this.gameOver.bind(this));
+        this.game.on('gameOver', this.gameOver.bind(this));
         // this.game.on('startgame', this.startGame.bind(this));
         this.startGame();
     }
@@ -48,6 +48,7 @@ export class GameManager {
 
     gameOver() {
         this.gameInfo.state = "FINISHED";
+        console.log("game over");
         this.gateway.sendToUser(Number(this.gameInfo.roomName), "gamestate", "finished");
     }
 

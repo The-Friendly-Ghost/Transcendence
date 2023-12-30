@@ -220,6 +220,11 @@ export class Game {
                 console.log(data.message);
                 this.start();
             }
+            if (data.messagetype == 'gamestate') {
+                console.log(data.message);
+                if (data.message == 'finished')
+                    console.log('game has ended. finito. finished');
+            }
         });
     }
 
