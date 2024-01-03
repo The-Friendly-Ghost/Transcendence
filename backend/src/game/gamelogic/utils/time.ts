@@ -5,6 +5,7 @@ export default class Time extends EventEmitter {
     public current: number;
     public elapsed: number;
     public delta: number;
+    public timeout: NodeJS.Timeout;
 
     constructor() {
         super();
@@ -26,6 +27,10 @@ export default class Time extends EventEmitter {
 
         // console.log('tick');
 
-        setTimeout(() => { this.tick() }, 10);
+        this.timeout = setTimeout(() => { this.tick() }, 10);
+    }
+
+    stop(): void {
+        clearTimeout(this.timeout);
     }
 }

@@ -204,6 +204,10 @@ export class Game {
         this.update_visuals();
     }
 
+    removeListeners(gameRoom: number): void {
+        this.socket.off(String(gameRoom));
+    }
+
     setListeners(gameRoom: number): void {
         this.socket.on(String(gameRoom), (data: any) => {
             // console.log(data);
@@ -211,24 +215,27 @@ export class Game {
                 // console.log(data.message);
                 this.ball.setPos(data.message.ball.pos);
                 this.ball.setVelocity(data.message.ball.vel);
-                this.paddle1.setDesiredPos(data.message.p1.pos);
-                this.paddle2.setDesiredPos(data.message.p2.pos);
-                this.paddle1.setDesiredAngle(data.message.p1.angle);
-                this.paddle2.setDesiredAngle(data.message.p2.angle);
+                this.paddle1.setPos(data.message.p1.pos);
+                this.paddle2.setPos(data.message.p2.pos);
+                this.paddle1.setAngle(data.message.p1.angle);
+                this.paddle2.setAngle(data.message.p2.angle);
             }
             if (data.messagetype == 'gameStart') {
                 console.log(data.message);
                 this.start();
             }
-            if (data.messagetype == 'gamestate') {
+            if (data.messagetype == 'gameStatus') {
                 console.log(data.message);
-                if (data.message == 'finished')
+                if (data.message == 'FINISHED') {
+                    // this.removeListeners(this.gameRoom);
                     console.log('game has ended. finito. finished');
+                }
             }
         });
     }
 
     setGameRoom(gameRoom: number): void {
+        this.removeListeners(this.gameRoom);
         this.gameRoom = gameRoom;
         this.setListeners(gameRoom);
     }
@@ -239,8 +246,6 @@ export class Game {
     }
 
     start(): void {
-        // let velocity: Matter.Vector = Matter.Vector.normalise(Matter.Vector.create(((Math.random() - 0.5) * 2), (Math.random() - 0.5) * 2))
-        // this.ball.setVelocity(Matter.Vector.mult(velocity, this.settings.ballBaseSpeed));
         this.paused = false;
     };
 

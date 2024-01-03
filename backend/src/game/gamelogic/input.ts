@@ -66,4 +66,8 @@ export default class InputHandler {
 
     init(): void {
     };
+
+    cleanup(): void {
+        this.game = null;
+    }
 }

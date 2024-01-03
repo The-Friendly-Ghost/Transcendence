@@ -84,7 +84,6 @@ export default class Ball {
         }
     };
 
-
     setPos(pos: Matter.Vector): void {
         Matter.Body.setPosition(this.body, pos);
     };
@@ -97,4 +96,7 @@ export default class Ball {
         return this.body.velocity;
     };
 
+    cleanup(): void {
+        this.game = null;
+    };
 };

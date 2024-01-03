@@ -61,7 +61,6 @@ export default class Game extends EventEmitter {
     p2_points: number;
     paused: boolean;
 
-
     constructor(p1: number, p2: number, settings: Settings) {
         super();
         this.paused = true;
@@ -71,27 +70,23 @@ export default class Game extends EventEmitter {
         this.input = new InputHandler(this);
         this.p1_points = 0;
         this.p2_points = 0;
-
         // MatterJS physics
         this.engine = Matter.Engine.create();
         this.engine.gravity.y = 0;
-
         // Level
         this.level = new Level(this);
-
         // Time tick event
         this.time = new Time();
         this.time.on('tick', this.update.bind(this));
-
+        // Ball
         this.ball = new Ball(this, Matter.Vector.create(0, 0));
         // paddle 1
         this.paddle1 = new Paddle(
             this, Matter.Vector.create(this.settings.fieldWidth / 2, 0));
-
         // paddle 2
         this.paddle2 = new Paddle(
             this, Matter.Vector.create((-this.settings.fieldWidth / 2), 0));
-
+        // Misc
         this.time.tick();
         console.log('game created');
     };
@@ -112,7 +107,6 @@ export default class Game extends EventEmitter {
         }
     }
 
-
     update(deltaTime: number): void {
         this.emit('update');
         this.update_logic(this.time.delta);
@@ -127,12 +121,12 @@ export default class Game extends EventEmitter {
                 vel: this.ball.getVelocity()
             },
             p1: {
-                pos: this.paddle1.desiredPos,
-                angle: this.paddle1.desiredAngle
+                pos: this.paddle1.getPos(),
+                angle: this.paddle1.getAngle()
             },
             p2: {
-                pos: this.paddle2.desiredPos,
-                angle: this.paddle2.desiredAngle
+                pos: this.paddle2.getPos(),
+                angle: this.paddle2.getAngle()
             }
         };
     }
@@ -194,4 +188,21 @@ export default class Game extends EventEmitter {
         }
         console.log('score: p1: ' + this.p1_points + ' p2: ' + this.p2_points);
     };
+
+    stop(): void {
+        // this.emit('stop');
+        this.paused = true;
+        this.time.stop();
+    }
+
+    cleanup(): void {
+        // this.emit('cleanup');
+        this.stop();
+        this.input.cleanup();
+        this.ball.cleanup();
+        this.paddle1.cleanup();
+        this.paddle2.cleanup();
+        this.level.cleanup();
+        Matter.World.clear(this.engine.world, false);
+    }
 };

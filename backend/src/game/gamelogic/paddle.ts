@@ -64,4 +64,16 @@ export default class Paddle {
         Matter.Body.setAngle(this.body, angle);
         this.desiredAngle = angle;
     };
+
+    getPos(): Matter.Vector {
+        return this.body.position;
+    };
+
+    getAngle(): number {
+        return this.body.angle;
+    };
+
+    cleanup(): void {
+        this.game = null;
+    };
 };

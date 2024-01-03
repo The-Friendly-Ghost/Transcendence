@@ -36,7 +36,9 @@ export default class Level {
             { isStatic: true }
         );
         Matter.Composite.add(this.engine.world, this.ceiling);
+    };
 
-
-    }
+    cleanup(): void {
+        this.game = null;
+    };
 }

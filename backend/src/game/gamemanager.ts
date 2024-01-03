@@ -21,8 +21,9 @@ export class GameManager {
     deltaTime: number;
     p1Input: PlayerInput;
     p2Input: PlayerInput;
+    cleanupCallback: (gameInfo: GameInfo) => void;
 
-    constructor(gameInfo: GameInfo, gateway: GameGateway) {
+    constructor(gameInfo: GameInfo, gateway: GameGateway, cleanupCallback: (gameInfo: GameInfo) => void) {
         this.gameInfo = gameInfo;
         this.gateway = gateway;
         this.gameInfo.state = "IN_PROGRESS";
@@ -34,6 +35,7 @@ export class GameManager {
         this.game.on('update', this.update.bind(this));
         this.game.on('gameOver', this.gameOver.bind(this));
         // this.game.on('startgame', this.startGame.bind(this));
+        this.cleanupCallback = cleanupCallback;
         this.startGame();
     }
 
@@ -49,7 +51,8 @@ export class GameManager {
     gameOver() {
         this.gameInfo.state = "FINISHED";
         console.log("game over");
-        this.gateway.sendToUser(Number(this.gameInfo.roomName), "gamestate", "finished");
+        this.gateway.sendToUser(Number(this.gameInfo.roomName), "gameStatus", this.gameInfo.state);
+        this.cleanup();
     }
 
     startGame() {
@@ -63,4 +66,14 @@ export class GameManager {
         this.game.input.updateInput(body);
     };
 
+    cleanup() {
+        this.game.cleanup();
+        this.game.removeAllListeners();
+        this.cleanupCallback(this.gameInfo);
+        this.game = null;
+        this.gateway = null;
+        this.gameInfo = null;
+        this.p1Input = null;
+        this.p2Input = null;
+    }
 }

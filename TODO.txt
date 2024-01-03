@@ -3,7 +3,7 @@ Game:
 - Proper position interpolation.
 - Visuals?
 - Better game UI.
-- Clearer que indicators.
+- Clearer queue indicators.
 - Sound effects?
-- Fix game after merge
-- Fix ball hitbox
+- proper garbage collection. This has priority. I need a stable base to add onto.
+- store finished games in database.
