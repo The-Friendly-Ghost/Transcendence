@@ -275,6 +275,9 @@ export class Game {
             }
             if (data.type == 'playerScored') {
                 console.log(data.message);
+                this.text.setText(data.message);
+                this.text.setVisibility(true);
+
                 // this.score(data.message);
             }
             if (data.type == 'playerLeft') {
