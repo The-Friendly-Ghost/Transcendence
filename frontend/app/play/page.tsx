@@ -81,7 +81,7 @@ export default function game_page(): React.JSX.Element {
             });
             gameSocketRef.current.on(String(intraName), (data: any) => {
                 console.log(data);
-                if (data.messagetype === "gameroom") {
+                if (data.type === "gameroom") {
                     console.log("game room");
                     setGameRoom(data.message);
                     console.log(gameRoom);

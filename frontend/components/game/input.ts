@@ -29,7 +29,7 @@ export default class UserInput {
 
     update(): void {
         // console.log("w: " + this.w + " a: " + this.a + " s: " + this.s + " d: " + this.d);
-        this.game.socket.emit('userInput', { gameRoom: this.game.gameRoom, user: this.game.user, up: this.game.input.w, down: this.game.input.s, left: this.game.input.a, right: this.game.input.d });
+        this.game.socket?.emit('userInput', { gameRoom: this.game.gameRoom, user: this.game.user, up: this.game.input.w, down: this.game.input.s, left: this.game.input.a, right: this.game.input.d });
         let pos1: Matter.Vector = this.game.paddle1.body.position;
         let pos2: Matter.Vector = this.game.paddle2.body.position;
         // if (this.w) {

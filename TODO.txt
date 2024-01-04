@@ -5,5 +5,7 @@ Game:
 - Better game UI.
 - Clearer queue indicators.
 - Sound effects?
-- proper garbage collection. This has priority. I need a stable base to add onto.
+
+- proper garbage collection. This has priority. I need a stable base to add onto. done?
+
 - store finished games in database.

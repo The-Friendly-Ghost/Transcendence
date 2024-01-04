@@ -13,6 +13,8 @@ import Settings from './settings';
 import Level from './level/level';
 import UserInput from './input';
 import { Socket } from 'socket.io-client';
+import { FontLoader, Font } from 'three/examples/jsm/loaders/FontLoader.js';
+import Text from './text';
 // import GUI from 'lil-gui';
 
 interface GameComponentProps {
@@ -29,15 +31,35 @@ function GameComponent({ user, socket, gameRoom }: GameComponentProps) {
     const settings = new Settings();
 
     useEffect(() => {
-        console.log('user: ' + user + ' socket: ' + socket + ' gameRoom: ' + gameRoom);
-        if (canvasRef.current && !game && user && socket && gameRoom) {
+        // console.log('user: ' + user + ' socket: ' + socket);
+        if (canvasRef.current && !game) {
             console.log('creating game');
-            setGame(new Game(canvasRef.current, settings, user, socket, gameRoom));
+            setGame(new Game(canvasRef.current, settings));
         }
+    }, [canvasRef, settings]);
+
+    useEffect(() => {
+        console.log('socket: ' + socket);
+        if (socket && game)
+            game?.setSocket(socket);
+    }, [socket, game]);
+
+    useEffect(() => {
+        console.log('user: ' + user);
+        if (user && game)
+            game.setUser(user);
+    }, [user, game]);
+
+    useEffect(() => {
         if (game && user && socket && gameRoom) {
             game.setGameRoom(gameRoom);
         }
-    }, [canvasRef, game, settings, user, socket, gameRoom]);
+    }, [user, socket, gameRoom]);
+
+    useEffect(() => {
+        if (game)
+            game.start();
+    }, [game]);
 
     // useEffect(() => {
     //     console.log('gameRoom: ' + gameRoom);
@@ -88,11 +110,11 @@ Player sees other entities in the past
 export class Game {
     // player1: Player;
     // player2: Player;
-    user: string;
+    user: string | null;
     gameRoom: number;
     socketData: any;
     canvas: HTMLCanvasElement;
-    socket: Socket;
+    socket: Socket | null;
     settings: Settings;
     camera: Camera;
     renderer: Renderer;
@@ -110,14 +132,17 @@ export class Game {
     p1_points: number;
     p2_points: number;
     paused: boolean;
+    font: Font | null;
+    text: Text;
 
-    constructor(canvas: HTMLCanvasElement, settings: Settings, user: string, socket: Socket, gameRoom: number) {
+
+    constructor(canvas: HTMLCanvasElement, settings: Settings) {
         this.paused = true;
         // this.player1 = p1;
         // this.player2 = p2;
-        this.user = user;
-        this.gameRoom = gameRoom;
-        this.socket = socket;
+        this.user = null;
+        this.gameRoom = 0;
+        this.socket = null;
         this.settings = settings;
         this.canvas = canvas;
         this.input = new UserInput(this);
@@ -159,14 +184,25 @@ export class Game {
             new THREE.Vector3(this.settings.fieldWidth / 2, 0, 0)
         );
 
-        this.setGameRoom(this.gameRoom);
+        // this.setGameRoom(this.gameRoom);
 
+        // loaders
+        this.font = null;
+        const fontLoader = new FontLoader()
+        fontLoader.load(
+            '/fonts/helvetiker_regular.typeface.json',
+            (font) => {
+                this.font = font
+                this.text = new Text(this.font, this.scene, 'test');
+            }
+        )
         // this.gui = new GUI();
         // this.gui.add(this, 'reset');
         // this.gui.add(this.settings, 'ballBaseSpeed');
         // this.gui.add(this.settings, 'ballSpeedMultiplier');
         // this.gui.add(this, 'start');
         this.time.tick();
+        // this.countdown(3);
     };
 
     update_logic(): void {
@@ -205,13 +241,13 @@ export class Game {
     }
 
     removeListeners(gameRoom: number): void {
-        this.socket.off(String(gameRoom));
+        this.socket?.off(String(gameRoom));
     }
 
     setListeners(gameRoom: number): void {
-        this.socket.on(String(gameRoom), (data: any) => {
+        this.socket?.on(String(gameRoom), (data: any) => {
             // console.log(data);
-            if (data.messagetype == 'gameUpdate') {
+            if (data.type == 'gameUpdate') {
                 // console.log(data.message);
                 this.ball.setPos(data.message.ball.pos);
                 this.ball.setVelocity(data.message.ball.vel);
@@ -220,16 +256,31 @@ export class Game {
                 this.paddle1.setAngle(data.message.p1.angle);
                 this.paddle2.setAngle(data.message.p2.angle);
             }
-            if (data.messagetype == 'gameStart') {
+            if (data.type == 'gameStart') {
                 console.log(data.message);
-                this.start();
+                this.countdown(3);
+                // this.start();
             }
-            if (data.messagetype == 'gameStatus') {
+            if (data.type == 'gameStatus') {
                 console.log(data.message);
                 if (data.message == 'FINISHED') {
-                    // this.removeListeners(this.gameRoom);
+                    this.removeListeners(this.gameRoom);
                     console.log('game has ended. finito. finished');
                 }
+            }
+            if (data.type == 'gameReset') {
+                console.log(data.message);
+                this.reset();
+                this.countdown(3);
+            }
+            if (data.type == 'playerScored') {
+                console.log(data.message);
+                // this.score(data.message);
+            }
+            if (data.type == 'playerLeft') {
+                console.log(data.message);
+                // this.removeListeners(this.gameRoom);
+                // console.log('player left. game over');
             }
         });
     }
@@ -261,12 +312,18 @@ export class Game {
     countdown(count: number): void {
         let countDown: any = setTimeout(() => {
             console.log(count);
+            if (this.text) {
+                this.text.setVisibility(true);
+                this.text.setPosition(new THREE.Vector3(-10, 10, 0));
+                this.text.setText(String(count));
+            }
             count -= 1;
             if (count < 0) {
+                this.text.setVisibility(false);
                 this.start();
             }
             else
-                this.countdown(count - 1);
+                this.countdown(count);
         }, 1000);
     };
 
@@ -284,5 +341,13 @@ export class Game {
             this.p2_points = 0;
         }
         console.log('score: p1: ' + this.p1_points + ' p2: ' + this.p2_points);
+    };
+
+    setUser(user: string): void {
+        this.user = user;
+    };
+
+    setSocket(socket: Socket): void {
+        this.socket = socket;
     };
 };

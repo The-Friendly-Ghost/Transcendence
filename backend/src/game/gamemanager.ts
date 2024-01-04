@@ -34,6 +34,7 @@ export class GameManager {
         this.game = new Game(gameInfo.p1, gameInfo.p2, new Settings());
         this.game.on('update', this.update.bind(this));
         this.game.on('gameOver', this.gameOver.bind(this));
+        this.game.on('score', this.score.bind(this));
         // this.game.on('startgame', this.startGame.bind(this));
         this.cleanupCallback = cleanupCallback;
         this.startGame();
@@ -75,5 +76,11 @@ export class GameManager {
         this.gameInfo = null;
         this.p1Input = null;
         this.p2Input = null;
+    }
+
+    score() {
+        // this.gameInfo.state = "SCORE";
+        this.gateway.sendToUser(Number(this.gameInfo.roomName), "playerScored", { player: });
+        this.game.score;
     }
 }

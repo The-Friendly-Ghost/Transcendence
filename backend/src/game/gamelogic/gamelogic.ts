@@ -164,12 +164,13 @@ export default class Game extends EventEmitter {
                 this.start();
             }
             else {
-                setTimeout(() => this.countdown(count), 1000);
+                this.countdown(count);
             }
         }, 1000);
     };
 
     score(who: number): void {
+        this.emit('score');
         if (who == 1)
             this.p1_points += 1;
         else if (who == 2)

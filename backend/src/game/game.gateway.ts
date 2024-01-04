@@ -68,13 +68,13 @@ export class GameGateway {
 
     public updateClients(gameId: number, message: gameStateDto) {
         this.server.emit(String(gameId), {
-            messagetype: "gameUpdate", message: message
+            type: "gameUpdate", message: message
         });
     }
 
-    public sendToUser(userId: number, messagetype: string, message: any) {
+    public sendToUser(userId: number, type: string, message: any) {
         this.server.emit(String(userId), {
-            messagetype: messagetype, message: message
+            type: type, message: message
         });
     }
 }

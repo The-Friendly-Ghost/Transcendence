@@ -109,6 +109,7 @@ export class GameService {
 
   cleanupGame(gameInfo: GameInfo) {
     this.gameManagers.delete(gameInfo.roomName);
+    this.prismaGameService.updateGame(gameInfo);
     // this.prismaGameService.deleteGame(gameInfo.id);
     this.gameCount--;
   }
