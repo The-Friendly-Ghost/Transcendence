@@ -59,6 +59,7 @@ export default class Game extends EventEmitter {
     input: InputHandler;
     p1_points: number;
     p2_points: number;
+    lastScored: number;
     paused: boolean;
 
     constructor(p1: number, p2: number, settings: Settings) {
@@ -66,6 +67,7 @@ export default class Game extends EventEmitter {
         this.paused = true;
         this.player1 = p1;
         this.player2 = p2;
+        this.lastScored = p1;
         this.settings = settings;
         this.input = new InputHandler(this);
         this.p1_points = 0;
@@ -100,10 +102,10 @@ export default class Game extends EventEmitter {
             this.paddle2.update();
         }
         if (this.ball.position.x > (this.settings.fieldWidth / 2 + 1)) {
-            this.score(1);
+            this.score(2);
         }
         else if (this.ball.position.x < (-this.settings.fieldWidth / 2 - 1)) {
-            this.score(2);
+            this.score(1);
         }
     }
 
@@ -169,12 +171,16 @@ export default class Game extends EventEmitter {
         }, 1000);
     };
 
-    score(who: number): void {
-        this.emit('score');
-        if (who == 1)
+    score(side: number): void {
+        if (side == 1) {
             this.p1_points += 1;
-        else if (who == 2)
+            this.lastScored = this.player1;
+        }
+        else if (side == 2) {
             this.p2_points += 1;
+            this.lastScored = this.player2;
+        }
+        this.emit('score');
         if (this.p1_points == 3) {
             console.log('player2 wins! game over');
             this.gameOver();
@@ -185,7 +191,10 @@ export default class Game extends EventEmitter {
         }
         else {
             this.reset();
-            this.countdown(3);
+            setTimeout(() => {
+                this.emit('countdown');
+                this.countdown(3);
+            }, 1000);
         }
         console.log('score: p1: ' + this.p1_points + ' p2: ' + this.p2_points);
     };

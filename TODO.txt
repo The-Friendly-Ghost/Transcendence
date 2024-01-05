@@ -6,6 +6,29 @@ Game:
 - Clearer queue indicators.
 - Sound effects?
 
-- proper garbage collection. This has priority. I need a stable base to add onto. done?
+- score counter
+
 
 - store finished games in database.
+
+
+Events:
+    Start of game.
+    Player scores.
+    Game end.
+
+Player scores:
+    Game input is paused for a second.
+    After that second the game is reset.
+    Then the countdown starts again.
+
+Start of game:
+    Display the names of the players on each side and wait a moment.
+    Start countdown.
+    Unpause game after countdown.
+    Play begins.
+
+Game end:
+    Display final scores.
+    Wait 5 seconds.
+    Start removing game.

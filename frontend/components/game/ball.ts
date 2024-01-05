@@ -33,8 +33,8 @@ export default class Ball {
         this.game.scene.add(this.mesh);
 
         // White point light in the center of the ball
-        this.light = new THREE.PointLight(0xff0000, 3, 0);
-        this.light.castShadow = true
+        this.light = new THREE.PointLight(0xff0000, 5, 0, 0.5);
+        // this.light.castShadow = true
         this.light.shadow.mapSize.set(1024, 1024)
         this.light.shadow.camera.far = 400
         this.light.position.copy(this.mesh.position);

@@ -35,6 +35,7 @@ export class GameManager {
         this.game.on('update', this.update.bind(this));
         this.game.on('gameOver', this.gameOver.bind(this));
         this.game.on('score', this.score.bind(this));
+        this.game.on('countdown', this.countdown.bind(this));
         // this.game.on('startgame', this.startGame.bind(this));
         this.cleanupCallback = cleanupCallback;
         this.startGame();
@@ -78,9 +79,17 @@ export class GameManager {
         this.p2Input = null;
     }
 
-    score() {
+    score(player: number) {
         // this.gameInfo.state = "SCORE";
-        this.gateway.sendToUser(Number(this.gameInfo.roomName), "playerScored", { player: });
-        this.game.score;
+        this.gateway.sendToUser(Number(this.gameInfo.roomName), "playerScored", {
+            player: this.game.lastScored,
+            p1_points: this.game.p1_points,
+            p2_points: this.game.p2_points
+        });
+        // this.game.score;
+    }
+
+    countdown() {
+        this.gateway.sendToUser(Number(this.gameInfo.roomName), "countdown", { count: 3 });
     }
 }

@@ -2,6 +2,20 @@ import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
 import { Font } from 'three/examples/jsm/loaders/FontLoader.js';
 
+export interface TextParameters {
+    font: any;
+    scene: THREE.Scene;
+    text?: string | undefined;
+    string?: string | undefined;
+    mesh?: THREE.Mesh | undefined;
+    material?: THREE.MeshBasicMaterial | undefined;
+    geometry?: TextGeometry | undefined;
+    position?: THREE.Vector3 | undefined;
+    rotation?: THREE.Euler | undefined;
+    size?: number | undefined;
+    color?: THREE.Color | undefined;
+}
+
 export default class Text {
     private string: string;
     private mesh: THREE.Mesh;
@@ -14,14 +28,14 @@ export default class Text {
     private size: number;
     private color: THREE.Color;
 
-    constructor(font: Font, scene: THREE.Scene, text?: string, color?: THREE.Color, position?: THREE.Vector3, rotation?: THREE.Euler, size?: number) {
-        this.position = position || new THREE.Vector3(0, 0, 0);
-        this.rotation = rotation || new THREE.Euler(0, 0, 0);
-        this.string = text || '';
-        this.color = color || new THREE.Color(0x000000);
-        this.size = size || 10;
-        this.font = font;
-        this.scene = scene;
+    constructor(params: TextParameters) {
+        this.font = params.font;
+        this.scene = params.scene;
+        this.string = params.text || '';
+        this.color = params.color || new THREE.Color(0x000000);
+        this.position = params.position || new THREE.Vector3(0, 0, 0);
+        this.rotation = params.rotation || new THREE.Euler(0, 0, 0);
+        this.size = params.size || 10;
         this.geometry = new TextGeometry(
             this.string,
             {
@@ -36,8 +50,10 @@ export default class Text {
                 bevelSegments: 1
             }
         )
+        this.geometry.center();
         this.material = new THREE.MeshBasicMaterial()
         this.mesh = new THREE.Mesh(this.geometry, this.material)
+        this.mesh.position.set(this.position.x, this.position.y, this.position.z);
         this.scene.add(this.mesh)
     };
 
@@ -56,6 +72,7 @@ export default class Text {
                 bevelSegments: 1
             }
         )
+        this.geometry.center();
         this.mesh.geometry = this.geometry;
     };
 

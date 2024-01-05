@@ -134,6 +134,8 @@ export class Game {
     paused: boolean;
     font: Font | null;
     text: Text;
+    scoreText1: Text;
+    scoreText2: Text;
 
 
     constructor(canvas: HTMLCanvasElement, settings: Settings) {
@@ -168,7 +170,7 @@ export class Game {
         this.time = new Time();
         this.time.on('tick', this.update.bind(this));
         // Ball
-        this.ball = new Ball(this,);
+        this.ball = new Ball(this);
 
         // paddle 1
         this.paddle1 = new Paddle(
@@ -193,7 +195,27 @@ export class Game {
             '/fonts/helvetiker_regular.typeface.json',
             (font) => {
                 this.font = font
-                this.text = new Text(this.font, this.scene, 'test');
+                this.text = new Text({
+                    font: this.font,
+                    scene: this.scene,
+                    text: 'Waiting for game to start...',
+                    color: new THREE.Color(0xffffff),
+                    position: new THREE.Vector3(0, 20, 10)
+                });
+                this.scoreText1 = new Text({
+                    font: this.font,
+                    scene: this.scene,
+                    text: 'score: 0',
+                    color: new THREE.Color(0xffffff),
+                    position: new THREE.Vector3(this.settings.fieldWidth / 3, this.settings.fieldHeight / 3 - 20, 1)
+                });
+                this.scoreText2 = new Text({
+                    font: this.font,
+                    scene: this.scene,
+                    text: 'score: 0',
+                    color: new THREE.Color(0xffffff),
+                    position: new THREE.Vector3(-this.settings.fieldWidth / 3, this.settings.fieldHeight / 3 - 20, 1)
+                });
             }
         )
         // this.gui = new GUI();
@@ -264,6 +286,7 @@ export class Game {
             if (data.type == 'gameStatus') {
                 console.log(data.message);
                 if (data.message == 'FINISHED') {
+                    this.text.setText("Game over!");
                     this.removeListeners(this.gameRoom);
                     console.log('game has ended. finito. finished');
                 }
@@ -275,7 +298,12 @@ export class Game {
             }
             if (data.type == 'playerScored') {
                 console.log(data.message);
-                this.text.setText(data.message);
+                if (data.message.player == this.user) {
+                    this.text.setText("You scored!");
+                }
+                else {
+                    this.text.setText("Opponent scored!");
+                }
                 this.text.setVisibility(true);
 
                 // this.score(data.message);
@@ -284,6 +312,10 @@ export class Game {
                 console.log(data.message);
                 // this.removeListeners(this.gameRoom);
                 // console.log('player left. game over');
+            }
+            if (data.type == 'countdown') {
+                console.log(data.message);
+                this.countdown(data.message.count);
             }
         });
     }
@@ -300,6 +332,8 @@ export class Game {
     }
 
     start(): void {
+        if (this.text)
+            this.text.setVisibility(false);
         this.paused = false;
     };
 
@@ -317,12 +351,11 @@ export class Game {
             console.log(count);
             if (this.text) {
                 this.text.setVisibility(true);
-                this.text.setPosition(new THREE.Vector3(-10, 10, 0));
+                this.text.setPosition(new THREE.Vector3(0, 50, 30));
                 this.text.setText(String(count));
             }
             count -= 1;
             if (count < 0) {
-                this.text.setVisibility(false);
                 this.start();
             }
             else
