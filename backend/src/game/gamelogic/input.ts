@@ -53,6 +53,18 @@ export default class InputHandler {
         if (this.p2Input.down) {
             this.game.paddle2.desiredPos.y -= this.game.settings.paddleSpeed;
         }
+        if (this.p1Input.left) {
+            this.game.paddle1.desiredAngle += this.game.settings.paddleRotationSpeed;
+        }
+        if (this.p1Input.right) {
+            this.game.paddle1.desiredAngle -= this.game.settings.paddleRotationSpeed;
+        }
+        if (this.p2Input.left) {
+            this.game.paddle2.desiredAngle += this.game.settings.paddleRotationSpeed;
+        }
+        if (this.p2Input.right) {
+            this.game.paddle2.desiredAngle -= this.game.settings.paddleRotationSpeed;
+        }
     };
 
     updateInput(input: any): void {

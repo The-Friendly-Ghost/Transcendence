@@ -12,7 +12,7 @@ export default class Settings {
     public paddleWidth: number = 10;
     // public paddleColor: THREE.Color = new THREE.Color();
     public paddleSpeed: number = 1;
-    public paddleRotationSpeed: number = 0.005;
+    public paddleRotationSpeed: number = 0.0025;
 
     // Camera
     public cameraDistance: number = 220;
