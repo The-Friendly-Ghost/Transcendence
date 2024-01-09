@@ -21,15 +21,23 @@ export default class Ball {
         //THREEJS (Render)
         var radius = 5;
         var position = new THREE.Vector3(0, 0, 0);
-        const material = new THREE.MeshStandardMaterial({
-            color: this.game.settings.ballColor,
-            metalness: 0.0,
-            roughness: 1,
-        })
+        const material = new THREE.MeshPhongMaterial({
+            color: new THREE.Color(0xff8888),
+            emissive: new THREE.Color(0xff0000),
+            side: THREE.DoubleSide,
+            flatShading: false,
+            // transparent: true,
+            // opacity: 0.5,
+        });
+        // const material = new THREE.MeshStandardMaterial({
+        //     color: this.game.settings.ballColor,
+        //     metalness: 0.0,
+        //     roughness: 0.7,
+        // })
         const geometry = new THREE.SphereGeometry(radius, 32, 16);
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.copy(position);
-        this.mesh.castShadow = true;
+        // this.mesh.castShadow = true;
         this.game.scene.add(this.mesh);
 
         // White point light in the center of the ball

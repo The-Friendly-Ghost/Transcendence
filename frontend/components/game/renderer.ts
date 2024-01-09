@@ -25,7 +25,8 @@ export default class Renderer {
     setInstance(): void {
         this.instance = new THREE.WebGLRenderer({
             canvas: this.canvas,
-            antialias: true
+            antialias: true,
+            alpha: true
         });
         this.instance.useLegacyLights = false;
         this.instance.toneMapping = THREE.CineonToneMapping;

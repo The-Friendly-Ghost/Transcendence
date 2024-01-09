@@ -10,7 +10,7 @@ import Renderer from './renderer';
 import Ball from './ball';
 import Paddle from './paddle';
 import Settings from './settings';
-import Level from './level/level';
+import Level from './level';
 import UserInput from './input';
 import { Socket } from 'socket.io-client';
 import { FontLoader, Font } from 'three/examples/jsm/loaders/FontLoader.js';
@@ -171,6 +171,9 @@ export class Game {
         this.time.on('tick', this.update.bind(this));
         // Ball
         this.ball = new Ball(this);
+        // this.level.spotLight1.target = this.ball.mesh;
+        // this.level.spotLight2.target = this.ball.mesh;
+
 
         // paddle 1
         this.paddle1 = new Paddle(
