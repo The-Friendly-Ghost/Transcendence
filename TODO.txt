@@ -1,13 +1,12 @@
 Game:
-- Add a visual start countdown.
-- Proper position interpolation.
-- Visuals?
+- Add a visual start countdown. check
+- Proper position interpolation. check
+- More Visuals?
 - Better game UI.
 - Clearer queue indicators.
 - Sound effects?
 
-- score counter
-
+- score counter. check
 
 - store finished games in database.
 

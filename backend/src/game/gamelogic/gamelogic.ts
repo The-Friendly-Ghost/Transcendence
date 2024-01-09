@@ -21,27 +21,16 @@ It could also have a reference to the game class and use that to get the logic.
 The game should also run on the server.
 Then sync the game state to the client.
 We need game settings and client settings.
-
 Client-server game architecture which can be summarized as follows:
-
 Server gets inputs from all the clients, with timestamps
-
 Server processes inputs and updates world status
-
 Server sends regular world snapshots to all clients
-
 Client sends input and simulates their effects locally
-
 Client get world updates and
-
 Syncs predicted state to authoritative state
-
 Interpolates known past states for other entities
-
 From a player’s point of view, this has two important consequences:
-
 Player sees himself in the present
-
 Player sees other entities in the past
 */
 

@@ -52,7 +52,8 @@ export default class Paddle {
     setPos(pos: Matter.Vector): void {
         console.log(pos);
         Matter.Body.setPosition(this.body, pos);
-        this.desiredPos = pos
+        this.desiredPos.x = pos.x
+        this.desiredPos.y = pos.y
         // this.mesh.position.set(pos.x, 0, pos.y);
     };
 
