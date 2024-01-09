@@ -305,7 +305,8 @@ export class Game {
                     this.text.setText("Opponent scored!");
                 }
                 this.text.setVisibility(true);
-
+                this.scoreText1.setText('score: ' + data.message.p1_points);
+                this.scoreText2.setText('score: ' + data.message.p2_points);
                 // this.score(data.message);
             }
             if (data.type == 'playerLeft') {
