@@ -60,6 +60,10 @@ export default class Ball {
                 let dot = Matter.Vector.dot(this.dir, normal);
                 this.dir.x = this.dir.x - 2 * dot * normal.x;
                 this.dir.y = this.dir.y - 2 * dot * normal.y;
+                if (this.dir.x < 0)
+                    this.dir.x = -1;
+                else if (this.dir.x > 0)
+                    this.dir.x = 1;
                 if (other.label == "paddle")
                     this.ballspeed += this.game.settings.ballBaseSpeed * this.game.settings.ballSpeedMultiplier;
                 Matter.Body.setVelocity(ball, { x: this.dir.x * this.ballspeed, y: this.dir.y * this.ballspeed });
