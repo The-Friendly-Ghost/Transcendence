@@ -109,11 +109,11 @@ export class ChatController {
     });
   }
 
-  @ApiOperation({ summary: 'Get protected chatroom.'})
-  @Get('get_protected_chatroom/:chatroom_name/:password')
-  async get_protected_chatroom(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string, @Param('password') password: string): Promise<any> {
-    return await this.chat.get_protected_chatroom(user.intraId, chatroom_name, password).catch((e: Error) => {
-      return e.message;
+  @ApiOperation({ summary: 'Check the password of a protected chatroom.'})
+  @Get('check_chatroom_pw/:chatroom_name/:password')
+  async check_chatroom_pw(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string, @Param('password') password: string): Promise<any> {
+    return await this.chat.check_chatroom_pw(user.intraId, chatroom_name, password).catch((e: Error) => {
+      return false;
     });
   }
 
