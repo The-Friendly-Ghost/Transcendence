@@ -15,10 +15,11 @@ export function InputSimple( props: any ) : React.JSX.Element
     let input: string = props.input? props.input : "";
     let setInput: any = props.setInput? props.setInput : () => {};
     let placeholder: string = props.placeholder? props.placeholder : "";
+    let type: string = props.type? props.type : "text";
 
     return (
         <input
-            type={"text"}
+            type={type}
             value={input}
             onChange={e => setInput(e.target.value)}
             className={"w-full px-3 h-12 bg-transparent border rounded-md text-white focus:outline-none"}

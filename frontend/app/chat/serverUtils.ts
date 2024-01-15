@@ -18,3 +18,11 @@ export async function createChatRoom( name: string )
     let res_json: any = await res.json();
     return res_json;
 }
+
+export async function validateChatroomPassword( Room:any, password:string) : Promise<any>
+{
+    const url: string = `/chat/check_chatroom_pw/` + Room.name + `/` + password;
+    const res: Response = await get(url);
+    let res_json: any = await res.json();
+    return res_json;
+}
