@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaGameService } from './prisma';
-import { Game, User } from '@prisma/client';
+import { GameGateway } from './game.gateway';
+import { GameInfo, User } from '@prisma/client';
+import { GameManager } from './gamemanager';
 import { create } from 'domain';
 import { clear } from 'console';
 
@@ -8,27 +10,9 @@ import { clear } from 'console';
 export class GameService {
   constructor(private readonly prismaGameService: PrismaGameService) { }
   private pendingIntraId: number;
-
-  async searchGame(userId: number) {
-    console.log('GameService.searchGame');
-    console.log('GameService.searchGame userId', userId);
-
-    let game = await this.prismaGameService.searchGame();
-    // game returns null if no game is found
-    // then create a new one
-    // return that
-    if (game == null) {
-      // let gameroom = await this.create_gameroom();
-      game = await this.create_game(userId);
-    }
-    else if (game.p1 != userId) {
-      console.log("game found")
-      game.p2 = userId;
-      game.state = "IN_PROGRESS";
-      await this.prismaGameService.updateGame(game);
-    }
-    return game;
-  }
+  private gamesInfo: GameInfo[];
+  private gameInterval: NodeJS.Timeout;
+  private gameCount: number = 0;
 
   async resetGames(userId: number) {
     console.log('GameService.resetGames');
@@ -41,79 +25,80 @@ export class GameService {
     return response;
   }
 
-  async getGame(gameId: number) {
-    console.log('GameService.getGame');
-    console.log('GameService.getGame gameId', gameId);
-
-    const game = await this.prismaGameService.findGame({ gameId });
-    return game;
+  async listGames(): Promise<void> {
+    console.log(this.gamesInfo);
   }
 
-//   async startGame(p1: string) {
-//     // connect to socket
-
-
-//   }
-
-  async create_gameroom(): Promise<string> {
-    const roomName = Math.random().toString().substring(2, 15)
-    return roomName;
-  }
-
-  async gameWait(gameInfo: any): Promise<void> {
-    let game: Game = await this.prismaGameService.findGame({ gameId: gameInfo.id });
-    if (game.state == "PENDING") {
-      // wait for players to join
-      // send game state to players
-      // wait for players to send action
-      // send action to game
-      // update game state
-      console.log(game);
-      console.log("waiting for players to join");
-    }
-    else if (game.state == "IN_PROGRESS") {
-      console.log("game ready to start");
-      clearInterval(gameInfo.intervalID);
-    }
-  }
-
-  async create_game(userId: number): Promise<Game> {
+  async create_game(p1: number, p2: number): Promise<GameInfo> {
     const game = await this.prismaGameService.createGame({
-      p1: userId,
-      p2: -1,
+      p1: p1,
+      p2: p2,
       state: "PENDING",
       roomName: Math.random().toString().substring(2, 15) // Turn this into a game room
     });
-    // this.prismaGameService.findGame({ gameId: game.id });
-    // let gameInfo = { id: game.id, intervalID: null };
-    // gameInfo.intervalID = setInterval(() => this.gameWait(gameInfo), 1000);
+    this.listGames();
+    // this.gamesInfo.push(game);
+    this.gameCount++;
     return game;
   }
 
-  async gameLoop() {
-    // while (game.state == "IN_PROGRESS") {
-    //   // get game state
-    //   // send game state to players
-    //   // wait for players to send action
-    //   // send action to game
-    //   // update game state
-    // }
+
+  async gameLoop(gameInfo: GameInfo, gateway: GameGateway, gameManager: GameManager) {
+    gameManager.update();
+    // gateway.sendToUser(Number(gameInfo.roomName), "gamestate", "gameloop");
+    // console.log("gameLoop");
+    if (gameInfo.state == "IN_PROGRESS" || gameInfo.state == "PENDING") {
+      setTimeout(() => { this.gameLoop(gameInfo, gateway, gameManager) }, 10)
+    }
+    else {
+      console.log("game finished");
+      this.prismaGameService.updateGame(gameInfo);
+      // clearTimeout(this.gameInterval);
+    }
   }
 
-  async joinQueue(intraId: number) {
+
+
+  async joinQueue(intraId: number, gateway: GameGateway) {
     console.log('GameService.joinQueue userId', intraId);
+    // Check if player is already in game
+    const game = await this.prismaGameService.findGame({ userId: intraId });
+    if (game != null && game.state != "FINISHED") {
+      gateway.sendToUser(intraId, "info", "You are already in a game");
+      gateway.sendToUser(intraId, "gameroom", game.roomName);
+      console.log(intraId, "is already in a game");
+
+      return;
+    }
+    // Check if a player is in queue already, if not add player to queue
     if (this.pendingIntraId == null && !Number.isNaN(intraId)) {
       this.pendingIntraId = intraId;
+      gateway.sendToUser(intraId, "info", "Added to queue");
     }
     else if (this.pendingIntraId != intraId && !Number.isNaN(intraId)) {
-      await this.start_game(intraId, this.pendingIntraId);
+      console.log("Found 2 users starting a game");
+      gateway.sendToUser(intraId, "info", "Found a player starting game");
+      await this.start_game(intraId, this.pendingIntraId, gateway);
       this.pendingIntraId = null;
     }
-
+    else {
+      console.log("User is already in queue");
+      gateway.sendToUser(intraId, "info", "You are already in queue");
+    }
   }
 
-  async start_game(p1: number, p2: number) {
+  async start_game(p1: number, p2: number, gateway: GameGateway) {
+    let gameInfo: GameInfo;
+    let gameManager: GameManager;
+
     console.log("Lets get ready to rumble!!");
+    gameInfo = await this.create_game(p1, p2);
+    gameManager = new GameManager(gameInfo, gateway);
+    console.log("game created:");
+    gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
+    gateway.sendToUser(p2, "gameroom", gameInfo.roomName);
+    this.gameInterval = setTimeout(() => { this.gameLoop(gameInfo, gateway, gameManager) }, 100);
+    console.log(gameInfo);
   }
 
   async disconnect_from_game(intraId: number) {

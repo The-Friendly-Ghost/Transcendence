@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,14 +8,17 @@ datasource db {
 }
 
 model User {
-  id             Int     @id @default(autoincrement())
-  intraId        Int     @unique
-  name           String  @unique
+  id             Int        @id @default(autoincrement())
+  intraId        Int        @unique
+  name           String     @unique
   image_url      String
   friends        Int[]
-  twoFAEnabled   Boolean @default(false)
+  twoFAEnabled   Boolean    @default(false)
   twoFASecret    String?
   blockedUserIds Int[]
+  chatroomId     Int?
+  wins           Int        @default(0)
+  losses         Int        @default(0)
   socket         Json?
   avatar         Json?
 
@@ -26,26 +26,15 @@ model User {
   chatrooms  Chatroom[] @relation("banned")
   adminOf    Chatroom[] @relation("admin")
   Chatroom   Chatroom?  @relation(fields: [chatroomId], references: [id])
-  chatroomId Int?
 
-  // Games
-  // gamesPlayed Game[]
-  wins   Int @default(0)
-  losses Int @default(0)
 }
 
-enum GameState {
-  PENDING
-  IN_PROGRESS
-  FINISHED
-}
-
-model Game {
+model GameInfo {
   id        Int       @id @default(autoincrement())
   score     Int[]
   state     GameState
-  p1        Int       @unique
-  p2        Int       @unique
+  p1        Int
+  p2        Int
   createdAt DateTime  @default(now())
   roomName  String?
 }
@@ -54,11 +43,9 @@ model Message {
   id         Int      @id @default(autoincrement())
   content    String
   createdAt  DateTime @default(now())
-  senderName String
-  // intraId    Int
-  // sender     User     @relation(fields: [intraId], references: [intraId])
-  chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
   chatroomId Int
+  senderName String
+  chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
 }
 
 model Chatroom {
@@ -66,9 +53,15 @@ model Chatroom {
   name         String    @unique
   private      Boolean   @default(false)
   pw_hash      String?
+  ownerIntraId Int
+  messages     Message[]
   users        User[]
   admins       User[]    @relation("admin")
-  messages     Message[]
   bannedUsers  User[]    @relation("banned")
-  ownerIntraId Int
+}
+
+enum GameState {
+  PENDING
+  IN_PROGRESS
+  FINISHED
 }
