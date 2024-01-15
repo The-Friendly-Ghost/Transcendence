@@ -73,7 +73,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                                 <summary className="h4_font font-bold pb-4 w-full cursor-pointer">
                                     Chatrooms
                                 </summary>
-                                <div className='grid grid-cols-2 gap-5'>
+                                <div className='grid grid-cols-1 gap-5'>
                                     {chatRooms
                                     // .filter(room => 
                                     // room.ownerIntraId !== (myIntraId ? +myIntraId : null))
