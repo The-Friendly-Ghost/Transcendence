@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ChatProps } from '@types'
-import { put } from '@utils/request/request';
+import { post, put } from '@utils/request/request';
 import StandardButton from '@components/common/Buttons';
 import SimpleForm from '@components/common/Forms';
 import { validateChatroom } from '@app/chat/utils';
@@ -91,9 +91,9 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 			</summary>
 			<div className="flex flex-col">
 				<StandardButton
-					onClick={() => put(`/chat/delete_chatroom/${room.name}`).then(() => setCurrentRoom(room.name))}
+					onClick={() => post(`/chat/delete_chatroom/${room.name}`)}
 					text={"Delete Chatroom"}
-					buttonStyle={"border-white border-[1px] hover:bg-red-700/40 hover:shadow-red-500 m-0 mr-4 mt-4"}
+					buttonStyle={"border-white border-[1px] hover:bg-red-700/40 hover:shadow-red-500 m-0 mr-4 mt-4 w-[200px]"}
 				/>
 			</div>
 		</details>
