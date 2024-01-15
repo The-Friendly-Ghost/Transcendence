@@ -1,14 +1,14 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Game, Prisma } from '@prisma/client';
+import { GameInfo, Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
-import { findGameDto, updateGameScoreDto } from '../dto';
+import { findGameDto, findGameByIdDto, updateGameScoreDto } from '../dto';
 
 @Injectable()
 export class PrismaGameService {
   constructor(private prisma: PrismaService) { }
 
   async resetGames(): Promise<boolean> {
-    const games: Game[] = await this.prisma.game
+    const games: GameInfo[] = await this.prisma.gameInfo
       .findMany()
       .catch((e: Prisma.PrismaClientKnownRequestError) => {
         console.error('PrismaGameService.resetGames error reason: ' + e.message + ' code: ' + e.code);
@@ -17,8 +17,8 @@ export class PrismaGameService {
     if (games.length == 0) {
       return true;
     }
-    const deleteGames = games.map((game: Game) => {
-      return this.prisma.game.delete({ where: { id: game.id } });
+    const deleteGames = games.map((game: GameInfo) => {
+      return this.prisma.gameInfo.delete({ where: { id: game.id } });
     });
     await this.prisma.$transaction(deleteGames).catch((e: Prisma.PrismaClientKnownRequestError) => {
       console.error(
@@ -29,8 +29,8 @@ export class PrismaGameService {
     return true;
   }
 
-  async createGame(data: Prisma.GameCreateInput): Promise<Game> {
-    const game: Game = await this.prisma.game
+  async createGame(data: Prisma.GameInfoCreateInput): Promise<GameInfo> {
+    return await this.prisma.gameInfo
       .create({
         data: data,
       })
@@ -39,24 +39,45 @@ export class PrismaGameService {
           'PrismaGameService.insertGame error reason: ' + e.message + ' code: ' + e.code,
         );
         throw new NotFoundException();
-      });
+      });;
+  }
+
+  async findGame(dto: findGameDto): Promise<GameInfo> {
+    let games: GameInfo[] = null;
+    try {
+      games = await this.prisma.gameInfo
+        .findMany({
+          where: { OR: [{ p1: dto.userId }, { p2: dto.userId }], AND: [{ OR: [{ state: "PENDING" }, { state: "IN_PROGRESS" }] }] },
+        })
+        .catch((e: Prisma.PrismaClientKnownRequestError) => {
+          // console.error('PrismaGameService.findGame error reason: ' + e.message + ' code: ' + e.code);
+          throw new NotFoundException();
+        });
+    } catch (error) {
+      // console.log("Game not found");
+    }
+    return games[0];
+  }
+
+  async findGameById(dto: findGameByIdDto): Promise<GameInfo> {
+    let game: GameInfo = null;
+    try {
+      game = await this.prisma.gameInfo
+        .findUniqueOrThrow({
+          where: { id: dto.gameId },
+        })
+        .catch((e: Prisma.PrismaClientKnownRequestError) => {
+          console.error('PrismaGameService.findGame error reason: ' + e.message + ' code: ' + e.code);
+          throw new NotFoundException();
+        });
+    } catch (error) {
+      console.log("Game not found");
+    }
     return game;
   }
 
-  async findGame(dto: findGameDto): Promise<Game> {
-    const game: Game = await this.prisma.game
-      .findUniqueOrThrow({
-        where: { id: dto.gameId },
-      })
-      .catch((e: Prisma.PrismaClientKnownRequestError) => {
-        console.error('PrismaGameService.findGame error reason: ' + e.message + ' code: ' + e.code);
-        throw new NotFoundException();
-      });
-    return game;
-  }
-
-  async updateGame(game: Game): Promise<boolean> {
-    await this.prisma.game
+  async updateGame(game: GameInfo): Promise<boolean> {
+    await this.prisma.gameInfo
       .update({
         where: { id: game.id },
         data: game,
@@ -70,8 +91,8 @@ export class PrismaGameService {
     return (true);
   }
 
-  async searchGame(): Promise<Game> {
-    const game: Game[] = await this.prisma.game
+  async searchGame(): Promise<GameInfo> {
+    const game: GameInfo[] = await this.prisma.gameInfo
       .findMany({
         where: {
           state: "PENDING"
@@ -84,23 +105,8 @@ export class PrismaGameService {
     return game[0];
   }
 
-//   async updateGameScore(dto: updateGameScoreDto): Promise<Game> {
-//     const game: Game = await this.prisma.game
-//       .update({
-//         data: { score: dto.score },
-//         where: { id: dto.gameId || undefined },
-//       })
-//       .catch((e: Prisma.PrismaClientKnownRequestError) => {
-//         console.error(
-//           'PrismaGameService.updateGameScore error reason: ' + e.message + ' code: ' + e.code,
-//         );
-//         throw new InternalServerErrorException();
-//       });
-//     return game;
-//   }
-
-  async updateEndGame(data: Prisma.GameUpdateArgs): Promise<Game> {
-    const game: Game = await this.prisma.game
+  async updateEndGame(data: Prisma.GameInfoUpdateArgs): Promise<GameInfo> {
+    const game: GameInfo = await this.prisma.gameInfo
       .update(data)
       .catch((e: Prisma.PrismaClientKnownRequestError) => {
         console.error(
