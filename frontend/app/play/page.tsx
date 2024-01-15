@@ -106,14 +106,18 @@ export default function game_page(): React.JSX.Element {
     async function startQueue() {
         console.log(gameSocketRef.current);
         if (gameSocketRef.current) {
-            gameSocketRef.current.emit('queueGame', { userId: intraName, destination: gameSocketRef.current.id });
+            gameSocketRef.current.emit('queueGame', {
+                userId: intraName,
+                socketId: gameSocketRef.current.id });
         }
     }
 
     async function testGame() {
         console.log(gameSocketRef.current);
         if (gameSocketRef.current) {
-            gameSocketRef.current.emit('testGame', { userId: intraName, destination: gameSocketRef.current.id });
+            gameSocketRef.current.emit('testGame', {
+                userId: intraName,
+                socketId: gameSocketRef.current.id });
         }
     }
 

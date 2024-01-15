@@ -16,6 +16,9 @@ Game:
 
 - refactor the whole GameService, GameGateway, GameManager layers. (remove deprecated stuff)
 
+Bugs:
+    reset scores on the client after game has ended.
+
 
 Events:
     Start of game.

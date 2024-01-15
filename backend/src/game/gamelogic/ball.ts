@@ -7,7 +7,7 @@ export default class Ball {
     game: Game;
     body: Matter.Body;
     engine: Matter.Engine;
-    ballspeed: number;
+    speed: number;
     dir: Matter.Vector;
     radius: number;
     position: Matter.Vector;
@@ -16,7 +16,7 @@ export default class Ball {
         this.game = game;
 
         // Initialize ball properties
-        this.ballspeed = game.settings.ballBaseSpeed;
+        this.speed = game.settings.ballBaseSpeed;
         this.radius = game.settings.ballRadius;
         this.position = Matter.Vector.create(position.x, position.y);
 
@@ -30,7 +30,7 @@ export default class Ball {
         this.engine = game.engine;
         this.body.label = "ball";
 
-        Matter.Events.on(this.engine, 'collisionStart', this.getReflection.bind(this));
+        Matter.Events.on(this.engine, 'collisionStart', this.reflection.bind(this));
         Matter.Composite.add(this.engine.world, this.body);
     };
 
@@ -38,11 +38,19 @@ export default class Ball {
         this.position = this.body.position;
     };
 
-    getReflection(event: any): void {
+    public start(): void {
+        this.dir = Matter.Vector.normalise(Matter.Vector.create(((Math.random() - 0.5) * 2), (Math.random() - 0.5)));
+        let speed = this.calculateBallSpeed(false);
+        this.speed = this.game.settings.ballBaseSpeed;
+        this.setVelocity(Matter.Vector.mult(this.dir, speed));
+    };
+
+    reflection(event: any): void {
         let ball: Matter.Body;
         let coll: Matter.Collision;
         let normal: Matter.Vector;
         let other: Matter.Body;
+        let currentSpeed: number;
         ball = null;
         for (let pair of this.engine.pairs.list) {
             if (pair.bodyA.label == "ball") {
@@ -56,36 +64,36 @@ export default class Ball {
             if (ball) {
                 coll = pair.collision;
                 normal = coll.normal;
-                this.dir = Matter.Vector.normalise(ball.velocity);
-                let dot = Matter.Vector.dot(this.dir, normal);
-                this.dir.x = this.dir.x - 2 * dot * normal.x;
-                this.dir.y = this.dir.y - 2 * dot * normal.y;
-                if (this.dir.x < 0)
-                    this.dir.x = -1;
-                else if (this.dir.x > 0)
-                    this.dir.x = 1;
+                this.dir = this.calculateReflection(normal, Matter.Vector.normalise(ball.velocity));
                 if (other.label == "paddle")
-                    this.ballspeed += this.game.settings.ballBaseSpeed * this.game.settings.ballSpeedMultiplier;
-                Matter.Body.setVelocity(ball, { x: this.dir.x * this.ballspeed, y: this.dir.y * this.ballspeed });
+                    currentSpeed = this.calculateBallSpeed(true);
+                else
+                    currentSpeed = this.calculateBallSpeed(false);
+                this.setVelocity(Matter.Vector.mult(this.dir, currentSpeed));
                 break;
             }
         }
     };
 
-    setReflection(event: any): void {
-        let ball: Matter.Body;
-        // let pairs = event.pair;
-        // console.log(event);
-        ball = null;
-        for (let pair of this.engine.pairs.list) {
-            if (pair.bodyA.label == "ball")
-                ball = pair.bodyA;
-            else if (pair.bodyB.label == "ball")
-                ball = pair.bodyB;
-            if (ball) {
-                Matter.Body.setVelocity(ball, { x: this.dir.x * this.ballspeed, y: this.dir.y * this.ballspeed });
-            }
-        }
+    calculateBallSpeed(paddleCollision: boolean): number {
+        let calculatedSpeed = 0;
+        let extraSpeed = 0;
+        extraSpeed = .3 / this.dir.x;
+        if (extraSpeed < 0)
+            extraSpeed = -extraSpeed;
+        if (extraSpeed > 2)
+            extraSpeed = 2;
+        if (paddleCollision)
+            this.speed += this.game.settings.ballBaseSpeed * this.game.settings.ballSpeedMultiplier;
+        calculatedSpeed = extraSpeed + this.speed;
+        return calculatedSpeed;
+    };
+
+    calculateReflection(normal: Matter.Vector, dir: Matter.Vector): Matter.Vector {
+        let dot = Matter.Vector.dot(dir, normal);
+        dir.x = dir.x - 2 * dot * normal.x;
+        dir.y = dir.y - 2 * dot * normal.y;
+        return dir;
     };
 
     setPos(pos: Matter.Vector): void {

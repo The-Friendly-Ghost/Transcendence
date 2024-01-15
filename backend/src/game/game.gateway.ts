@@ -16,54 +16,55 @@ import { GameService } from './game.service';
     }
 })
 export class GameGateway {
+    private connections: Map<number, Socket>;
     constructor(
         private gameService: GameService
-    ) { }
+    ) {
+        this.connections = new Map<number, Socket>();
+    }
     @WebSocketServer()
     server: Server;
 
     async handleConnection(client: Socket) {
-        // console.log('connected, user: ', client);
+        // Add user and socket to connections map
+        this.connections.set(Number(client.handshake.query.token), client);
+        // Debug log
         console.log('handle connectoin intraId: ', client.handshake.query.token);
+        // Join a room that is the same as the user's intraId for 1-to-1 communication
+        client.join(String(client.handshake.query.token));
+        // Add event listeners
+        client.on('queueGame', this.queueGame.bind(this, client));
+        client.on('testGame', this.testGame.bind(this, client));
+        client.on('userInput', this.userInput.bind(this, client));
     }
 
     async handleDisconnect(client: Socket) {
         console.log('handle disconnection intraId: ', client.handshake.query.token, " disconnected");
         this.gameService.disconnect_from_game(Number(client.handshake.query.token));
+        // Remove user and socket from connections map
+        this.connections.delete(Number(client.handshake.query.token));
         client.disconnect();
     }
 
-    @SubscribeMessage('queueGame')
-    handleMessage(client: Socket, @MessageBody() body: queueGameDto) {
-        this.gameService.joinQueue(parseInt(body.userId as unknown as string), this);
-        // this.server.emit('message', message);
-        console.log("message object:", body);
-        this.server.to(body.destination).emit('queueStatus', {
+    queueGame(client: Socket, data: queueGameDto)
+    {
+        this.gameService.joinQueue(parseInt(data.userId as unknown as string), this);
+        console.log("User queued:", data);
+        client.emit('queueStatus', {
             queueStatus: "joined queue"
         });
-        this.server.emit(String(body.userId), {
-            queueStatus: "hello?"
-        });
     }
 
-    @SubscribeMessage('testGame')
-    testGame(client: Socket, @MessageBody() body: queueGameDto) {
-        this.gameService.testGame(parseInt(body.userId as unknown as string), this);
-        console.log("message object:", body);
-        this.server.to(body.destination).emit(String(body.userId), {
+    testGame(client: Socket, data: queueGameDto) {
+        this.gameService.testGame(parseInt(data.userId as unknown as string), this);
+        console.log("message object:", data);
+        client.emit("queueStatus", {
             queueStatus: "starting test game"
         });
-        this.server.emit(String(body.userId), {
-            queueStatus: "hello?"
-        });
     }
 
-    @SubscribeMessage('userInput')
-    userInput(client: Socket, @MessageBody() body: any) {
-        // this.gameService.userInput(body);
-        // this.server.emit('message', message);
-        // console.log("message object:", body);
-        this.gameService.userInput(body);
+    userInput(client: Socket, data: any) {
+        this.gameService.userInput(data);
     }
 
     public updateClients(gameId: number, message: gameStateDto) {

@@ -3,7 +3,7 @@ import Player from '../gamelogic/player';
 
 export class queueGameDto {
   userId: number;
-  destination: string;
+  socketId: string;
 }
 
 export class findGameDto {

@@ -124,15 +124,14 @@ export default class Game extends EventEmitter {
 
     start(): void {
         this.emit('start');
-        let velocity: Matter.Vector = Matter.Vector.normalise(Matter.Vector.create(((Math.random() - 0.5) * 2), ((Math.random() - 0.5) * 2)));
-        this.ball.setVelocity(Matter.Vector.mult(velocity, this.settings.ballBaseSpeed));
+        this.ball.start();
         this.paused = false;
     };
 
     reset(): void {
         this.emit('reset');
         this.ball.setPos(Matter.Vector.create(0, 0));
-        this.ball.ballspeed = this.settings.ballBaseSpeed;
+        this.ball.speed = this.settings.ballBaseSpeed;
         this.ball.setVelocity(Matter.Vector.create(0, 0));
         this.paddle1.reset();
         this.paddle2.reset();
