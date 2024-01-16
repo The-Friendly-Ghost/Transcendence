@@ -27,8 +27,15 @@ export class ChatController {
   @ApiOperation({ summary: 'create chatroom.' })
   @Put('create_chatroom/:chatroom_name')
   async create_chatroom(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string): Promise<any> {
-    console.log("create_chatroom ACTIVATED -----------------------");
     return await this.chat.create_chatroom(user.intraId, chatroom_name).catch((e: Error) => {
+      return e.message;
+    });
+  }
+
+  @ApiOperation({ summary: 'create chatroom.' })
+  @Put('create_dm_chatroom/:intraId2/:chatroom_name')
+  async create_dm_chatroom(@GetUser() user: User, @Param('intraId2', ParseIntPipe) intraId2: number, @Param('chatroom_name') chatroom_name: string): Promise<any> {
+    return await this.chat.create_dm_chatroom(user.intraId, intraId2, chatroom_name).catch((e: Error) => {
       return e.message;
     });
   }
@@ -151,8 +158,8 @@ export class ChatController {
 
   @ApiOperation({ summary: 'Get all chatrooms.'})
   @Get('get_all_chatrooms')
-  async get_all_chatrooms(): Promise<any> {
-    return await this.chat.get_all_chatrooms().catch((e: Error) => {
+  async get_all_chatrooms(@GetUser() user: User): Promise<any> {
+    return await this.chat.get_all_chatrooms(user.intraId).catch((e: Error) => {
       return e.message;
     });
   }
