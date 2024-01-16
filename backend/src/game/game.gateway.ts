@@ -27,15 +27,16 @@ export class GameGateway {
 
     async handleConnection(client: Socket) {
         // Add user and socket to connections map
+        console.log(Number(client.handshake.query.token));
         this.connections.set(Number(client.handshake.query.token), client);
         // Debug log
-        console.log('handle connectoin intraId: ', client.handshake.query.token);
+        console.log('handle connection intraId: ', client.handshake.query.token);
         // Join a room that is the same as the user's intraId for 1-to-1 communication
         client.join(String(client.handshake.query.token));
         // Add event listeners
         client.on('queueGame', this.queueGame.bind(this, client));
         client.on('testGame', this.testGame.bind(this, client));
-        client.on('userInput', this.userInput.bind(this, client));
+        // client.on('userInput', this.userInput.bind(this, client));
     }
 
     async handleDisconnect(client: Socket) {
@@ -55,16 +56,13 @@ export class GameGateway {
         });
     }
 
+    // Starts a game for testing purposes. Nothing is stored in the database.
     testGame(client: Socket, data: queueGameDto) {
         this.gameService.testGame(parseInt(data.userId as unknown as string), this);
-        console.log("message object:", data);
+        // console.log("message object:", data);
         client.emit("queueStatus", {
             queueStatus: "starting test game"
         });
-    }
-
-    userInput(client: Socket, data: any) {
-        this.gameService.userInput(data);
     }
 
     public updateClients(gameId: number, message: gameStateDto) {
@@ -74,8 +72,26 @@ export class GameGateway {
     }
 
     public sendToUser(userId: number, type: string, message: any) {
-        this.server.emit(String(userId), {
+        // console.log(this.connections);
+        let socket: Socket = this.connections.get(userId);
+        // console.log(typeof(socket), socket);
+        if (socket == undefined) {
+            console.log("socket undefined");
+            return;
+        }
+        console.log("sending to user:", userId, "message:", message);
+        socket.emit(String(userId), {
             type: type, message: message
         });
+    }
+
+    public sendToRoom(roomId: string, type: string, message: any) {
+        this.server.to(roomId).emit(roomId, {
+            type: type, message: message
+        });
+    }
+
+    public getSocket(userId: number): Socket {
+        return this.connections.get(userId);
     }
 }

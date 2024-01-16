@@ -11,10 +11,7 @@ export class GameService {
   constructor(private readonly prismaGameService: PrismaGameService) { }
   private pendingIntraId: number;
   private gamesInfo: GameInfo[];
-  private gameInterval: NodeJS.Timeout;
-
   private gameManagers: Map<string, GameManager> = new Map();
-  private gameCount: number = 0;
 
   async resetGames(userId: number) {
     console.log('GameService.resetGames');
@@ -27,9 +24,6 @@ export class GameService {
     return response;
   }
 
-  async listGames(): Promise<void> {
-    console.log(this.gamesInfo);
-  }
 
   async create_game(p1: number, p2: number): Promise<GameInfo> {
     const game = await this.prismaGameService.createGame({
@@ -38,8 +32,6 @@ export class GameService {
       state: "PENDING",
       roomName: Math.random().toString().substring(2, 15) // Turn this into a game room
     });
-    this.listGames();
-    this.gameCount++;
     return game;
   }
 
@@ -47,24 +39,13 @@ export class GameService {
     let gameInfo: GameInfo;
     let gameManager: GameManager;
 
-    console.log("Lets get ready to rumble!!");
+    console.log("Test Game:")
     gameInfo = await this.create_game(p1, p1);
     gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
-    console.log("game created:");
     gameManager = new GameManager(gameInfo, gateway, this.cleanupGame.bind(this));
-    console.log("game initialized.");
     this.gameManagers.set(gameInfo.roomName, gameManager);
     console.log(gameInfo);
   };
-
-  async userInput(input: any) {
-    let gameManager: GameManager;
-
-    gameManager = this.gameManagers.get(input.gameRoom);
-    if (gameManager)
-      gameManager.userInput(input);
-  };
-
 
   async joinQueue(intraId: number, gateway: GameGateway) {
     console.log('GameService.joinQueue userId', intraId);
@@ -97,11 +78,10 @@ export class GameService {
     let gameInfo: GameInfo;
     let gameManager: GameManager;
 
-    console.log("Lets get ready to rumble!!");
     gameInfo = await this.create_game(p1, p2);
     gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
     gateway.sendToUser(p2, "gameroom", gameInfo.roomName);
-    console.log("game created:");
+    console.log("gameroom created:");
     gameManager = new GameManager(gameInfo, gateway, this.cleanupGame.bind(this));
     console.log("game initialized.");
     this.gameManagers.set(gameInfo.roomName, gameManager);
@@ -111,8 +91,6 @@ export class GameService {
   cleanupGame(gameInfo: GameInfo) {
     this.gameManagers.delete(gameInfo.roomName);
     this.prismaGameService.updateGame(gameInfo);
-    // this.prismaGameService.deleteGame(gameInfo.id);
-    this.gameCount--;
   }
 
   async disconnect_from_game(intraId: number) {
