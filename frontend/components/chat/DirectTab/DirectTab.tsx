@@ -17,7 +17,7 @@ import StandardButton, { SubmitButton } from '@components/common/Buttons';
 import InputSimple from '@components/common/Input';
 
 /* Import functions */
-import { createChatRoom, getChatRoom } from '../../../app/chat/serverUtils';
+import { createChatRoom, createDmRoom, getChatRoom } from '../../../app/chat/serverUtils';
 import { checkReceivedMessage, sendMessage, validateChatroom } from '../../../app/chat/utils';
 
 /* Import React or Library functions */
@@ -96,13 +96,8 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                             }
                             else
                             {
-                                let temp: string = dmUser.name + " <-> " + userName;
-                                setNewRoom(temp);
-                                createChatRoom(temp);
-                                // await put(`/chat/connect_to_chatroom/${newRoom}`);
-                                // setCurrentRoom(newRoom);
-                                await put('/chat/make_admin/' + temp + '/' + dmUser.intraID);
-                                await put('/chat/toggle_access/' + temp);
+                                let temp: string = dmUser.name + " -- " + userName;
+                                await createDmRoom(numUser, temp);
                                 setNewRoom("");
                                 window.location.reload();
                             }
