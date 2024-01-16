@@ -12,6 +12,7 @@ import React, { use, useEffect, useRef, useState } from 'react';
 import ChatRoomOverview from './ChatRoomOverview';
 import { ChatProps } from '@types';
 import SmallAccordion from '@components/common/Accordion';
+import { put } from '@utils/request/request';
 
 export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId } 
     : ChatProps)
@@ -66,20 +67,42 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
             {currentRoom === "" && (
                 <div className='h-full'>
 
+                    <p className='mb-3'>Create New Room</p>
+                    <SimpleForm
+                        onSubmit= { (event: any) => { 
+                            if (validateChatroom(newRoom, chatRooms, setCreateRoomError) === true)
+                            {
+                                setCreateRoomError("");
+                                createChatRoom(newRoom);
+                            }
+                            else
+                                event.preventDefault();
+                        }}
+                        content = {
+                            <div className="flex">
+                                <InputSimple 
+                                    input={newRoom} 
+                                    setInput={setNewRoom}
+                                    placeholder={"Room name ..."}
+                                />
+                                <StandardButton 
+                                    text={"Create"}
+                                    buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
+                                />
+                            </div>
+                        }
+                    />
+                    { createRoomError !== "" && (
+                        <p className="text-red-500">{createRoomError}</p>
+                    )}
+
                     {/* Show this block if there are chatrooms inside the database */}
                     { Array.isArray(chatRooms) && 
                         (
-                            <details>
-                                <summary className="h4_font font-bold pb-4 w-full cursor-pointer">
-                                    Chatrooms
-                                </summary>
+                            <div className='pb-4'>
+                                <p className='my-3'>All chatrooms ({chatRooms.length})</p>
                                 <div className='grid grid-cols-1 gap-5'>
-                                    {chatRooms
-                                    // .filter(room => 
-                                    // room.ownerIntraId !== (myIntraId ? +myIntraId : null))
-                                    // room.users.includes(myIntraId))
-                                    // room.users.map((user:any) => user.intra_id) === myIntraId ? false : true)
-                                    .map((room:any, index:number) => (
+                                    {chatRooms.map((room:any, index:number) => (
                                         <ChatRoomOverview 
                                             setCurrentRoom={setCurrentRoom}
                                             key={index}
@@ -90,42 +113,10 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                                         />
                                     ))}
                                 </div>
-                            </details>
+                            </div>
                         )
                     }
 
-                    <details>
-                        <summary className="h4_font font-bold pb-4 w-full cursor-pointer">
-                            Create new chatroom
-                        </summary>
-                        <SimpleForm
-                            onSubmit= { (event: any) => { 
-                                if (validateChatroom(newRoom, chatRooms, setCreateRoomError) === true)
-                                {
-                                    setCreateRoomError("");
-                                    createChatRoom(newRoom);
-                                }
-                                else
-                                    event.preventDefault();
-                            }}
-                            content = {
-                                <div className="flex">
-                                    <InputSimple 
-                                        input={newRoom} 
-                                        setInput={setNewRoom}
-                                        placeholder={"Room name ..."}
-                                    />
-                                    <StandardButton 
-                                        text={"Create"}
-                                        buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
-                                    />
-                                </div>
-                            }
-                        />
-                        { createRoomError !== "" && (
-                            <p className="text-red-500">{createRoomError}</p>
-                        )}
-                    </details>
                 </div>
             )}
 
@@ -139,7 +130,11 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                                 buttonStyle={"m-0 mr-4 mb-4 p-0 w-full border-white border-[1px] hover:bg-violet-700/40"}
                             />
                         <StandardButton
-                                onClick={() => {setCurrentRoom("");}}
+                                onClick={ async () => {
+                                    setCurrentRoom("");
+                                    await put(`/chat/leave_chatroom/${currentRoom}`);
+                                    window.location.reload();
+                                }}
                                 text={"Leave " + currentRoom}
                                 buttonStyle={"m-0 mr-4 mb-4 p-0 w-full border-white border-[1px] hover:bg-red-700/40 hover:shadow-red-500"}
                             />

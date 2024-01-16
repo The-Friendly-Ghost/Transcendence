@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ChatProps } from '@types'
-import { post, put } from '@utils/request/request';
+import { doDelete, post, put } from '@utils/request/request';
 import StandardButton from '@components/common/Buttons';
 import SimpleForm from '@components/common/Forms';
 import { validateChatroom } from '@app/chat/utils';
@@ -14,6 +14,11 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 	const IntraIdNum = Number(myIntraId);
 	const [password, setPassword] = useState<string>("");
 	const [passwordError, setPasswordError] = useState<string>("");
+	const [addUser, setAddUser] = useState<string>("");
+	const [removeUser, setRemoveUser] = useState<string>("");
+	const [makeAdmin, setMakeAdmin] = useState<string>("");
+	const [newRoomPassword, setNewRoomPassword] = useState<string>("");
+	const [banUser, setBanUser] = useState<string>("");
 
   return (
 	<div className='p-5 border rounded-lg cursor-pointer' key={key}>
@@ -90,11 +95,151 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 				Admin Panel
 			</summary>
 			<div className="flex flex-col">
+
+				{/* Delete chatroom */}
+				<p className='my-3'>Delete chatroom</p>
 				<StandardButton
-					onClick={() => post(`/chat/delete_chatroom/${room.name}`)}
+					onClick={ async () => {
+						await doDelete(`/chat/delete_chatroom/${room.name}`)
+						window.location.reload();
+					}}
 					text={"Delete Chatroom"}
-					buttonStyle={"border-white border-[1px] hover:bg-red-700/40 hover:shadow-red-500 m-0 mr-4 mt-4 w-[200px]"}
+					buttonStyle={"border-white border-[1px] hover:bg-red-700/40 hover:shadow-red-500 m-0 mr-4 w-[200px]"}
 				/>
+
+				{/* Add user to chatroom */}
+				<p className='my-3'>Add User</p>
+				<SimpleForm
+                    onSubmit= { async (event: any) => { 
+						await put(`/chat/add_user_to_chatroom/${room.name}/${addUser}`)
+                    }}
+                    content = {
+                        <div className="flex">
+                            <InputSimple 
+                                input={addUser} 
+                                setInput={setAddUser}
+                                placeholder={"IntraID"}
+                            />
+                            <StandardButton 
+                                text={"Add"}
+                                buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
+                            />
+                        </div>
+                    }
+                />
+
+				{/* Ban user */}
+				<p className='my-3'>Ban user</p>
+				<SimpleForm
+                    onSubmit= { async (event: any) => { 
+						await put(`/chat/ban_user/${room.name}/${banUser}`)
+                    }}
+                    content = {
+                        <div className="flex">
+                            <InputSimple 
+                                input={banUser}
+                                setInput={setBanUser}
+                                placeholder={"intraID"}
+                            />
+                            <StandardButton 
+                                text={"Ban"}
+                                buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
+                            />
+                        </div>
+                    }
+                />
+
+				{/* Remove user from chatroom*/}
+				<p className='my-3'>Remove User</p>
+				<SimpleForm
+                    onSubmit= { async (event: any) => { 
+						await put(`/chat/remove_user_from_chatroom/${room.name}/${removeUser}`)
+                    }}
+                    content = {
+                        <div className="flex">
+                            <InputSimple 
+                                input={removeUser} 
+                                setInput={setRemoveUser}
+                                placeholder={"IntraID"}
+                            />
+                            <StandardButton 
+                                text={"Remove"}
+                                buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
+                            />
+                        </div>
+                    }
+                />
+
+				{/* Toggle public/private */}
+				<p className='my-3'>Toggle public/private</p>
+				<StandardButton
+					onClick={async () => {
+						await put(`/chat/toggle_access/${room.name}`)
+						window.location.reload();
+					}}
+					text={"Set " + (room.private === true ? "public" : "private")}
+					buttonStyle={"border-white border-[1px] hover:bg-red-700/40 hover:shadow-red-500 m-0 mr-4 w-[200px]"}
+				/>
+
+				{/* Leave chatroom [in Chatroom]*/}
+
+				{/* Make Admin */}
+				<p className='my-3'>Make admin</p>
+				<SimpleForm
+                    onSubmit= { async (event: any) => { 
+						await put(`/chat/make_admin/${room.name}/${makeAdmin}`)
+                    }}
+                    content = {
+                        <div className="flex">
+                            <InputSimple 
+                                input={makeAdmin} 
+                                setInput={setMakeAdmin}
+                                placeholder={"IntraID"}
+                            />
+                            <StandardButton 
+                                text={"Set"}
+                                buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
+                            />
+                        </div>
+                    }
+                />
+
+				{/* Change chatroom password */}
+				<p className='my-3'>New password</p>
+				<SimpleForm
+                    onSubmit= { async (event: any) => { 
+						await put(`/chat/set_password/${room.name}/${newRoomPassword}`)
+                    }}
+                    content = {
+                        <div className="flex">
+                            <InputSimple 
+                                input={newRoomPassword}
+                                setInput={setNewRoomPassword}
+                                placeholder={"new password"}
+                            />
+                            <StandardButton 
+                                text={"Set"}
+                                buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
+                            />
+                        </div>
+                    }
+                />
+
+				{/* Reset Password*/}
+				<p className='my-3'>Reset password</p>
+				<StandardButton
+					onClick={async () => {
+						await put(`/chat/reset_password/${room.name}`)
+						window.location.reload();
+					}}
+					text={"Reset password"}
+					buttonStyle={"border-white border-[1px] hover:bg-red-700/40 hover:shadow-red-500 m-0 mr-4 w-[200px]"}
+				/>
+
+				{/* Join Chatroom [niet vereist] */}
+
+				{/* Change owner [niet vereist]*/}
+
 			</div>
 		</details>
 		: 
