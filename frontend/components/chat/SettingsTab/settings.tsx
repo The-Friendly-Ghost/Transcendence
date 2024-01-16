@@ -27,6 +27,8 @@ export function SettingsTab({ setUserName, chatSocket, userName, intraId}
 
   	return (
         <div>
+			Hier moet een inputbox komen waar je een intraID invult. 
+			Als je submit wordt een profiel getoond.
         </div>
   )
 }

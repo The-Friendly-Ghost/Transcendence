@@ -17,6 +17,7 @@ import { GroupsTab } from "@components/chat/Groups/GroupsTab";
 /* Import Functions */
 import { getCookie } from "@app/ServerUtils";
 import { fetchIntraName, setupWebSocket } from "./utils";
+import DirectTab from "@components/chat/DirectTab/DirectTab";
 
 /**
  * Function that returns the Chat Page.
@@ -83,7 +84,13 @@ export default function chat_page(): React.JSX.Element {
               />
             )}
             {toggleTab === 2 && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">DM Tab</p>
+              <DirectTab
+                setCurrentRoom={setCurrentRoom}
+                currentRoom={currentRoom}
+                userName={userName}
+                chatSocket={chatSocket}
+                myIntraId={intraId}
+              />
             )}
             {toggleTab === 3 && (
               <SettingsTab
