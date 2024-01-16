@@ -27,6 +27,7 @@ import { ChatProps } from '@types';
 import SmallAccordion from '@components/common/Accordion';
 import { put, get } from '@utils/request/request';
 import ChatRoomOverview from '../Groups/ChatRoomOverview';
+import { getUserInfo } from '@app/ServerUtils';
 
 
 export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId } 
@@ -85,22 +86,25 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                     <p className='mb-3'>Start chat</p>
                     <SimpleForm
                         onSubmit= { async (event: any) => { 
-                            const dmUser: any = await get(`/user/getUser/${newRoom}`);
-                            const meUser: any = await get(`/user/getMe`);
-                            if (dmUser.message === "Not Found")
+                            event.preventDefault();
+                            let numUser = Number(newRoom);
+                            const dmUser: any = await getUserInfo(numUser);
+                            
+                            if (dmUser.message && dmUser.message === "Not Found")
                             {
-                                event.preventDefault();
                                 setCreateRoomError("User not found");
                             }
                             else
                             {
-                                setNewRoom(dmUser.name + " <-> " + meUser.name)
-                                createChatRoom(newRoom);
+                                let temp: string = dmUser.name + " <-> " + userName;
+                                setNewRoom(temp);
+                                createChatRoom(temp);
                                 // await put(`/chat/connect_to_chatroom/${newRoom}`);
                                 // setCurrentRoom(newRoom);
-                                await put('/chat/make_admin/' + newRoom + '/' + dmUser.intraID);
-                                await put('/chat/toggle_access/' + newRoom);
+                                await put('/chat/make_admin/' + temp + '/' + dmUser.intraID);
+                                await put('/chat/toggle_access/' + temp);
                                 setNewRoom("");
+                                window.location.reload();
                             }
                         }}
                         content = {
@@ -128,7 +132,7 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                                 <p className='my-3'>All chatrooms ({chatRooms.length})</p>
                                 <div className='grid grid-cols-1 gap-5'>
                                     {chatRooms.map((room:any, index:number) => (
-                                        <ChatRoomOverview 
+                                        <DmOverview
                                             setCurrentRoom={setCurrentRoom}
                                             key={index}
                                             room={room}

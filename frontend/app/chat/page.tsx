@@ -68,7 +68,7 @@ export default function chat_page(): React.JSX.Element {
             onClick={ () => setToggleTab(2) } 
             style={`w-1/3 ${toggleTab === 2 ? " active_tab" : ""}`} />
           <SingleTab 
-            title={"Settings"} 
+            title={"Find User"} 
             onClick={ () => setToggleTab(3) } 
             style={`w-1/3 ${toggleTab === 3 ? " active_tab" : ""}`} />
         </ul>
