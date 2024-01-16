@@ -9,6 +9,7 @@ export class PrismaChatService {
   constructor(private prisma: PrismaService) {}
 
   async create_chatroom(intraId: number, name: string) {
+    const all_users = await this.prisma.user.findMany({});
     if (!(await this.check_if_chatroom_exists(name))) {
       return await this.prisma.chatroom.create({
         data: {
@@ -19,11 +20,36 @@ export class PrismaChatService {
               intraId: intraId,
             },
           },
-          users: {
-            connect: {
-              intraId: intraId,
-            },
+          users:{
+               connect: all_users.map((user) => {
+                return {intraId: user.intraId};
+             }),
+          }
+        },
+      });
+    }
+    throw new Error('Chatroom already exists');
+  }
+
+  async create_dm_chatroom(intraId: number, intraId2: number, name: string) {
+    if (!(await this.check_if_chatroom_exists(name))) {
+      return await this.prisma.chatroom.create({
+        data: {
+          name: name,
+          ownerIntraId: intraId,
+          admins: {
+            connect: [
+              {intraId: intraId},
+              {intraId: intraId2}
+            ],
           },
+          isDm: true,
+          users:  {
+            connect: [
+              {intraId: intraId},
+              {intraId: intraId2}
+            ],
+          }
         },
       });
     }
@@ -324,7 +350,6 @@ export class PrismaChatService {
     }
     return chatroom.ownerIntraId === intraId;
   }
-  
 
   async set_password(chatroom_name: string, password: string) {
     if (!(await this.check_if_chatroom_exists(chatroom_name))) {
@@ -374,8 +399,19 @@ export class PrismaChatService {
     });
   }
 
-  async get_all_chatrooms(): Promise<Chatroom[]> {  
-    return await this.prisma.chatroom.findMany({include: {users: true, admins: true, bannedUsers: true, messages: true}});  
+  async get_all_chatrooms(intraId: number): Promise<Chatroom[]> {
+    return await this.prisma.chatroom.findMany({
+      where: {
+        users: {
+          some: {
+              intraId: intraId
+          },
+        },
+      },
+      include: {
+        users: true, admins: true, bannedUsers: true, messages: true
+      }
+    });  
   }
 
   async add_message(destination: string, msg: string, userName: string) {

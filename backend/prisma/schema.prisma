@@ -25,8 +25,8 @@ model User {
   // Chat
   chatrooms  Chatroom[] @relation("banned")
   adminOf    Chatroom[] @relation("admin")
-  Chatroom   Chatroom?  @relation(fields: [chatroomId], references: [id])
-
+  // Chatroom   Chatroom?  @relation(fields: [chatroomId], references: [id])
+  Chatroom   Chatroom[]
 }
 
 model GameInfo {
@@ -52,6 +52,7 @@ model Chatroom {
   id           Int       @id @default(autoincrement())
   name         String    @unique
   private      Boolean   @default(false)
+  isDm         Boolean   @default(false)
   pw_hash      String?
   ownerIntraId Int
   messages     Message[]

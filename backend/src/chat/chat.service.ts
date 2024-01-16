@@ -19,6 +19,13 @@ export class ChatService {
     return chatroom;
   }
 
+  async create_dm_chatroom(intraId: number, intraId2: number, chatroom_name: string) {
+    const chatroom = await this.prisma_chat.create_dm_chatroom(intraId, intraId2, chatroom_name).catch((e: Error) => {
+      throw e;
+    });
+    return chatroom;
+  }
+
   async delete_chatroom(intraId: number, chatroom_name: string) {
     const is_user_admin = await this.prisma_chat
       .is_user_admin(intraId, chatroom_name)
@@ -236,7 +243,7 @@ export class ChatService {
     return await this.prisma_chat.add_message(destination, msg, userName).catch((e: Error) => {throw e;});
   }
 
-  async get_all_chatrooms(): Promise<Chatroom[]> {
-    return await this.prisma_chat.get_all_chatrooms().catch((e: Error) => {throw e;});
+  async get_all_chatrooms(intraId: number): Promise<Chatroom[]> {
+    return await this.prisma_chat.get_all_chatrooms(intraId).catch((e: Error) => {throw e;});
   }
 }
