@@ -49,3 +49,5 @@ Invite system:
 
     invitePlayer(Inviter, Invitee) returns invite ID
     acceptInvite(inviteID)
+
+    Map / dict van invites.
