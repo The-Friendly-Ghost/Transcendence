@@ -93,6 +93,14 @@ export class GameService {
     this.prismaGameService.updateGame(gameInfo);
   }
 
+  async invitePlayer(intraId: number, playerId: number) {
+    return null;
+  };
+
+  async acceptInvite(intraId: number, inviteId: number) {
+    return null;
+  };
+
   async disconnect_from_game(intraId: number) {
     if (this.pendingIntraId == intraId) {
       this.pendingIntraId = null;

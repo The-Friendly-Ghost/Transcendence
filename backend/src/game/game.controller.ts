@@ -19,9 +19,32 @@ export class GameController {
   @Get('resetGames')
   async resetGames(@GetUser() user: User): Promise<any> {
     console.log('GameController.resetGames');
-    // console.log('GameController.resetGames user', user);
 
     const response = await this.gameService.resetGames(user.intraId);
+    return response;
+  }
+
+  @ApiOperation({
+    summary: 'Create an invite to play a game together.',
+    description: 'Create an invite you can send to another player that they can accept, to play a game together.',
+  })
+  @Get('invitePlayer/:playerId')
+  async invitePlayer(@GetUser() user: User, @Param('playerId') playerId: number): Promise<any> {
+    console.log('GameController.invitePlayer');
+
+    const response = await this.gameService.invitePlayer(user.intraId, playerId);
+    return response;
+  }
+
+  @ApiOperation({
+    summary: 'Create an invite to play a game together.',
+    description: 'Create an invite you can send to another player that they can accept, to play a game together.',
+  })
+  @Get('acceptInvite/:inviteId')
+  async accptInvite(@GetUser() user: User, @Param('inviteId') inviteId: number): Promise<any> {
+    console.log('GameController.invitePlayer');
+
+    const response = await this.gameService.acceptInvite(user.intraId, inviteId);
     return response;
   }
 }
