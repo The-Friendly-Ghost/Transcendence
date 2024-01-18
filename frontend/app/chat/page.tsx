@@ -39,7 +39,7 @@ export default function chat_page(): React.JSX.Element {
   const [toggleTab, setToggleTab] = useState<number>(1);
   // The current room the user is in
   const [currentRoom, setCurrentRoom] = useState<string>("");
-
+  // The messages received. Stored in an array of strings.
   const [messageReceived, setMessageReceived] = useState<string[]>([]);
 
   /* **************** */
@@ -80,11 +80,11 @@ export default function chat_page(): React.JSX.Element {
         <ul className="tab_ul">
           <SingleTab
             title={"Groups"}
-            onClick={ () => {setToggleTab(1); setCurrentRoom("")} }
+            onClick={ () => {setToggleTab(1); setCurrentRoom(""); setMessageReceived([])}}
             style={`w-1/3 ${toggleTab === 1 ? " active_tab" : ""}`} />
           <SingleTab
             title={"Direct"}
-            onClick={ () => {setToggleTab(2); setCurrentRoom("")} }
+            onClick={ () => {setToggleTab(2); setCurrentRoom(""); setMessageReceived([])} }
             style={`w-1/3 ${toggleTab === 2 ? " active_tab" : ""}`} />
           <SingleTab
             title={"Find User"}
@@ -101,6 +101,7 @@ export default function chat_page(): React.JSX.Element {
                 chatSocket={chatSocket.current}
                 myIntraId={intraId}
                 messageReceived={messageReceived}
+                setMessageReceived={setMessageReceived}
               />
             )}
             {toggleTab === 2 && (
@@ -111,6 +112,7 @@ export default function chat_page(): React.JSX.Element {
                 chatSocket={chatSocket.current}
                 myIntraId={intraId}
                 messageReceived={messageReceived}
+                setMessageReceived={setMessageReceived}
               />
             )}
             {toggleTab === 3 && (

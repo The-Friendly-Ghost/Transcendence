@@ -16,6 +16,7 @@ export interface ChatProps {
     userName: string,
     myIntraId: string,
     messageReceived: string[],
+    setMessageReceived: React.Dispatch<React.SetStateAction<string[]>>,
     }
 
 // export interface CustomFormProps {

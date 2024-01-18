@@ -15,7 +15,7 @@ import SmallAccordion from '@components/common/Accordion';
 import { put } from '@utils/request/request';
 import { getCookie } from '@app/ServerUtils';
 
-export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId, messageReceived }
+export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId, messageReceived, setMessageReceived }
     : ChatProps)
 	: React.JSX.Element
 {
@@ -117,7 +117,9 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                                             room={room}
                                             myIntraId={myIntraId}
                                             userName={userName}
-                                            chatSocket={chatSocket}
+                                            chatSocket={chatSocket} 
+                                            messageReceived={messageReceived}
+                                            setMessageReceived={setMessageReceived}
                                         />
                                     ))}
                                 </div>
@@ -133,13 +135,14 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                 <div className='grid grid-cols-1 h-full content-between'>
                     <div className="grid grid-cols-2 w-full content-center gap-4">
                         <StandardButton
-                                onClick={() => {setCurrentRoom("");}}
+                                onClick={() => {setCurrentRoom(""); setMessageReceived([])}}
                                 text={"‹ Other Rooms"}
                                 buttonStyle={"m-0 mr-4 mb-4 p-0 w-full border-white border-[1px] hover:bg-violet-700/40"}
                             />
                         <StandardButton
                                 onClick={ async () => {
                                     setCurrentRoom("");
+                                    setMessageReceived([]);
                                     await put(`/chat/leave_chatroom/${currentRoom}`);
                                     window.location.reload();
                                 }}
