@@ -61,15 +61,15 @@ export default function chat_page(): React.JSX.Element {
         <ul className="tab_ul">
           <SingleTab 
             title={"Groups"} 
-            onClick={ () => setToggleTab(1) } 
+            onClick={ () => {setToggleTab(1); setCurrentRoom("")} } 
             style={`w-1/3 ${toggleTab === 1 ? " active_tab" : ""}`} />
           <SingleTab 
             title={"Direct"} 
-            onClick={ () => setToggleTab(2) } 
+            onClick={ () => {setToggleTab(2); setCurrentRoom("")} } 
             style={`w-1/3 ${toggleTab === 2 ? " active_tab" : ""}`} />
           <SingleTab 
             title={"Find User"} 
-            onClick={ () => setToggleTab(3) } 
+            onClick={ () => {setToggleTab(3); setCurrentRoom("")} } 
             style={`w-1/3 ${toggleTab === 3 ? " active_tab" : ""}`} />
         </ul>
         

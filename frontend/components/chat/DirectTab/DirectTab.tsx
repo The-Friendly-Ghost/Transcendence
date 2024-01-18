@@ -124,9 +124,9 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                     { Array.isArray(chatRooms) && 
                         (
                             <div className='pb-4'>
-                                <p className='my-3'>All chatrooms ({chatRooms.length})</p>
+                                <p className='my-3'>All chatrooms ({chatRooms.filter((room: any) => room.isDm).length})</p>
                                 <div className='grid grid-cols-1 gap-5'>
-                                    {chatRooms.map((room:any, index:number) => (
+                                    {chatRooms.filter((room: any) => room.isDm).map((room:any, index:number) => (
                                         <DmOverview
                                             setCurrentRoom={setCurrentRoom}
                                             key={index}

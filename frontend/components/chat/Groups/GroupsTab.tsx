@@ -5,7 +5,7 @@ import InputSimple from '@components/common/Input';
 
 /* Import functions */
 import { createChatRoom, getChatRoom } from '../../../app/chat/serverUtils';
-import { checkReceivedMessage, sendMessage, validateChatroom } from '../../../app/chat/utils';
+import { checkReceivedMessage, sendMessage, setupWebSocket, validateChatroom } from '../../../app/chat/utils';
 
 /* Import React or Library functions */
 import React, { use, useEffect, useRef, useState } from 'react';
@@ -13,6 +13,7 @@ import ChatRoomOverview from './ChatRoomOverview';
 import { ChatProps } from '@types';
 import SmallAccordion from '@components/common/Accordion';
 import { put } from '@utils/request/request';
+import { getCookie } from '@app/ServerUtils';
 
 export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId } 
     : ChatProps)
@@ -32,6 +33,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
     const [newRoom, setNewRoom] = useState<string>("");
     // Create room error message
     const [createRoomError, setCreateRoomError] = useState<string>("");
+
 
     /* ********************* */
     /* UseEffect Hooks      */
@@ -100,9 +102,9 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                     { Array.isArray(chatRooms) && 
                         (
                             <div className='pb-4'>
-                                <p className='my-3'>All chatrooms ({chatRooms.length})</p>
+                                <p className='my-3'>All chatrooms ({chatRooms.filter((room: any) => !room.isDm).length})</p>
                                 <div className='grid grid-cols-1 gap-5'>
-                                    {chatRooms.map((room:any, index:number) => (
+                                    {chatRooms.filter((room: any) => !room.isDm).map((room:any, index:number) => (
                                         <ChatRoomOverview 
                                             setCurrentRoom={setCurrentRoom}
                                             key={index}
