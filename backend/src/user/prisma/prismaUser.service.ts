@@ -111,4 +111,18 @@ export class PrismaUserService {
       });
     return user;
   }
+
+  async removeFriend(intraId: number, intraIdFriend: number) {
+    const {friends} = await this.prisma.user.findUnique({
+      where: {intraId: intraId},
+      select: {friends: true},
+    })
+    const user = await this.prisma.user.update({
+      where: { intraId: intraId },
+      data: { friends: { set: friends.filter((intraId) => intraId !== intraIdFriend) } },
+    });
+
+    if (!user) throw new NotFoundException('user not found');
+    return { message: 'friend removed' };
+  }
 }

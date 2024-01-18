@@ -1,21 +1,36 @@
+/* 
+Gebruik exact dezelfde code als Groups.tsx, maar dan met de volgende aanpassingen:
+- Create new room moet wijzigen naar "Start new chat", met als input IntraID. Als je een intraID
+invult dan wordt er een private chat room gestart met die persoon.
+- ChatRoomOverview moet wijzigen naar DirectOverview, Alleen de naam van persoon wordt getoond
+en een knop met "Start Chat"
+- Er is geen admin panel nodig, dus die kan je weglaten. Alleen delete chat.
+
+Sietse moet een API call maken die een lijst weergeeft van alle private rooms 
+die op DM "true" staan.
+*/
+
+
 /* Import Components */
 import SimpleForm from '@components/common/Forms';
 import StandardButton, { SubmitButton } from '@components/common/Buttons';
 import InputSimple from '@components/common/Input';
 
 /* Import functions */
-import { createChatRoom, getChatRoom } from '../../../app/chat/serverUtils';
-import { checkReceivedMessage, sendMessage, setupWebSocket, validateChatroom } from '../../../app/chat/utils';
+import { createChatRoom, createDmRoom, getChatRoom } from '../../../app/chat/serverUtils';
+import { checkReceivedMessage, sendMessage, validateChatroom } from '../../../app/chat/utils';
 
 /* Import React or Library functions */
 import React, { use, useEffect, useRef, useState } from 'react';
-import ChatRoomOverview from './ChatRoomOverview';
+import DmOverview from './DmOverview';
 import { ChatProps } from '@types';
 import SmallAccordion from '@components/common/Accordion';
-import { put } from '@utils/request/request';
-import { getCookie } from '@app/ServerUtils';
+import { put, get } from '@utils/request/request';
+import ChatRoomOverview from '../Groups/ChatRoomOverview';
+import { getUserInfo } from '@app/ServerUtils';
 
-export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId } 
+
+export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId } 
     : ChatProps)
 	: React.JSX.Element
 {
@@ -33,7 +48,6 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
     const [newRoom, setNewRoom] = useState<string>("");
     // Create room error message
     const [createRoomError, setCreateRoomError] = useState<string>("");
-
 
     /* ********************* */
     /* UseEffect Hooks      */
@@ -69,26 +83,34 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
             {currentRoom === "" && (
                 <div className='h-full'>
 
-                    <p className='mb-3'>Create New Room</p>
+                    <p className='mb-3'>Start chat</p>
                     <SimpleForm
-                        onSubmit= { (event: any) => { 
-                            if (validateChatroom(newRoom, chatRooms, setCreateRoomError) === true)
+                        onSubmit= { async (event: any) => { 
+                            event.preventDefault();
+                            let numUser = Number(newRoom);
+                            const dmUser: any = await getUserInfo(numUser);
+                            
+                            if (dmUser.message && dmUser.message === "Not Found")
                             {
-                                setCreateRoomError("");
-                                createChatRoom(newRoom);
+                                setCreateRoomError("User not found");
                             }
                             else
-                                event.preventDefault();
+                            {
+                                let temp: string = dmUser.name + " -- " + userName;
+                                await createDmRoom(numUser, temp);
+                                setNewRoom("");
+                                window.location.reload();
+                            }
                         }}
                         content = {
                             <div className="flex">
                                 <InputSimple 
                                     input={newRoom} 
                                     setInput={setNewRoom}
-                                    placeholder={"Room name ..."}
+                                    placeholder={"IntraID"}
                                 />
                                 <StandardButton 
-                                    text={"Create"}
+                                    text={"Start"}
                                     buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
                                 />
                             </div>
@@ -102,10 +124,10 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                     { Array.isArray(chatRooms) && 
                         (
                             <div className='pb-4'>
-                                <p className='my-3'>All chatrooms ({chatRooms.filter((room: any) => !room.isDm).length})</p>
+                                <p className='my-3'>All chatrooms ({chatRooms.filter((room: any) => room.isDm).length})</p>
                                 <div className='grid grid-cols-1 gap-5'>
-                                    {chatRooms.filter((room: any) => !room.isDm).map((room:any, index:number) => (
-                                        <ChatRoomOverview 
+                                    {chatRooms.filter((room: any) => room.isDm).map((room:any, index:number) => (
+                                        <DmOverview
                                             setCurrentRoom={setCurrentRoom}
                                             key={index}
                                             room={room}
@@ -173,4 +195,4 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
     );
     }
 
-export default GroupsTab
+export default DirectTab

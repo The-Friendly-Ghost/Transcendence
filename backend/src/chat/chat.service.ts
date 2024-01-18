@@ -19,6 +19,13 @@ export class ChatService {
     return chatroom;
   }
 
+  async create_dm_chatroom(intraId: number, intraId2: number, chatroom_name: string) {
+    const chatroom = await this.prisma_chat.create_dm_chatroom(intraId, intraId2, chatroom_name).catch((e: Error) => {
+      throw e;
+    });
+    return chatroom;
+  }
+
   async delete_chatroom(intraId: number, chatroom_name: string) {
     const is_user_admin = await this.prisma_chat
       .is_user_admin(intraId, chatroom_name)
@@ -152,7 +159,7 @@ export class ChatService {
     return chatroom;
   }
 
-  async get_protected_chatroom(intraId: number, chatroom_name: string, password: string): Promise<Chatroom> {
+  async check_chatroom_pw(intraId: number, chatroom_name: string, password: string): Promise<Boolean> {
     const chatroom = await this.prisma_chat.get_chatroom_w_users(chatroom_name).catch((e: Error) => {throw e;});
     if (chatroom.private === true) {
       const isUserInChatroom = await this.prisma_chat.check_if_user_in_chatroom(intraId, chatroom_name).catch((e: Error) => {throw e;});
@@ -161,13 +168,13 @@ export class ChatService {
       }
     }
     if (chatroom.pw_hash === null) {
-      return chatroom;
+      return true;
     }
     const isPwValid = await argon.verify(chatroom.pw_hash, password);
     if (isPwValid === false) {
       throw new Error('Invalid password');
     }
-    return chatroom;
+    return true;
   }
 
   async set_password(ownerIntraId: number, chatroom_name: string, password: string) {
@@ -205,9 +212,9 @@ export class ChatService {
         throw new Error('Chatroom is private');
       }
     }
-    if (chatroom.pw_hash !== null) {
-      throw new Error('Chatroom is password protected');
-    }
+    // if (chatroom.pw_hash !== null) {
+    //   throw new Error('Chatroom is password protected');
+    // }
     const isUserBanned = await this.prisma_chat.is_user_banned(intraId, chatroom_name).catch((e: Error) => {throw e;});
     if (isUserBanned === true) {
       throw new Error('You are banned from this chatroom');
@@ -236,7 +243,7 @@ export class ChatService {
     return await this.prisma_chat.add_message(destination, msg, userName).catch((e: Error) => {throw e;});
   }
 
-  async get_all_chatrooms(): Promise<Chatroom[]> {
-    return await this.prisma_chat.get_all_chatrooms().catch((e: Error) => {throw e;});
+  async get_all_chatrooms(intraId: number): Promise<Chatroom[]> {
+    return await this.prisma_chat.get_all_chatrooms(intraId).catch((e: Error) => {throw e;});
   }
 }

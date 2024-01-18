@@ -82,12 +82,11 @@ export function Friends(props: any)
                   height={120}
                   className='rounded-lg'
                 />
-                <a href="#" className='text-red-600 hover:text-red-400 text-xs'>X Delete friend</a>
+                {/* <a href="#" className='text-red-600 hover:text-red-400 text-xs'>X Delete friend</a> */}
               </div>
               <div>
                 <p className='w-full font-bold'>{friend.name} <span className='text-white/60 text-sm font-normal'>(ID: {friend.intraId})</span></p>
                 <p className='w-full text-white/60'>Wins: {friend.wins} - Losses: {friend.losses}</p>
-                <a href="#" className='text-white/60 hover:text-white'>Invite to play</a>
               </div>
             </div>
           ))}

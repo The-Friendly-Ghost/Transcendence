@@ -10,6 +10,10 @@ import { changeUserName } from '../../../app/chat/utils'
 import React from 'react'
 import { Socket } from 'socket.io-client'
 import { useState } from 'react'
+import { getUserInfo } from '@app/ServerUtils'
+import { createChatRoom } from '@app/chat/serverUtils'
+import { put } from '@utils/request/request'
+import Image from 'next/image'
 
 /**
  * 
@@ -25,34 +29,62 @@ export function SettingsTab({ setUserName, chatSocket, userName, intraId}
 	: React.JSX.Element
 {
 
-	// The New user name of the user
-	const [newUserName, setNewUserName] = useState<string>("");
+	// Find user input
+	const [toFind, setToFind] = useState<string>("");
+    // Find user error
+    const [errorMessage, setErrorMessage] = useState<string>("");
+
+	// Username info
+	const [showUserName, setShowUserName] = useState<string>("");
+	const [showImageUrl, setShowImageUrl] = useState<string>("");
+	const [showWins, setShowWins] = useState<string>("");
+	const [showLosses, setShowLosses] = useState<string>("");
 
   	return (
         <div>
-			<h2 className="h4_font font-bold pb-4">Change username</h2>
-
-        	<SimpleForm
-                onSubmit={(event: React.FormEvent<HTMLFormElement>) => changeUserName(event, newUserName, setUserName, chatSocket, userName, intraId, setNewUserName)}
-                content={
-                  <div className="flex">
-                    <InputSimple 
-                      input={newUserName} 
-                      setInput={setNewUserName}
-                      placeholder={"Type new username here ..."}
+			<p className='mb-3'>Find user profile</p>
+                    <SimpleForm
+                        onSubmit= { async (event: any) => { 
+                            event.preventDefault();
+                            let numUser = Number(toFind);
+                            const dmUser: any = await getUserInfo(numUser);
+                            
+                            if (dmUser.message && dmUser.message === "Not Found")
+                                setErrorMessage("User not found");
+                            else
+                            {
+                                setShowUserName(dmUser.name);
+								setShowImageUrl(dmUser.image_url);
+								setShowWins(dmUser.wins);
+								setShowLosses(dmUser.losses);
+                            }
+                        }}
+                        content = {
+                            <div className="flex">
+                                <InputSimple 
+                                    input={toFind} 
+                                    setInput={setToFind}
+                                    placeholder={"IntraID"}
+                                />
+                                <StandardButton 
+                                    text={"Search"}
+                                    buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
+                                />
+                            </div>
+                        }
                     />
-                    <StandardButton 
-						text={"Change"}
-						buttonStyle={"border-white border-[1px] hover:bg-white/20"}
-					/>
-                  </div>
-                }
-            />
 
-			<p className='py-3 border-b-[1px]'>
-				<span className="font-bold">Current username: </span>
-				{userName}
-			</p>
+				<p>Name: {showUserName}</p>
+				{/* <image src={showImageUrl} /> */}
+				<Image
+                  src={showImageUrl}
+                  alt="User Avatar"
+                  width={120}
+                  height={120}
+                  className='rounded-lg'
+                />
+				<p>Wins: {showWins}</p>
+				<p>Losses: {showLosses}</p>
         </div>
   )
 }
