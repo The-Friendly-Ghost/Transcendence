@@ -3,11 +3,10 @@ export class Invite{
     senderId: number;
     receiverId: number;
     state: string;
-    constructor(id: number, senderId: number, receiverId: number, state: string, gameId: number) {
-        this.id = id;
+    constructor(senderId: number) {
         this.senderId = senderId;
-        this.receiverId = receiverId;
-        this.state = state;
+        this.state = "PENDING";
+        this.id = Math.floor(Math.random() * 1000000000);
     }
 
     public getId(): number {
@@ -20,5 +19,10 @@ export class Invite{
 
     public getReceiverId(): number {
         return this.receiverId;
+    }
+
+    acceptInvite(receiverId: number) {
+        this.receiverId = receiverId;
+        this.state = "ACCEPTED";
     }
 }

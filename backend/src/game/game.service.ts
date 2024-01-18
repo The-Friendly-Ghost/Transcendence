@@ -5,6 +5,7 @@ import { GameInfo, User } from '@prisma/client';
 import { GameManager } from './gamemanager';
 import { create } from 'domain';
 import { clear } from 'console';
+import { Invite } from './invite';
 
 @Injectable()
 export class GameService {
@@ -12,6 +13,7 @@ export class GameService {
   private pendingIntraId: number;
   private gamesInfo: GameInfo[];
   private gameManagers: Map<string, GameManager> = new Map();
+  private invites: Map<number, Invite> = new Map();
 
   async resetGames(userId: number) {
     console.log('GameService.resetGames');
@@ -30,7 +32,7 @@ export class GameService {
       p1: p1,
       p2: p2,
       state: "PENDING",
-      roomName: Math.random().toString().substring(2, 15) // Turn this into a game room
+      roomName: Math.floor(Math.random() * 1000000000).toString(),
     });
     return game;
   }
@@ -94,11 +96,14 @@ export class GameService {
   }
 
   async invitePlayer(intraId: number, playerId: number) {
-    return null;
+    let invite: Invite = new Invite(intraId);
+    this.invites.set(invite.getId(), invite);
+    return invite.getId();
   };
 
-  async acceptInvite(intraId: number, inviteId: number) {
-    return null;
+  async acceptInvite(inviteId: number, intraId: number) {
+    this.invites.get(inviteId).acceptInvite(intraId);
+    return true;
   };
 
   async disconnect_from_game(intraId: number) {
