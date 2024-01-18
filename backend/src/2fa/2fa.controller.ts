@@ -21,15 +21,36 @@ export class TFAController {
     private readonly userService: UserService,
   ) {}
 
+  //boken endpoint, I don't know what's wrong.
   @ApiOperation({ summary: 'Get the qr code for google authenticator' })
   @Get('/qrcode/:intraId')
   async get_qr(
     @Response() res: any,
     @Param('intraId', ParseIntPipe) intraId: number,
-  ): Promise<void> {
+  ): Promise<string> {
     console.log('TFAController.get_qr');
-    const user: User = await this.userService.getUser(intraId);
-    return await this.tfa.getOtpauthUrl(res, 'ft_transcendence', user.intraId);
+    // const user: User = await this.userService.getUser(intraId);
+    // return await this.tfa.getOtpauthUrl(res, 'ft_transcendence', user.intraId);
+    console.log('TFAController.get_qr returning');
+    return "test";
+  }
+
+  @ApiOperation({ summary: 'Get secret.' })
+  @Get('/secret/:intraId')
+  async get_secret(
+    @Param('intraId', ParseIntPipe) intraId: number,
+  ): Promise<string> {
+    console.log('TFAController.get_secret');
+    return await this.tfa.get_secret(intraId).catch((e: Error) => {return e.message;});
+  }
+
+  @ApiOperation({ summary: 'Enable 2fa.' })
+  @Post('/toggle/:intraId')
+  async toggle(
+    @Param('intraId', ParseIntPipe) intraId: number,
+  ): Promise<any> {
+    console.log('TFAController.enable_2fa');
+    return await this.tfa.toggle_2fa(intraId);
   }
 
   @ApiOperation({ summary: 'Enter your code from google authenticator.' })

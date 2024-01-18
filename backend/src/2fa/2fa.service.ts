@@ -4,23 +4,34 @@ import { toFileStream } from 'qrcode';
 import { Response } from 'express';
 import { PrismaTFAService } from './prisma';
 import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class TFAService {
   constructor(
     private prisma: PrismaTFAService,
     private readonly jwtService: JwtService,
+    private user: UserService,
   ) {}
-
-  async getOtpauthUrl(stream: Response, name: string, intraId: number): Promise<void> {
-    console.log('TFAService.getOtpauthUrl');
+//name: string, stream: Response, 
+  async get_secret(intraId: number): Promise<string> {
     const secret = authenticator.generateSecret();
-
+    const user = await this.user.getUser(intraId);
+    if (!user) throw new Error('User not found');
     await this.prisma.updateTFASecret({ intraId, secret });
-
     //replace "sietse" with current user and "2FA app name" with env variable
-    const otpauthUrl = authenticator.keyuri(name, '2FA app name', secret);
-    return await toFileStream(stream, otpauthUrl);
+    // const otpauthUrl = authenticator.keyuri(name, '2FA app name', secret);
+    // return await toFileStream(stream, otpauthUrl);
+    return secret;
+  }
+
+  async toggle_2fa(intraId: number): Promise<any> {
+    console.log('TFAService.enable_2fa');
+    const is2faEnabled = await this.prisma.getTwoFAEnabled(intraId).catch((e: Error) => {return "wrong intraId"});
+    if (is2faEnabled) {
+      return await this.prisma.toggle_tfa(intraId, false);
+    }
+    return await this.prisma.toggle_tfa(intraId, true);
   }
 
   async compareCodeSecret(tfacode: string, intraId: number): Promise<boolean> {
