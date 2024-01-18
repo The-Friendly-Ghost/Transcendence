@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 
 /**
- * 
+ *
  * @param event The event that triggered the function
  * @param newUserName The new user name
  * @param setUserName The function to set the user name
@@ -19,7 +19,7 @@ export async function changeUserName(
   userName: string,
   intraId: string,
   setNewUserName: React.Dispatch<React.SetStateAction<string>>
-): Promise<void> 
+): Promise<void>
 {
   event.preventDefault(); // Prevents the page from reloading
   if (newUserName === "" || newUserName === null ) // If the message is empty, return
@@ -30,7 +30,7 @@ export async function changeUserName(
 }
 
 /**
- * 
+ *
  * @param event The event that triggered the function
  * @param chatMessage The message to send
  * @param chatSocket The socket to send and receive messages
@@ -56,7 +56,7 @@ export async function sendMessage(
   }
 
 /**
-* 
+*
 * @param getCookie Get the cookie from the browser
 * @param setUserName Set the user name
 * @param setIntraId Set the intraId
@@ -66,7 +66,7 @@ export async function fetchIntraName(
     setUserName: React.Dispatch<React.SetStateAction<string>>,
     setIntraId: React.Dispatch<React.SetStateAction<string>>
   )
-  : Promise<string> 
+  : Promise<string>
 {
     const newUserName = await getCookie('username');
     setUserName(newUserName);
@@ -76,15 +76,13 @@ export async function fetchIntraName(
   }
 
 /**
- * 
+ *
  * @param intraId The user name of the user
  * @param setChatSocket The function to set the socket
  */
 export async function setupWebSocket(
     intraId: string | null,
-    setChatSocket: React.Dispatch<React.SetStateAction<Socket | null>>
-    )
-  : Promise<void> 
+    socketRef: React.MutableRefObject<Socket | null>)
 {
     const url: string = `${process.env.BACKEND_URL}` + '/chat';
     console.log("intraId in setupWebSocket: " + intraId);
@@ -93,11 +91,11 @@ export async function setupWebSocket(
     });
     console.log("socket : " + socket);
     console.log("url : " + url);
-    setChatSocket(socket);
+    socketRef.current = socket;
   }
 
 /**
- * 
+ *
  * @param chatSocket The socket to send and receive messages
  * @param setMessageReceived The function to set the messages received
  */
@@ -111,7 +109,7 @@ export function checkReceivedMessage(
   }
 
 
-export function validateChatroom(newRoom: string, chatRooms: any, 
+export function validateChatroom(newRoom: string, chatRooms: any,
   setCreateRoomError: React.Dispatch<React.SetStateAction<string>>)
 : boolean
 {

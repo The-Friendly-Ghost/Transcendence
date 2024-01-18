@@ -1,4 +1,4 @@
-/* 
+/*
 Gebruik exact dezelfde code als Groups.tsx, maar dan met de volgende aanpassingen:
 - Create new room moet wijzigen naar "Start new chat", met als input IntraID. Als je een intraID
 invult dan wordt er een private chat room gestart met die persoon.
@@ -6,7 +6,7 @@ invult dan wordt er een private chat room gestart met die persoon.
 en een knop met "Start Chat"
 - Er is geen admin panel nodig, dus die kan je weglaten. Alleen delete chat.
 
-Sietse moet een API call maken die een lijst weergeeft van alle private rooms 
+Sietse moet een API call maken die een lijst weergeeft van alle private rooms
 die op DM "true" staan.
 */
 
@@ -30,7 +30,7 @@ import ChatRoomOverview from '../Groups/ChatRoomOverview';
 import { getUserInfo } from '@app/ServerUtils';
 
 
-export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId } 
+export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId, messageReceived }
     : ChatProps)
 	: React.JSX.Element
 {
@@ -43,7 +43,7 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
     // The message to send
     const [chatMessage, setChatMessage] = useState("");
     // The messages received. Stored in an array of strings.
-    const [messageReceived, setMessageReceived] = useState<string[]>([]);
+    // const [messageReceived, setMessageReceived] = useState<string[]>([]);
     // The new room to create
     const [newRoom, setNewRoom] = useState<string>("");
     // Create room error message
@@ -58,14 +58,14 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
         getChatRoom().then((availableRooms) => {
             setChatRooms(availableRooms);
         });
-    }, []);
+    }, [newRoom]);
 
     /* This useEffect runs when the chatSocket changes. */
-    useEffect(() => {
-        checkReceivedMessage(chatSocket || null, setMessageReceived);
-    }, [chatSocket]);
+    // useEffect(() => {
+    //     checkReceivedMessage(chatSocket || null, setMessageReceived);
+    // }, [chatSocket]);
 
-    /* This useEffect runs when the messageReceived array changes. 
+    /* This useEffect runs when the messageReceived array changes.
     It will scroll to the bottom of the message box so that
     the user can always see the latest message. */
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -85,11 +85,11 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
 
                     <p className='mb-3'>Start chat</p>
                     <SimpleForm
-                        onSubmit= { async (event: any) => { 
+                        onSubmit= { async (event: any) => {
                             event.preventDefault();
                             let numUser = Number(newRoom);
                             const dmUser: any = await getUserInfo(numUser);
-                            
+
                             if (dmUser.message && dmUser.message === "Not Found")
                             {
                                 setCreateRoomError("User not found");
@@ -99,17 +99,17 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                                 let temp: string = dmUser.name + " -- " + userName;
                                 await createDmRoom(numUser, temp);
                                 setNewRoom("");
-                                window.location.reload();
+                                // window.location.reload();
                             }
                         }}
                         content = {
                             <div className="flex">
-                                <InputSimple 
-                                    input={newRoom} 
+                                <InputSimple
+                                    input={newRoom}
                                     setInput={setNewRoom}
                                     placeholder={"IntraID"}
                                 />
-                                <StandardButton 
+                                <StandardButton
                                     text={"Start"}
                                     buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
                                 />
@@ -121,7 +121,7 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                     )}
 
                     {/* Show this block if there are chatrooms inside the database */}
-                    { Array.isArray(chatRooms) && 
+                    { Array.isArray(chatRooms) &&
                         (
                             <div className='pb-4'>
                                 <p className='my-3'>All chatrooms ({chatRooms.filter((room: any) => room.isDm).length})</p>
@@ -134,6 +134,7 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                                             myIntraId={myIntraId}
                                             userName={userName}
                                             chatSocket={chatSocket}
+                                            messageReceived={messageReceived}
                                         />
                                     ))}
                                 </div>
@@ -169,7 +170,7 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                             {messageReceived.map((message, index) => (
                             <p className="text-white" key={index}>{message}</p>
                             ))}
-                            
+
                         </div>
 
                         <SimpleForm
@@ -177,15 +178,15 @@ export function DirectTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                             content=
                             {
                                 <div className="flex">
-                                    <InputSimple 
-                                        input={chatMessage} 
+                                    <InputSimple
+                                        input={chatMessage}
                                         setInput={setChatMessage}
                                         placeholder={"Type message here ..."}
                                     />
                                     <SubmitButton />
                                 </div>
                             }
-                            
+
                         />
                         <div ref={ messagesEndRef } />
                     </div>

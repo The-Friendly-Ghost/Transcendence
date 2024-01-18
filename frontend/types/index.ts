@@ -15,6 +15,7 @@ export interface ChatProps {
     chatSocket: Socket | null,
     userName: string,
     myIntraId: string,
+    messageReceived: string[],
     }
 
 // export interface CustomFormProps {

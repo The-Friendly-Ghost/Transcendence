@@ -15,7 +15,7 @@ import SmallAccordion from '@components/common/Accordion';
 import { put } from '@utils/request/request';
 import { getCookie } from '@app/ServerUtils';
 
-export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId } 
+export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, myIntraId, messageReceived }
     : ChatProps)
 	: React.JSX.Element
 {
@@ -28,7 +28,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
     // The message to send
     const [chatMessage, setChatMessage] = useState("");
     // The messages received. Stored in an array of strings.
-    const [messageReceived, setMessageReceived] = useState<string[]>([]);
+    // const [messageReceived, setMessageReceived] = useState<string[]>([]);
     // The new room to create
     const [newRoom, setNewRoom] = useState<string>("");
     // Create room error message
@@ -47,11 +47,17 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
     }, []);
 
     /* This useEffect runs when the chatSocket changes. */
-    useEffect(() => {
-        checkReceivedMessage(chatSocket || null, setMessageReceived);
-    }, [chatSocket]);
+    // useEffect(() => {
+    //     console.log("useEffect chatSocket: ");
+    //     console.log(chatSocket);
+    //     if (chatSocket !== null)
+    //         chatSocket.on('onMessage', (data: any) => {
+    //         setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
+    //         });
+    //     // checkReceivedMessage(chatSocket || null, setMessageReceived);
+    // }, [chatSocket]);
 
-    /* This useEffect runs when the messageReceived array changes. 
+    /* This useEffect runs when the messageReceived array changes.
     It will scroll to the bottom of the message box so that
     the user can always see the latest message. */
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -71,7 +77,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
 
                     <p className='mb-3'>Create New Room</p>
                     <SimpleForm
-                        onSubmit= { (event: any) => { 
+                        onSubmit= { (event: any) => {
                             if (validateChatroom(newRoom, chatRooms, setCreateRoomError) === true)
                             {
                                 setCreateRoomError("");
@@ -82,12 +88,12 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                         }}
                         content = {
                             <div className="flex">
-                                <InputSimple 
-                                    input={newRoom} 
+                                <InputSimple
+                                    input={newRoom}
                                     setInput={setNewRoom}
                                     placeholder={"Room name ..."}
                                 />
-                                <StandardButton 
+                                <StandardButton
                                     text={"Create"}
                                     buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
                                 />
@@ -99,13 +105,13 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                     )}
 
                     {/* Show this block if there are chatrooms inside the database */}
-                    { Array.isArray(chatRooms) && 
+                    { Array.isArray(chatRooms) &&
                         (
                             <div className='pb-4'>
                                 <p className='my-3'>All chatrooms ({chatRooms.filter((room: any) => !room.isDm).length})</p>
                                 <div className='grid grid-cols-1 gap-5'>
                                     {chatRooms.filter((room: any) => !room.isDm).map((room:any, index:number) => (
-                                        <ChatRoomOverview 
+                                        <ChatRoomOverview
                                             setCurrentRoom={setCurrentRoom}
                                             key={index}
                                             room={room}
@@ -147,7 +153,7 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                             {messageReceived.map((message, index) => (
                             <p className="text-white" key={index}>{message}</p>
                             ))}
-                            
+
                         </div>
 
                         <SimpleForm
@@ -155,15 +161,15 @@ export function GroupsTab({ setCurrentRoom, currentRoom, chatSocket, userName, m
                             content=
                             {
                                 <div className="flex">
-                                    <InputSimple 
-                                        input={chatMessage} 
+                                    <InputSimple
+                                        input={chatMessage}
                                         setInput={setChatMessage}
                                         placeholder={"Type message here ..."}
                                     />
                                     <SubmitButton />
                                 </div>
                             }
-                            
+
                         />
                         <div ref={ messagesEndRef } />
                     </div>
