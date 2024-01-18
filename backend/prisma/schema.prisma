@@ -55,6 +55,7 @@ model Chatroom {
   isDm         Boolean   @default(false)
   pw_hash      String?
   ownerIntraId Int
+  mutedIds     Int[]
   messages     Message[]
   users        User[]
   admins       User[]    @relation("admin")

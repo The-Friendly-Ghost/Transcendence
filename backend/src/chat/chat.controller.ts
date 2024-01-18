@@ -164,4 +164,20 @@ export class ChatController {
     });
   }
 
+  @ApiOperation({ summary: 'Mute user.'})
+  @Put('mute_user/:chatroom_name/:intraId')
+  async mute_user(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string, @Param('intraId', ParseIntPipe) mutedUserId: number): Promise<any> {
+    return await this.chat.mute_user(user.intraId, chatroom_name, mutedUserId).catch((e: Error) => {
+      return e.message;
+    });
+  }
+
+  @ApiOperation({ summary: 'Unmute user.'})
+  @Put('unmute_user/:chatroom_name/:intraId')
+  async unmute_user(@GetUser() user: User, @Param('chatroom_name') chatroom_name: string, @Param('intraId', ParseIntPipe) mutedUserId: number): Promise<any> {
+    return await this.chat.unmute_user(user.intraId, chatroom_name, mutedUserId).catch((e: Error) => {
+      return e.message;
+    });
+  }
+
 }

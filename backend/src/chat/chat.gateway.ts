@@ -10,6 +10,7 @@ import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
 import { chatDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaChatService } from './prisma/prisma_chat.service';
 
 @WebSocketGateway({
   cors: {
@@ -20,6 +21,7 @@ import { JwtService } from '@nestjs/jwt';
 export class ChatGateway {
   constructor(
     private chat: ChatService,
+    private prisma_chat: PrismaChatService
   ) {}
   @WebSocketServer()
   server: Server;
@@ -40,6 +42,12 @@ export class ChatGateway {
     //   throw e.message;
     // }));
     // this.chat.add_message(body.destination, body.msg, body.userName).catch((err) => {throw err;});
+    const is_muted = await this.prisma_chat.is_user_muted(Number(body.intraId), body.destination);
+    if (is_muted) {
+      body.msg = "You are muted.";
+      this.server.to(client.id).emit('onMessage', body);
+      return;
+    }
     this.server.to(body.destination).emit('onMessage', body);
   }
 }

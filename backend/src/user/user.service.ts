@@ -42,7 +42,7 @@ export class UserService {
   async setAvatar(intraId: number, avatar: any): Promise<any> {
     if (avatar.mimetype === 'image/jpeg' || avatar.mimetype === 'image/png')
       return this.prismaUserService.updateAvatar(intraId, avatar).catch((e) => {throw new Error(e.message)});
-    
+
     throw new Error('only jpeg and png file are accepted');
   }
 
