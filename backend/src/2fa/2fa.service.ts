@@ -13,6 +13,8 @@ export class TFAService {
     private readonly jwtService: JwtService,
     private user: UserService,
   ) {}
+
+// if needed to revert this funciton to show qr use this:
 //name: string, stream: Response, 
   async get_secret(intraId: number): Promise<string> {
     const secret = authenticator.generateSecret();
