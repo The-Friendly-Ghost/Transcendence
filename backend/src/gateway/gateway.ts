@@ -20,7 +20,7 @@ export class GatewayGateway {
 
     async handleConnection(client: Socket) {
         console.log(client.handshake.query.token, " connected to main gateway");
-        // console.log('socket: ', client);
+        client.emit('onConnection', "connected to main gateway");
         const intraId = Number(client.handshake.query.token);
         await this.chat.add_socket_to_user(intraId, client).catch((err) => {
             console.log(err);

@@ -18,6 +18,7 @@ import { GroupsTab } from "@components/chat/Groups/GroupsTab";
 import { getCookie } from "@app/ServerUtils";
 import { fetchIntraName, setupWebSocket } from "./utils";
 import DirectTab from "@components/chat/DirectTab/DirectTab";
+import { useSocket } from "@contexts/SocketContext";
 
 /**
  * Function that returns the Chat Page.
@@ -56,6 +57,8 @@ export default function chat_page(): React.JSX.Element {
       console.log("setup web socket but actually")
       console.log(chatSocket)
     }
+    const socket: Socket | null = useSocket();
+    socket?.emit("test", {"test": "test"});
   }, []);
 
   useEffect(() => {
