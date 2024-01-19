@@ -16,6 +16,8 @@ import '@styles/containers.css';
 import '@styles/fonts.css';
 import '@styles/dashboard.css'
 import Settings from './Settings';
+import { useSocket } from '@contexts/SocketContext';
+import { Socket } from 'socket.io-client';
 
 export function dashboard() {
 
@@ -24,16 +26,18 @@ export function dashboard() {
   /* ******************* */
 
   const [userInfo, setUserInfo] = useState<any>([]);
-  
-  
+  // The socket to send and receive messages
+  const socket: Socket | null = useSocket();
+
   /* ********************* */
   /* UseEffect Hooks      */
   /* ******************* */
-  
+
   // This useEffect is used to get the chat rooms from the backend
   useEffect(() => {
-    getUserInfo().then((userInfo) => { 
+    getUserInfo().then((userInfo) => {
       setUserInfo(userInfo);
+      socket?.emit("test", {"test": "test"});
     });
   }, []);
 
@@ -44,16 +48,16 @@ export function dashboard() {
         info = {userInfo.name}
         avatar = {userInfo.image_url}
         intraId = {userInfo.intraId}
-      /> 
+      />
     </div>
     <div className='dashboard_block h-full'>
-      <Stats 
+      <Stats
         wins = {userInfo.wins}
         losses = {userInfo.losses}
       />
     </div>
     <div className='dashboard_block'>
-      <Friends 
+      <Friends
         friends = {userInfo.friends}
       />
     </div>

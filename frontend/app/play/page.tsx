@@ -1,27 +1,17 @@
 "use client";
-import { cookies } from "next/headers";
-import { post } from "@utils/request/request";
-// import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import Canvas from '@components/game/canvas';
 import React, { useEffect, useRef, useState } from 'react'
 import { reset_game } from "./reset_game";
 import { Socket, io } from "socket.io-client";
 import { getCookie } from "@app/ServerUtils";
-import { exists } from "fs";
-import Player from '@components/game/player';
-import Settings from '@components/game/settings';
-import GameComponent, { Game } from "@components/game/game";
+import GameComponent from "@components/game/game";
 // import Canvas from './components/game/canvas'
 
 export default function game_page(): React.JSX.Element {
     // const
     const [intraName, setIntraName] = useState<string | null>(null);
     const gameSocketRef = useRef<Socket | null>(null);
-    const [messageReceived, setMessageReceived] = useState("");
     const [queueStatus, setQueueStatus] = useState(false);
     const [gameRoom, setGameRoom] = useState<number | null>(null);
-    // const canvasRef = useRef(null);
-    // const [game, setGame] = useState<Game | null>(null);
     /* The useEffect runs only once on component mount.
     This is because de dependency array is empty.
     ( the [] at the end ) */
@@ -33,7 +23,6 @@ export default function game_page(): React.JSX.Element {
         console.log("Resetting all games");
         const res: any = await reset_game();
         console.log(res);
-        // console.log("Resetting games");
     }
     // Setup websocket if intraName is set
     useEffect(() => {
@@ -49,7 +38,6 @@ export default function game_page(): React.JSX.Element {
             console.log("Setting up socket");
             setupWebSocket();
         }
-
         return () => {
             console.log("unmount");
             if (gameSocketRef.current) {
@@ -58,7 +46,6 @@ export default function game_page(): React.JSX.Element {
                 gameSocketRef.current.close();
             }
         }
-
     }, [intraName]);
 
     // Fetch intra name on mount

@@ -42,7 +42,8 @@ export default function chat_page(): React.JSX.Element {
   const [currentRoom, setCurrentRoom] = useState<string>("");
   // The messages received. Stored in an array of strings.
   const [messageReceived, setMessageReceived] = useState<string[]>([]);
-
+  // The socket to send and receive messages
+  const socket: Socket | null = useSocket();
   /* **************** */
   /* UseEffect hooks */
   /* ************** */
@@ -50,16 +51,16 @@ export default function chat_page(): React.JSX.Element {
   /* This useEffect runs only once on component mount. */
   useEffect(() =>
   {
-    console.log("setup web socket")
+    socket?.emit("test", {"test": "test"});
+    console.log("setup chat socket")
     if (chatSocket.current === null)
     {
       fetchIntraName(getCookie, setUserName, setIntraId).then((intraId) => {setupWebSocket(intraId, chatSocket)});
-      console.log("setup web socket but actually")
+      console.log("setup chat socket but actually")
       console.log(chatSocket)
     }
-    const socket: Socket | null = useSocket();
-    socket?.emit("test", {"test": "test"});
   }, []);
+
 
   useEffect(() => {
     console.log("useEffect chatSocket: ");

@@ -61,11 +61,6 @@ function GameComponent({ user, socket, gameRoom }: GameComponentProps) {
             game.start();
     }, [game]);
 
-    // useEffect(() => {
-    //     console.log('gameRoom: ' + gameRoom);
-    //     console.log('socket: ' + socket);
-    // }, [socket, gameRoom, game]);
-
     return (
         < canvas ref={canvasRef} />
     );

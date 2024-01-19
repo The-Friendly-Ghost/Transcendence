@@ -21,12 +21,14 @@ function ClientSideLayout
 
   useEffect(() => {
     if (loggedIn) {
-      // Replace 'ws://your-websocket-url' with your WebSocket URL
-      const url: string = `${process.env.BACKEND_URL}` + '/main';
+      const url: string = `${process.env.BACKEND_URL}`;
       const ns = io(url , {
         query: { token: 123 }
       });
-      ns.on('onconnection', () => {console.log("socket connected with server")});
+      ns.on('onConnection', (data) => {
+        console.log("socket connected with server")
+        console.log(data)
+    });
       setSocket(ns);
     } else if (socket) {
       socket.close();
