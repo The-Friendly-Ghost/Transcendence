@@ -427,4 +427,76 @@ export class PrismaChatService {
       },
     }).catch((e: Error) => {throw e;});
   }
+
+  async mute_user(mutedIntraId: number, chatroom_name: string) {
+    if (!(await this.check_if_user_exists(mutedIntraId))) {
+      throw new Error('User does not exist');
+    }
+    if (!(await this.check_if_chatroom_exists(chatroom_name))) {
+      throw new Error('Chatroom does not exist');
+    }
+    if (!(await this.check_if_user_in_chatroom(mutedIntraId, chatroom_name))) {
+      throw new Error('User is not in chatroom');
+    }
+    await this.prisma.chatroom.update({
+      where: {
+        name: chatroom_name,
+      },
+      data: {
+        mutedIds: {
+          push: mutedIntraId
+        }
+      },
+    });
+    return 'muted ' + mutedIntraId + ' in chatroom' + chatroom_name;
+  }
+
+  async unmute_user(mutedIntraId: number, chatroom_name: string) {
+    if (!(await this.check_if_user_exists(mutedIntraId))) {
+      throw new Error('User does not exist');
+    }
+    if (!(await this.check_if_chatroom_exists(chatroom_name))) {
+      throw new Error('Chatroom does not exist');
+    }
+    if (!(await this.check_if_user_in_chatroom(mutedIntraId, chatroom_name))) {
+      throw new Error('User is not in chatroom');
+    }
+    const { mutedIds } = await this.prisma.chatroom.findUnique({
+      where: {
+        name: chatroom_name,
+      },
+      select: {
+        mutedIds: true,
+      },
+    });
+    await this.prisma.chatroom.update({
+      where: {
+        name: chatroom_name,
+      },
+      data: {
+        mutedIds: {
+          set: mutedIds.filter((intraId) => intraId !== mutedIntraId)
+        }
+      },
+    });
+    return 'unmuted ' + mutedIntraId + ' in chatroom' + chatroom_name;
+  }
+
+  async is_user_muted(intraId: number, chatroom_name: string): Promise<boolean> {
+    const chatroom = await this.prisma.chatroom.findUnique({
+      where: {
+        name: chatroom_name,
+      },
+    });
+    if (!chatroom) {
+      throw new Error('Chatroom does not exist');
+    }
+    if (!(await this.check_if_user_exists(intraId))) {
+      throw new Error('User does not exist');
+    }
+    if (chatroom.mutedIds.includes(intraId)) {
+      return true;
+    }
+    return false;
+  }
 }

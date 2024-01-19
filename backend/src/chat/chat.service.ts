@@ -246,4 +246,36 @@ export class ChatService {
   async get_all_chatrooms(intraId: number): Promise<Chatroom[]> {
     return await this.prisma_chat.get_all_chatrooms(intraId).catch((e: Error) => {throw e;});
   }
+
+  async mute_user(userIntraId: number, chatroom_name: string, mutedIntraId: number) {
+    const is_user_admin = await this.prisma_chat.is_user_admin(userIntraId, chatroom_name).catch((e: Error) => {throw e;});
+    if (is_user_admin === false) {
+      return 'You are not an admin';
+    }
+    const is_muted_admin = await this.prisma_chat
+    .is_user_admin(mutedIntraId, chatroom_name)
+    .catch((e: Error) => {
+      throw e;
+    });
+    if (is_muted_admin === true) {
+      return 'You cannot mute an admin';
+    }
+    const is_muted = await this.prisma_chat.is_user_muted(mutedIntraId, chatroom_name).catch((e: Error) => {throw e;});
+    if (is_muted === true) {
+      return 'User is already muted';
+    }
+    return await this.prisma_chat.mute_user(mutedIntraId, chatroom_name).catch((e: Error) => {throw e;});
+  }
+
+  async unmute_user(userIntraId: number, chatroom_name: string, mutedIntraId: number) {
+    const is_user_admin = await this.prisma_chat.is_user_admin(userIntraId, chatroom_name).catch((e: Error) => {throw e;});
+    if (is_user_admin === false) {
+      return 'You are not an admin';
+    }
+    const is_muted = await this.prisma_chat.is_user_muted(mutedIntraId, chatroom_name).catch((e: Error) => {throw e;});
+    if (is_muted === false) {
+      return 'User isn\'t muted';
+    }
+    return await this.prisma_chat.unmute_user(mutedIntraId, chatroom_name).catch((e: Error) => {throw e;});
+  }
 }
