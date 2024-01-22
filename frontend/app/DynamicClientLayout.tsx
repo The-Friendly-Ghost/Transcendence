@@ -20,6 +20,7 @@ function ClientSideLayout
   }, []);
 
   useEffect(() => {
+    console.log("setup 123");
     if (loggedIn) {
       const url: string = `${process.env.BACKEND_URL}`;
       const ns = io(url , {
