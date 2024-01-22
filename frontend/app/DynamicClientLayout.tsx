@@ -21,7 +21,7 @@ function ClientSideLayout
 
   useEffect(() => {
     if (loggedIn) {
-      const url: string = `${process.env.BACKEND_URL}`;
+      const url: string = `${process.env.BACKEND_URL}` + '/gateway';
       const ns = io(url , {
         query: { token: 123 }
       });

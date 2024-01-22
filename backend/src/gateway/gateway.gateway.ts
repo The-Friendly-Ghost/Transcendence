@@ -2,17 +2,20 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io';
 import { ChatService } from 'src/chat/chat.service';
 import { PrismaChatService } from 'src/chat/prisma/prisma_chat.service';
+import { GatewayService } from './gateway.service';
 
 @WebSocketGateway({
     cors: {
       origin: '*'
-    }
+    },
+    namespace: 'gateway',
   })
 @WebSocketGateway()
 export class GatewayGateway {
     constructor(
     private chat: ChatService,
-    private prisma_chat: PrismaChatService
+    private prisma_chat: PrismaChatService,
+    private gateway: GatewayService
     ) {}
     @WebSocketServer()
     server: Server;
@@ -24,7 +27,15 @@ export class GatewayGateway {
         client.on("test", (data: any) => {
             console.log(data);
         });
-        await this.chat.add_socket_to_user(intraId, client).catch((err) => {
+        await this.gateway.add_socket_to_user(intraId, client).catch((err) => {
+            console.log(err);
+        });
+    }
+
+    async handleDisconnect(client: Socket) {
+        console.log(client.handshake.query.token, " disconnected from main gateway");
+        const intraId = Number(client.handshake.query.token);
+        await this.gateway.remove_socket_from_user(intraId).catch((err) => {
             console.log(err);
         });
     }
@@ -32,7 +43,7 @@ export class GatewayGateway {
 
     @SubscribeMessage('newMessage')
     async handleMessage(client, body) {
-        console.log("message object:", body);
+        console.log("message object in main gateway:", body);
         // console.log("ceated chatroom:", await this.chat.create_chatroom(parseInt(body.intraId), body.destination).catch((e: Error) => {
         //   throw e.message;
         // }));
