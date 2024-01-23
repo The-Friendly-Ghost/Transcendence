@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { isLoggedIn } from "@utils/isLoggedIn";
 import Navbar from "@components/navbar/Nav";
@@ -11,13 +11,19 @@ function ClientSideLayout
   const [loggedIn, setLoggedIn] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [userInfo, setUserInfo] = useState<any>([]);
+  const [twoFactorVerified, setTwoFactorVerified] = useState(false);
 
-   // This useEffect is used to get the chat rooms from the backend
    useEffect(() => {
     getUserInfo().then((userInfo) => {
       setUserInfo(userInfo);
     });
   }, []);
+
+  useEffect(() => {
+    if (userInfo.twoFAEnabled === true) {
+      setTwoFactorVerified(true);
+    }
+  }, [userInfo]);
 
   useEffect(() => {
     const checkLoggedIn = async () => {

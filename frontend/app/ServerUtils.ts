@@ -114,3 +114,24 @@ export async function setupWebSocket(
   console.log("url : " + url);
   socketRef.current = socket;
 }
+
+/**
+ * Sends a request to the backend to get the user's Online/offline status.
+ * @param intraId the intraId of the user to get information for.
+ * @returns the user's status
+ */
+export async function getStatus(intraId: number): Promise<any>
+{
+    const endpoint: string = `/gateway/status/` + intraId;
+    const res: Response = await get(endpoint);
+    return res.json();
+}
+
+/**
+ */
+export async function getSecret(intraId: number): Promise<any>
+{
+    const endpoint: string = `/auth/2fa/secret/` + intraId;
+    const res: Response = await get(endpoint);
+    return res.json();
+}

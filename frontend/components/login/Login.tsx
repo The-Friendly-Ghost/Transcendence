@@ -27,7 +27,7 @@ function login()
 
         <button 
             type="button"
-            className="main_btn"
+            className="main_btn w-[200px]"
             onClick={loginWith42}
             >
             Login with 42

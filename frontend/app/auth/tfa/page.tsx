@@ -19,7 +19,8 @@ export default function tfa_page() {
     e.preventDefault();
 
     const isVerified: boolean = await verifyTfaCode(tfa_code);
-    if (isVerified) router.push("/");
+    if (isVerified) 
+      router.push("/");
     else alert("Wrong 2FA code");
   };
 

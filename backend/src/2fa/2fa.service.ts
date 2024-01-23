@@ -17,10 +17,14 @@ export class TFAService {
 // if needed to revert this funciton to show qr use this:
 //name: string, stream: Response, 
   async get_secret(intraId: number): Promise<string> {
-    const secret = authenticator.generateSecret();
     const user = await this.user.getUser(intraId);
     if (!user) throw new Error('User not found');
-    await this.prisma.updateTFASecret({ intraId, secret });
+
+    let secret = await this.prisma.getTFASecret(intraId);
+    if (!secret) {
+      secret = authenticator.generateSecret();
+      await this.prisma.updateTFASecret({ intraId, secret });
+    }
     //replace "sietse" with current user and "2FA app name" with env variable
     // const otpauthUrl = authenticator.keyuri(name, '2FA app name', secret);
     // return await toFileStream(stream, otpauthUrl);
