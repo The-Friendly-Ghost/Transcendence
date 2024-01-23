@@ -27,7 +27,7 @@ export default function Settings()
 				Settings
 			</h2>
 
-			<div className='dashboard-block-content content-center h-[300px] overflow-y-auto'>
+			<div className='dashboard-block-content content-center overflow-y-auto'>
 				<p className='pb-3 font-bold'>Change username</p>
 				<SimpleForm
 					onSubmit= { (event: any) => {

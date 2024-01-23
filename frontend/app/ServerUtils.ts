@@ -79,6 +79,14 @@ export async function getUserInfo(intraId?: number): Promise<any>
   }
 }
 
+export async function getAllUsers()
+: Promise<any> {
+    const url: string = `/user/get_all_users`;
+    const res: Response = await get(url);
+    let res_json: any = await res.json();
+    return res_json;
+}
+
 export async function addNewFriend( intraID: string )
 : Promise<any> {
     const url: string = `/user/addFriend/` + intraID;

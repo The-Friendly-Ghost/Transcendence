@@ -5,6 +5,8 @@ import UserInfo from '@components/dashboard/userInfo';
 import Play from '@components/dashboard/play';
 import Friends from '@components/dashboard/friends';
 import Stats from './Stats';
+import TwoFactor from '@components/dashboard/TwoFactor';
+import Ladder from '@components/dashboard/Ladder';
 
 /* Import functions and library */
 import { getCookie, getSecret, getUserInfo } from '@app/ServerUtils'
@@ -19,7 +21,6 @@ import Settings from './Settings';
 import { useSocket } from '@contexts/SocketContext';
 import { Socket } from 'socket.io-client';
 import StandardButton from '@components/common/Buttons';
-import { post, put } from '@utils/request/request';
 
 export function dashboard() {
 
@@ -73,19 +74,23 @@ export function dashboard() {
         friends = {userInfo.friends}
       />
     </div>
+
+    <div className='dashboard_block'>
+      <Ladder />
+    </div>
+
+    <div className='dashboard_block'>
+      <TwoFactor 
+        twoFactorEnabled = {userInfo.twoFAEnabled}
+        mySecret = {mySecret}
+        intraId = {userInfo.intraId}
+      />
+    </div>
+
     <div className='dashboard_block'>
       <Settings />
     </div>
-    <div className='dashboard_block'>
-      <p>
-        2FA Secret: {mySecret.secret}
-      </p>
-					<StandardButton
-						onClick={ () => post('/auth/2fa/toggle/' + userInfo.intraId) }
-						text={"Toggle 2FA ON/OFF"}
-						buttonStyle={"w-[200px] border-white border-[1px] hover:bg-violet-700/40 m-0 mr-4 mt-4"}
-					/>
-    </div>
+
   </div>
   )
 }
