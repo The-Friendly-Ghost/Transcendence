@@ -6,9 +6,9 @@ import { PrismaChatService } from 'src/chat/prisma/prisma_chat.service';
 @WebSocketGateway({
     cors: {
       origin: '*'
-    }
+    },
+    namespace: '/gateway'
   })
-@WebSocketGateway()
 export class GatewayGateway {
     constructor(
     private chat: ChatService,
@@ -45,10 +45,4 @@ export class GatewayGateway {
         }
         this.server.to(body.destination).emit('onMessage', body);
     }
-
-    // @SubscribeMessage('test')
-    // async test(client, body) {
-    //     console.log("test message:", body);
-    //     this.server.to(client.id).emit('onTest', body);
-    // }
 }
