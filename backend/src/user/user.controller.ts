@@ -118,4 +118,16 @@ export class UserController {
 
     return await this.userService.removeFriend(intraId, Number(friendId)).catch((e) => {return {message: e.message}});
   }
+
+  @Get('get_all_users')
+  @ApiOperation({
+    summary: 'Get all users',
+    description: 'Retrieves all users.',
+  })
+  async getAllUsers() {
+    console.log('UserController.getAllUsers');
+
+    const users: User[] = await this.userService.get_all_users();
+    return users;
+  }
 }

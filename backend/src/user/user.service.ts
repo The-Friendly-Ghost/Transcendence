@@ -76,4 +76,8 @@ export class UserService {
     console.log('UserService.removeFriend returning user');
     return "User removed from friend list";
   }
+
+  async get_all_users(): Promise<User[]> {
+    return this.prismaUserService.get_all_users();
+  }
 }
