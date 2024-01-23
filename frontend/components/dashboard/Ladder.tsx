@@ -9,7 +9,11 @@ export default function Ladder()
 	// This useEffect is used to get the chat rooms from the backend
 	  useEffect(() => {
 		getAllUsers().then((users) => {
-		  setAllUsers(users);
+			if (Array.isArray(users)) {
+				setAllUsers(users);
+			} else {
+				console.error('Expected users to be an array, got', users);
+			}
 		});
 	  }, []);
 
