@@ -39,9 +39,9 @@ export class TFAController {
   @Get('/secret/:intraId')
   async get_secret(
     @Param('intraId', ParseIntPipe) intraId: number,
-  ): Promise<string> {
+  ): Promise<any> {
     console.log('TFAController.get_secret');
-    return await this.tfa.get_secret(intraId).catch((e: Error) => {return e.message;});
+    return {secret: await this.tfa.get_secret(intraId).catch((e: Error) => {return e.message;})};
   }
 
   @ApiOperation({ summary: 'Enable 2fa.' })
