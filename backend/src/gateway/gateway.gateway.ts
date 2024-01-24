@@ -2,6 +2,7 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io';
 import { ChatService } from 'src/chat/chat.service';
 import { PrismaChatService } from 'src/chat/prisma/prisma_chat.service';
+import { GatewayService } from './gateway.service';
 
 @WebSocketGateway({
     cors: {
@@ -11,6 +12,7 @@ import { PrismaChatService } from 'src/chat/prisma/prisma_chat.service';
   })
 export class GatewayGateway {
     constructor(
+    private gateway: GatewayService,
     private chat: ChatService,
     private prisma_chat: PrismaChatService
     ) {}
@@ -24,7 +26,7 @@ export class GatewayGateway {
         client.on("test", (data: any) => {
             console.log(data);
         });
-        await this.chat.add_socket_to_user(intraId, client).catch((err) => {
+        await this.gateway.add_socket_to_user(intraId, client).catch((err) => {
             console.log(err);
         });
     }

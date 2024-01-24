@@ -58,6 +58,7 @@ export default function chat_page(): React.JSX.Element {
       // Set up your chat listener here
       console.log("setup chat listener");
       socket.on('onMessage', (data: any) => {
+        console.log("onMessage: " + data);
         setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
       });
     });
