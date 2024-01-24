@@ -22,7 +22,7 @@ export class GatewayService {
 
   async get_socket_from_user(intraId: number): Promise<Socket> {
     console.log("intraId in get socket:", intraId);
-    console.log("map in get socket:", this.userBySocket);
+    console.log("map size get_socket:", this.userBySocket.size);
     return this.userBySocket.get(intraId);
   }
 

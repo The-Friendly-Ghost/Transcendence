@@ -8,10 +8,12 @@ import { JwtService } from '@nestjs/jwt';
 import { GatewayService } from './gateway.service';
 import { GatewayController } from './gateway.controller';
 import { ChatModule } from 'src/chat/chat.module';
+import { PrismaModule } from 'prisma/prisma.module';
 
 @Module({
-  imports: [ChatModule],
+  imports: [PrismaModule],
   controllers: [GatewayController],
-  providers: [GatewayGateway, ChatService, PrismaChatService, PrismaService, JwtService, GatewayService],
+  exports: [GatewayService],
+  providers: [GatewayGateway, JwtService, GatewayService, PrismaChatService],
 })
 export class GatewayModule {}

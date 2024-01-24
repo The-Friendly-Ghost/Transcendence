@@ -8,14 +8,14 @@ import { TFAService } from './2fa/2fa.service';
 import { PrismaTFAService } from './2fa/prisma';
 import { JwtService } from '@nestjs/jwt';
 import { GameModule } from './game/game.module';
-import { GatewayModule } from './gateway/gateway.modules';
+import { GatewayModule } from './gateway/gateway.module';
 import { ChatModule } from './chat/chat.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UserService } from './user/user.service';
 
 @Module({
-  imports: [AuthModule, PrismaModule, UserModule, TFAModule, ChatModule, GatewayModule, GameModule, ServeStaticModule.forRoot({
+  imports: [AuthModule, PrismaModule, UserModule, TFAModule, GatewayModule, ChatModule, GameModule, ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'files'),
   }),],
   providers: [PrismaService, TFAService, PrismaTFAService, JwtService, UserService],
