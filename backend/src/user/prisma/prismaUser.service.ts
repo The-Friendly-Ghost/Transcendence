@@ -125,4 +125,8 @@ export class PrismaUserService {
     if (!user) throw new NotFoundException('user not found');
     return { message: 'friend removed' };
   }
+
+  async get_all_users(): Promise<User[]> {
+    return this.prisma.user.findMany();
+  }
 }
