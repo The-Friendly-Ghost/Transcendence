@@ -8,14 +8,13 @@ import { GatewayService } from './gateway.service';
     cors: {
       origin: '*'
     },
-    namespace: 'gateway',
+    namespace: '/gateway'
   })
-@WebSocketGateway()
 export class GatewayGateway {
     constructor(
+    private gateway: GatewayService,
     private chat: ChatService,
-    private prisma_chat: PrismaChatService,
-    private gateway: GatewayService
+    private prisma_chat: PrismaChatService
     ) {}
     @WebSocketServer()
     server: Server;
@@ -32,18 +31,10 @@ export class GatewayGateway {
         });
     }
 
-    async handleDisconnect(client: Socket) {
-        console.log(client.handshake.query.token, " disconnected from main gateway");
-        const intraId = Number(client.handshake.query.token);
-        await this.gateway.remove_socket_from_user(intraId).catch((err) => {
-            console.log(err);
-        });
-    }
-
 
     @SubscribeMessage('newMessage')
     async handleMessage(client, body) {
-        console.log("message object in main gateway:", body);
+        console.log("message object:", body);
         // console.log("ceated chatroom:", await this.chat.create_chatroom(parseInt(body.intraId), body.destination).catch((e: Error) => {
         //   throw e.message;
         // }));
@@ -56,10 +47,4 @@ export class GatewayGateway {
         }
         this.server.to(body.destination).emit('onMessage', body);
     }
-
-    // @SubscribeMessage('test')
-    // async test(client, body) {
-    //     console.log("test message:", body);
-    //     this.server.to(client.id).emit('onTest', body);
-    // }
 }

@@ -3,14 +3,14 @@ import { PrismaChatService } from './prisma/prisma_chat.service';
 import { Chatroom } from '@prisma/client';
 import * as argon from 'argon2';
 import { Socket } from 'socket.io';
+import { GatewayService } from 'src/gateway/gateway.service';
 
 // service for chat endpoints. These functions check permissions 'n stuff
 // and
 // Input validation is done in prisma_chat.service.ts
 @Injectable()
 export class ChatService {
-  constructor(private prisma_chat: PrismaChatService) {}
-  private userBySocket = new Map<number, Socket>();
+  constructor(private prisma_chat: PrismaChatService, private gateway: GatewayService) {}
 
   async create_chatroom(intraId: number, chatroom_name: string) {
     const chatroom = await this.prisma_chat.create_chatroom(intraId, chatroom_name).catch((e: Error) => {
@@ -219,24 +219,12 @@ export class ChatService {
     if (isUserBanned === true) {
       throw new Error('You are banned from this chatroom');
     }
-    const client = await this.get_socket_from_user(intraId);
+    const client = await this.gateway.get_socket_from_user(intraId);
     if (client === undefined) {
       throw new Error('You are not connected');
     }
     client.join(chatroom_name);
     return chatroom;
-  }
-
-  async add_socket_to_user(intraId: number, client: Socket) {
-    this.userBySocket.set(intraId, client);
-  }
-
-  async remove_socket_from_user(intraId: number) {
-    this.userBySocket.delete(intraId);
-  }
-
-  async get_socket_from_user(intraId: number): Promise<Socket> {
-    return this.userBySocket.get(intraId);
   }
 
   async add_message(destination: string, msg: string, userName: string) {

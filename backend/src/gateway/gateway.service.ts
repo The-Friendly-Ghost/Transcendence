@@ -3,9 +3,11 @@ import { Socket } from "socket.io";
 
 @Injectable()
 export class GatewayService {
+  private userBySocket: Map<number, Socket>;
     constructor(
-      ) {}
-  private userBySocket = new Map<number, Socket>();
+      ) {
+        this.userBySocket = new Map<number, Socket>();
+      }
 
   async add_socket_to_user(intraId: number, client: Socket) {
     this.userBySocket.set(intraId, client);
