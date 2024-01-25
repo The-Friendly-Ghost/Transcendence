@@ -73,10 +73,10 @@ export default class Game extends EventEmitter {
         this.ball = new Ball(this, Matter.Vector.create(0, 0));
         // paddle 1
         this.paddle1 = new Paddle(
-            this, Matter.Vector.create(this.settings.fieldWidth / 2, 0));
+            this, Matter.Vector.create(-this.settings.fieldWidth / 2, 0));
         // paddle 2
         this.paddle2 = new Paddle(
-            this, Matter.Vector.create((-this.settings.fieldWidth / 2), 0));
+            this, Matter.Vector.create((this.settings.fieldWidth / 2), 0));
         // Misc
         this.time.tick();
         console.log('game created');
@@ -90,11 +90,11 @@ export default class Game extends EventEmitter {
             this.paddle1.update();
             this.paddle2.update();
         }
-        if (this.ball.position.x > (this.settings.fieldWidth / 2 + 1)) {
-            this.score(2);
-        }
-        else if (this.ball.position.x < (-this.settings.fieldWidth / 2 - 1)) {
+        if (this.ball.position.x > (this.settings.fieldWidth / 2 + 10)) {
             this.score(1);
+        }
+        else if (this.ball.position.x < (-this.settings.fieldWidth / 2 - 10)) {
+            this.score(2);
         }
     }
 
@@ -186,6 +186,10 @@ export default class Game extends EventEmitter {
         }
         console.log('score: p1: ' + this.p1_points + ' p2: ' + this.p2_points);
     };
+
+    getScore(): number[] {
+        return [this.p1_points, this.p2_points];
+    }
 
     stop(): void {
         // this.emit('stop');

@@ -205,14 +205,14 @@ export class Game {
                     scene: this.scene,
                     text: 'score: 0',
                     color: new THREE.Color(0xffffff),
-                    position: new THREE.Vector3(this.settings.fieldWidth / 3, this.settings.fieldHeight / 3 - 20, 1)
+                    position: new THREE.Vector3(-this.settings.fieldWidth / 3, this.settings.fieldHeight / 3 - 20, 1)
                 });
                 this.scoreText2 = new Text({
                     font: this.font,
                     scene: this.scene,
                     text: 'score: 0',
                     color: new THREE.Color(0xffffff),
-                    position: new THREE.Vector3(-this.settings.fieldWidth / 3, this.settings.fieldHeight / 3 - 20, 1)
+                    position: new THREE.Vector3(this.settings.fieldWidth / 3, this.settings.fieldHeight / 3 - 20, 1)
                 });
             }
         )
