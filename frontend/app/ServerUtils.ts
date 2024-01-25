@@ -91,6 +91,7 @@ export async function uploadAvatar(img: any)
 : Promise<any> {
     const url: string = `/user/upload_avatar/`;
     const res: Response = await postImage(url, img);
+  console.log("res: " + res);
     let res_json: any = await res.json();
     return res_json;
 }

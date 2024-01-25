@@ -58,18 +58,18 @@ export default function Settings()
 				<p className='pb-3 font-bold'>Change profile picture</p>
 					<form onSubmit={(event) => {
 						event.preventDefault();
-						const fileInput = (event.target as HTMLFormElement).elements.namedItem('file') as HTMLInputElement;
+						const fileInput = (event.target as HTMLFormElement).elements.namedItem('newAvatar') as HTMLInputElement;
 						if (fileInput.files && fileInput.files.length > 0) {
 							const file = fileInput.files[0];
 							const formData = new FormData();
-							formData.append('file', file);
+							formData.append('newAvatar', file);
 							uploadAvatar(formData);
-							console.log("avatar uploaded")
+							// console.log("avatar uploaded")
 							console.log(formData)
 							// window.location.reload();
 						}
 					}}>
-						<input type='file' id='file' name='file' accept='image/*' />
+						<input type='file' id='newAvatar' name='newAvatar' accept='*/*' />
 						<StandardButton 
 							text={"Upload"}
 							buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
