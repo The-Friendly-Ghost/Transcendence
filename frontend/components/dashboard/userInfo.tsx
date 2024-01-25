@@ -5,7 +5,7 @@ import '@styles/fonts.css';
 import React from 'react'
 import Image from 'next/image'
 
-function userInfo(props: any) 
+function userInfo(props: any)
 {
   return (
     <div>
@@ -25,7 +25,7 @@ function userInfo(props: any)
           <a href="#" className='text-white/60 hover:text-white text-xs text-center'>Change Avatar</a>
         </div>
         <div className='col-span-1grid grid-cols-1 gap-2 content-start'>
-          <h3 className='font-bold mb-1'>Intra ID</h3> 
+          <h3 className='font-bold mb-1'>Intra ID</h3>
           <p className='text-white/60 mb-4'>{props.intraId ? props.intraId : "-"}</p>
           <h3 className='font-bold mb-1'>Username</h3>
           <p className='text-white/60'>{props.info ? props.info : "-"}</p>

@@ -116,4 +116,16 @@ export class PrismaGameService {
       });
     return game;
   }
+
+  async getMatchHistory(userId: number): Promise<any> {
+    const games: GameInfo[] = await this.prisma.gameInfo
+      .findMany({
+        where: { OR: [{ p1: userId }, { p2: userId }], AND: [{ state: "FINISHED" }] },
+      })
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error('PrismaGameService.getMatchHistory error reason: ' + e.message + ' code: ' + e.code);
+        throw new InternalServerErrorException();
+      });
+    return games;
+  }
 }

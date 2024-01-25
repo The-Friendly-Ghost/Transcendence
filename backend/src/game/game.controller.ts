@@ -47,4 +47,16 @@ export class GameController {
     const response = await this.gameService.acceptInvite(user.intraId, inviteId);
     return response;
   }
+
+  @Get('match_history')
+  @ApiOperation({
+    summary: 'Get the match history of the authenticated user.',
+    description: 'Retrieves the match history of the authenticated user.',
+  })
+  async getMatchHistory(@GetUser() user: User): Promise<any> {
+    console.log('GameController.getMatchHistory');
+
+    const matches = await this.gameService.getMatchHistory(user.intraId);
+    return matches;
+  }
 }

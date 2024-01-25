@@ -111,4 +111,11 @@ export class GameService {
       this.pendingIntraId = null;
     }
   }
+
+  async getMatchHistory(intraId: number): Promise<any> {
+    console.log('GameService.getMatchHistory userId', intraId);
+
+    const matches = await this.prismaGameService.getMatchHistory(intraId);
+    return matches;
+  }
 }

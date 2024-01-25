@@ -5,6 +5,7 @@ import { isLoggedIn } from "@utils/isLoggedIn";
 import Navbar from "@components/navbar/Nav";
 import Login from "@components/login/Login";
 import { getUserInfo } from "./ServerUtils";
+import { SocketContext } from "@contexts/SocketContext";
 
 function ClientSideLayout
 ({ children }: { children: React.ReactNode }) {
@@ -35,6 +36,7 @@ function ClientSideLayout
   }, []);
 
   useEffect(() => {
+    console.log("setup socket");
     if (loggedIn) {
       const url: string = `${process.env.BACKEND_URL}` + '/gateway';
       const ns = io(url , {
@@ -53,8 +55,10 @@ function ClientSideLayout
 
   return (
     <div>
-      {loggedIn ? <Navbar /> : <Login />}
-      {children}
+      <SocketContext.Provider value={socket}>
+        {loggedIn ? <Navbar /> : <Login />}
+        {children}
+      </SocketContext.Provider>
     </div>
   );
 }
