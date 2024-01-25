@@ -16,7 +16,7 @@ import { GroupsTab } from "@components/chat/Groups/GroupsTab";
 
 /* Import Functions */
 import { getCookie } from "@app/ServerUtils";
-import { fetchIntraName, setupWebSocket } from "./utils";
+import { fetchIntraName } from "./utils";
 import DirectTab from "@components/chat/DirectTab/DirectTab";
 import { useSocket } from "@contexts/SocketContext";
 import { connect } from "http2";
@@ -69,6 +69,17 @@ export default function chat_page(): React.JSX.Element {
       // Remove your chat listener here
       socket.off('onMessage');
     });
+
+    // Check if the socket is already connected when the component mounts
+    if (socket?.connected) {
+      console.log('Socket already connected');
+      // Set up your chat listener here
+      console.log("setup chat listener");
+      socket.on('onMessage', (data: any) => {
+        console.log("onMessage: " + data);
+        setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
+      });
+    }
 
     // Clean up function
     return () => {

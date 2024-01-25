@@ -13,7 +13,7 @@ import { GatewayService } from './gateway.service';
 export class GatewayGateway {
     constructor(
     private gateway: GatewayService,
-    private chat: ChatService,
+    // private chat: ChatService,
     private prisma_chat: PrismaChatService
     ) {}
     @WebSocketServer()
@@ -29,12 +29,17 @@ export class GatewayGateway {
         await this.gateway.add_socket_to_user(intraId, client).catch((err) => {
             console.log(err);
         });
+        // this.gateway.get_user_by_socket_map().then((map) => {
+        //     console.log("current map:", map);
+        // });
     }
-
 
     @SubscribeMessage('newMessage')
     async handleMessage(client, body) {
         console.log("message object:", body);
+        // this.gateway.get_user_by_socket_map().then((map) => {
+        //     console.log("current map:", map);
+        // });
         // console.log("ceated chatroom:", await this.chat.create_chatroom(parseInt(body.intraId), body.destination).catch((e: Error) => {
         //   throw e.message;
         // }));
