@@ -5,9 +5,11 @@ import UserInfo from '@components/dashboard/userInfo';
 import Play from '@components/dashboard/play';
 import Friends from '@components/dashboard/friends';
 import Stats from './Stats';
+import TwoFactor from '@components/dashboard/TwoFactor';
+import Ladder from '@components/dashboard/Ladder';
 
 /* Import functions and library */
-import { getCookie, getUserInfo } from '@app/ServerUtils'
+import { getCookie, getSecret, getUserInfo } from '@app/ServerUtils'
 import { useEffect, useState } from 'react';
 import React from 'react';
 
@@ -18,8 +20,10 @@ import '@styles/dashboard.css'
 import Settings from './Settings';
 import { useSocket } from '@contexts/SocketContext';
 import { Socket } from 'socket.io-client';
+import StandardButton from '@components/common/Buttons';
+import MatchHistory from './MatchHistory';
 
-export function dashboard() {
+export function  dashboard() {
 
   /* ********************* */
   /* Init State Variables */
@@ -28,6 +32,7 @@ export function dashboard() {
   const [userInfo, setUserInfo] = useState<any>([]);
   // The socket to send and receive messages
   const socket: Socket | null = useSocket();
+  const [mySecret, setMySecret] = useState<any>([]);
 
   /* ********************* */
   /* UseEffect Hooks      */
@@ -40,6 +45,15 @@ export function dashboard() {
       socket?.emit("test", {"test": "test"});
     });
   }, []);
+
+  useEffect(() => {
+    const fetchSecret = async () => {
+      const secret = await getSecret(userInfo.intraId);
+      setMySecret(secret);
+    }
+    fetchSecret();
+  }, [userInfo]);
+
 
   return (
 	<div className='dashboard_grid'>
@@ -61,12 +75,27 @@ export function dashboard() {
         friends = {userInfo.friends}
       />
     </div>
+
+    <div className='dashboard_block'>
+      <Ladder />
+    </div>
+
+    <div className='dashboard_block'>
+      <TwoFactor 
+        twoFactorEnabled = {userInfo.twoFAEnabled}
+        mySecret = {mySecret}
+        intraId = {userInfo.intraId}
+      />
+    </div>
+
     <div className='dashboard_block'>
       <Settings />
     </div>
+
     <div className='dashboard_block'>
-      <p>2FA</p>
+      <MatchHistory />
     </div>
+
   </div>
   )
 }

@@ -79,6 +79,22 @@ export async function getUserInfo(intraId?: number): Promise<any>
   }
 }
 
+export async function getAllUsers()
+: Promise<any> {
+    const url: string = `/user/get_all_users`;
+    const res: Response = await get(url);
+    let res_json: any = await res.json();
+    return res_json;
+}
+
+export async function getMatchHistory()
+: Promise<any> {
+    const url: string = `/game/match_history`;
+    const res: Response = await get(url);
+    let res_json: any = await res.json();
+    return res_json;
+}
+
 export async function addNewFriend( intraID: string )
 : Promise<any> {
     const url: string = `/user/addFriend/` + intraID;
@@ -113,4 +129,25 @@ export async function setupWebSocket(
   console.log("socket : " + socket);
   console.log("url : " + url);
   socketRef.current = socket;
+}
+
+/**
+ * Sends a request to the backend to get the user's Online/offline status.
+ * @param intraId the intraId of the user to get information for.
+ * @returns the user's status
+ */
+export async function getStatus(intraId: number): Promise<any>
+{
+    const endpoint: string = `/gateway/status/` + intraId;
+    const res: Response = await get(endpoint);
+    return res.json();
+}
+
+/**
+ */
+export async function getSecret(intraId: number): Promise<any>
+{
+    const endpoint: string = `/auth/2fa/secret/` + intraId;
+    const res: Response = await get(endpoint);
+    return res.json();
 }

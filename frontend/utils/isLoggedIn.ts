@@ -1,3 +1,5 @@
+"use server"
+
 import { getCookie } from "@app/ServerUtils";
 import { get } from "./request/request";
 

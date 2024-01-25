@@ -5,7 +5,7 @@ import '@styles/containers.css';
 import '@styles/fonts.css';
 import '@styles/buttons.css';
 import InputSimple from '@components/common/Input';
-import { addNewFriend, getUserInfo } from '@app/ServerUtils';
+import { addNewFriend, getStatus, getUserInfo } from '@app/ServerUtils';
 import Image from 'next/image';
 import StandardButton from '@components/common/Buttons';
 import SimpleForm from '@components/common/Forms';
@@ -34,10 +34,24 @@ export function Friends(props: any)
   const [friendsInfo, setFriendsInfo] = useState<any[]>([]);
   const [newFriend, setNewFriend] = useState<string>("");
   const [friendAmount, setFriendAmount] = useState<number>(0);
+  const [status, setStatus] = useState< {[key: string]: boolean} >({});
 
   useEffect(() => {
     getFriendsInfo(props.friends, setFriendAmount).then(info => setFriendsInfo(info));
   }, [props.friends]);
+
+  useEffect(() => {
+    const fetchStatuses = async () => {
+      const newStatuses: { [key: number]: boolean } = {};
+      for (const friend of friendsInfo) {
+          const status = await getStatus(friend.intraId);
+          newStatuses[friend.intraId] = status.online;
+      }
+      setStatus(newStatuses);
+    };
+
+    fetchStatuses();
+  }, [friendsInfo]);
 
   return (
     <div>
@@ -87,6 +101,10 @@ export function Friends(props: any)
               <div>
                 <p className='w-full font-bold'>{friend.name} <span className='text-white/60 text-sm font-normal'>(ID: {friend.intraId})</span></p>
                 <p className='w-full text-white/60'>Wins: {friend.wins} - Losses: {friend.losses}</p>
+                <p className='w-full text-white/60'>
+                  <div className={`inline-block h-3 w-3 mr-2 rounded-full ${status[friend.intraId] ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                  {status[friend.intraId] ? "Online" : "Offline"}
+                </p>
               </div>
             </div>
           ))}
