@@ -87,6 +87,14 @@ export async function getAllUsers()
     return res_json;
 }
 
+export async function getMatchHistory()
+: Promise<any> {
+    const url: string = `/game/match_history`;
+    const res: Response = await get(url);
+    let res_json: any = await res.json();
+    return res_json;
+}
+
 export async function addNewFriend( intraID: string )
 : Promise<any> {
     const url: string = `/user/addFriend/` + intraID;

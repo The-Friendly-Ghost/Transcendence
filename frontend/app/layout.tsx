@@ -32,8 +32,8 @@ export default async function RootLayout (
       <body className="container_full_background">
 
         {/* Animated Gradient Background with static stars */}
-        <div className="auroral_background"></div>
-        <div id="stars"></div>
+        {/* <div className="auroral_background"></div> */}
+        <div id="stars"></div> 
 
         {/* If the user is logged in, render the Navbar and the children.
         If the user is not logged in, render the Login page */}

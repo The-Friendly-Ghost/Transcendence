@@ -21,8 +21,9 @@ import Settings from './Settings';
 import { useSocket } from '@contexts/SocketContext';
 import { Socket } from 'socket.io-client';
 import StandardButton from '@components/common/Buttons';
+import MatchHistory from './MatchHistory';
 
-export function dashboard() {
+export function  dashboard() {
 
   /* ********************* */
   /* Init State Variables */
@@ -89,6 +90,10 @@ export function dashboard() {
 
     <div className='dashboard_block'>
       <Settings />
+    </div>
+
+    <div className='dashboard_block'>
+      <MatchHistory />
     </div>
 
   </div>

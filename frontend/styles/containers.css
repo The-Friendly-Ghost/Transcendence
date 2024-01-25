@@ -11,12 +11,13 @@
 
 /* Container that's always visible on the background. */
 .container_full_background {
+  background: linear-gradient(10deg, rgba(161, 217, 180, 0.8) 20%, rgba(50, 152, 138, 0.8) 40%, rgba(0, 14, 60, 1) 65%);
   @apply 
     bg-black /* black background */
     w-full /* full width */
-    h-screen /* full height */
+    /* h-screen full height */
     flex-col /* flex direction column */
-    overflow-hidden /* hide overflow */
+    overflow-auto /* hide overflow */
     relative /* position relative */
     z-10 /* z-index of 10.*/
   ;
@@ -26,15 +27,15 @@
 .auroral_background {
   position: absolute; /* position absolute */
   overflow: hidden; /* hide overflow */
-  left: -50%; /* left of -50% */
-  top: -50%; /* top of -50% */
-  width: 200%; /* width of 200% */
+  /* left: -50%; left of -50% */
+  /* top: -50%; top of -50% */
+  width: 100%; /* width of 200% */
   height: 200%; /* height of 200% */
-  animation-name: northern; /* animation name. Animation is defined below in @keyframes */
-  animation-duration: 10s; /* animation duration of 10s. This will make sure the animation takes 10 seconds */
-  animation-timing-function: linear; /* animation timing function linear. This will make sure the animation goes at a constant speed */
-  animation-iteration-count: infinite; /* animation iteration count infinite. This will make sure the animation keeps going */
-  animation-direction: alternate; /* animation direction alternate. This will make sure the animation goes back and forth */
+  /* animation-name: northern; animation name. Animation is defined below in @keyframes */
+  /* animation-duration: 10s; animation duration of 10s. This will make sure the animation takes 10 seconds */
+  /* animation-timing-function: linear; animation timing function linear. This will make sure the animation goes at a constant speed */
+  /* animation-iteration-count: infinite; animation iteration count infinite. This will make sure the animation keeps going */
+  /* animation-direction: alternate; animation direction alternate. This will make sure the animation goes back and forth */
   z-index: -1; /* z-index of -1. This will make sure the background is always behind the content */
   background: linear-gradient(10deg, rgba(161, 217, 180, 0.8) 20%, rgba(50, 152, 138, 0.8) 40%, rgba(0, 14, 60, 1) 65%);
 }
