@@ -17,8 +17,9 @@ export class GameManager {
     p1Socket: Socket;
     p2Socket: Socket;
     cleanupCallback: (gameInfo: GameInfo) => void;
+    startCallback: (gameInfo: GameInfo) => void;
 
-    constructor(gameInfo: GameInfo, gateway: GameGateway, cleanupCallback: (gameInfo: GameInfo) => void) {
+    constructor(gameInfo: GameInfo, gateway: GameGateway, cleanupCallback: (gameInfo: GameInfo) => void, startCallback: (gameInfo: GameInfo) => void) {
         this.gameInfo = gameInfo;
         this.gateway = gateway;
         this.p1Socket = gateway.getSocket(gameInfo.p1);
@@ -35,6 +36,7 @@ export class GameManager {
         this.game.on('countdown', this.countdown.bind(this));
         // this.game.on('startgame', this.startGame.bind(this));
         this.cleanupCallback = cleanupCallback;
+        this.startCallback = startCallback;
         this.startGame();
     }
 
@@ -50,6 +52,7 @@ export class GameManager {
     gameOver() {
         this.gameInfo.state = "FINISHED";
         console.log("game over");
+        this.gameInfo.score = this.game.getScore();
         this.gateway.sendToRoom(this.gameInfo.roomName, "gameStatus", this.gameInfo.state);
         this.cleanup();
     }
@@ -59,6 +62,7 @@ export class GameManager {
         this.gateway.sendToRoom(this.gameInfo.roomName, "gameStart", "started");
         this.game.countdown(3);
         this.gameInfo.state = "IN_PROGRESS";
+        this.startCallback(this.gameInfo);
     }
 
     userInput(body: any) {
