@@ -39,6 +39,7 @@ export class UserController {
   }
 
   @Post('upload_avatar/:img')
+  @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({
     summary: 'Upload avatar',
     description: 'Upload avatar',
@@ -55,7 +56,7 @@ export class UserController {
       },
     },
   })
-  @UseInterceptors(FileInterceptor('file'))
+  // @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File, @GetUser() user: User) {
     return (this.userService.setAvatar(user.intraId, file).catch((e) => {return {message: e.message}}));
   }

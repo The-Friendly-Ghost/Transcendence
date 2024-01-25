@@ -1,8 +1,9 @@
-import { changeUsername } from '@app/ServerUtils';
+import { changeUsername, uploadAvatar } from '@app/ServerUtils';
 import { changeUserName } from '@app/chat/utils';
 import StandardButton from '@components/common/Buttons';
 import SimpleForm from '@components/common/Forms'
 import InputSimple from '@components/common/Input'
+import { postImage } from '@utils/request/request';
 import React, { useState } from 'react'
 
 export default function Settings()
@@ -54,7 +55,26 @@ export default function Settings()
 				/>
 				<p className='text-red-600'>{errorUserName}</p>
 
-
+				<p className='pb-3 font-bold'>Change profile picture</p>
+					<form onSubmit={(event) => {
+						event.preventDefault();
+						const fileInput = (event.target as HTMLFormElement).elements.namedItem('file') as HTMLInputElement;
+						if (fileInput.files && fileInput.files.length > 0) {
+							const file = fileInput.files[0];
+							const formData = new FormData();
+							formData.append('file', file);
+							uploadAvatar(formData);
+							console.log("avatar uploaded")
+							console.log(formData)
+							// window.location.reload();
+						}
+					}}>
+						<input type='file' id='file' name='file' accept='image/*' />
+						<StandardButton 
+							text={"Upload"}
+							buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
+						/>
+					</form>
 				
 			</div>
 		</React.Fragment>

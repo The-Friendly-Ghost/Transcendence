@@ -1,7 +1,7 @@
 "use server"
 
 /* Import Functions */
-import { get, post } from "@utils/request/request";
+import { get, post, postImage } from "@utils/request/request";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
 import { io, Socket } from "socket.io-client";
@@ -87,6 +87,14 @@ export async function getAllUsers()
     return res_json;
 }
 
+export async function uploadAvatar(img: any)
+: Promise<any> {
+    const url: string = `/user/upload_avatar/`;
+    const res: Response = await postImage(url, img);
+    let res_json: any = await res.json();
+    return res_json;
+}
+
 export async function getMatchHistory()
 : Promise<any> {
     const url: string = `/game/match_history`;
@@ -139,6 +147,18 @@ export async function setupWebSocket(
 export async function getStatus(intraId: number): Promise<any>
 {
     const endpoint: string = `/gateway/status/` + intraId;
+    const res: Response = await get(endpoint);
+    return res.json();
+}
+
+/**
+ * Sends a request to the backend to get the user's in Game status.
+ * @param intraId the intraId of the user to get information for.
+ * @returns the user's ingame status
+ */
+export async function getInGame(intraId: number): Promise<any>
+{
+    const endpoint: string = `/game/game_status/` + intraId;
     const res: Response = await get(endpoint);
     return res.json();
 }
