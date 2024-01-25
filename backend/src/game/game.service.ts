@@ -122,4 +122,17 @@ export class GameService {
     const matches = await this.prismaGameService.getMatchHistory(intraId);
     return matches;
   }
+
+  async getGameStatus(intraId: number): Promise<any> {
+    console.log('GameService.getGameStatus userId', intraId);
+
+    const game = await this.prismaGameService.get_games_in_progress(intraId);
+    console.log("games in get game status:", game);
+    if (game == null) {
+      return { "playing": false };
+    }
+    else {
+      return { "playing": true };
+    }
+  }
 }

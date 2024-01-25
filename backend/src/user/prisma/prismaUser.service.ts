@@ -129,4 +129,34 @@ export class PrismaUserService {
   async get_all_users(): Promise<User[]> {
     return this.prisma.user.findMany();
   }
+
+  async addWin(intraId: number): Promise<User> {
+    const user: User = await this.prisma.user
+      .update({
+        where: { intraId: intraId },
+        data: { wins: { increment: 1 } },
+      })
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error(
+          'PrismaUserService.addWin error reason: ' + e.message + ' code: ' + e.code,
+        );
+        throw new InternalServerErrorException();
+      });
+    return user;
+  }
+
+  async addLoss(intraId: number): Promise<User> {
+    const user: User = await this.prisma.user
+      .update({
+        where: { intraId: intraId },
+        data: { losses: { increment: 1 } },
+      })
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error(
+          'PrismaUserService.addWin error reason: ' + e.message + ' code: ' + e.code,
+        );
+        throw new InternalServerErrorException();
+      });
+    return user;
+  }
 }

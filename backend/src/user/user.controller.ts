@@ -130,4 +130,28 @@ export class UserController {
     const users: User[] = await this.userService.get_all_users();
     return users;
   }
+
+  @Post('add_win')
+  @ApiOperation({
+    summary: 'Add a win to the user',
+    description: 'Add a win to the user.',
+  })
+  async addWin(@GetUser('intraId') intraId: number) {
+    console.log('UserController.addWin intraId', intraId);
+
+    const user: User = await this.userService.addWin(intraId);
+    return user;
+  }
+
+  @Post('add_loss')
+  @ApiOperation({
+    summary: 'Add a win to the user',
+    description: 'Add a win to the user.',
+  })
+  async addLoss(@GetUser('intraId') intraId: number) {
+    console.log('UserController.addWin intraId', intraId);
+
+    const user: User = await this.userService.addLoss(intraId);
+    return user;
+  }
 }

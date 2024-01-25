@@ -128,4 +128,16 @@ export class PrismaGameService {
       });
     return games;
   }
+
+  async get_games_in_progress(userId: number): Promise<any> {
+    const games: GameInfo = await this.prisma.gameInfo
+      .findFirst({
+        where: { OR: [{ p1: userId }, { p2: userId }], AND: [{ state: "IN_PROGRESS" }] },
+      })
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error('PrismaGameService.getMatchHistory error reason: ' + e.message + ' code: ' + e.code);
+        throw new InternalServerErrorException();
+      });
+    return games;
+  }
 }

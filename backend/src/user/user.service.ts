@@ -79,4 +79,12 @@ export class UserService {
   async get_all_users(): Promise<User[]> {
     return this.prismaUserService.get_all_users();
   }
+
+  async addWin(intraId: number): Promise<User> {  
+    return this.prismaUserService.addWin(intraId);
+  }
+
+  async addLoss(intraId: number): Promise<User> {  
+    return this.prismaUserService.addLoss(intraId);
+  }
 }

@@ -59,4 +59,16 @@ export class GameController {
     const matches = await this.gameService.getMatchHistory(user.intraId);
     return matches;
   }
+
+  @Get('game_status/:intraId')
+  @ApiOperation({
+    summary: 'Check if a player is in a game.',
+    description: 'check if a player is in a game.',
+  })
+  async getGameStatus(@Param('intraId', ParseIntPipe) intraId: number): Promise<any> {
+    console.log('GameController.getGameStatus');
+
+    const response = await this.gameService.getGameStatus(intraId);
+    return response;
+  }
 }
