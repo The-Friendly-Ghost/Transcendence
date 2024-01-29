@@ -94,23 +94,3 @@ export async function changeUsername( newUsername: string )
     let res_json: any = await res.json();
     return res_json;
 }
-
-/**
- *
- * @param intraId The user name of the user
- * @param setChatSocket The function to set the socket
- */
-export async function setupWebSocket(
-  intraId: string | null,
-  socketRef: React.MutableRefObject<Socket | null>,
-  namespace: string)
-{
-  const url: string = `${process.env.BACKEND_URL}` + '/' + namespace;
-  console.log("intraId in setupWebSocket: " + intraId);
-  const socket = io(url , {
-    query: { token: intraId }
-  });
-  console.log("socket : " + socket);
-  console.log("url : " + url);
-  socketRef.current = socket;
-}
