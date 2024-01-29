@@ -99,10 +99,18 @@ export class GameService {
     this.prismaGameService.updateGame(gameInfo);
   }
 
-  async invitePlayer(intraId: number, playerId: number) {
-    let invite: Invite = new Invite(intraId);
-    this.invites.set(invite.getId(), invite);
-    return invite.getId();
+  /* Invite player takes an senderId and a receiverId.
+    Validates that the receiverId is online.
+    Creates a new invite object and adds it to the invites map.
+    send a notification to the receiverId that they have been invited to a game using sockets.
+    The event is "invite". The data is the inviteId and the senderId.
+    Returns if the invite was successful or not and why and if succesful the inviteId.
+  */
+  async invitePlayer(senderId: number, receiverId: number) {
+    let invite: Invite = new Invite(senderId, receiverId);
+    // this.invites.set(invite.getId(), invite);
+
+    // return invite.getId();
   };
 
   async acceptInvite(inviteId: number, intraId: number) {

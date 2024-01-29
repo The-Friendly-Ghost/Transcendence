@@ -3,8 +3,9 @@ export class Invite{
     senderId: number;
     receiverId: number;
     state: string;
-    constructor(senderId: number) {
+    constructor(senderId: number, receiverId: number) {
         this.senderId = senderId;
+        this.receiverId = receiverId;
         this.state = "PENDING";
         this.id = Math.floor(Math.random() * 1000000000);
     }
@@ -22,7 +23,8 @@ export class Invite{
     }
 
     acceptInvite(receiverId: number) {
-        this.receiverId = receiverId;
-        this.state = "ACCEPTED";
+        // this.receiverId = receiverId;
+        if (this.receiverId === receiverId)
+            this.state = "ACCEPTED";
     }
 }

@@ -121,26 +121,6 @@ export async function changeUsername( newUsername: string )
 }
 
 /**
- *
- * @param intraId The user name of the user
- * @param setChatSocket The function to set the socket
- */
-export async function setupWebSocket(
-  intraId: string | null,
-  socketRef: React.MutableRefObject<Socket | null>,
-  namespace: string)
-{
-  const url: string = `${process.env.BACKEND_URL}` + '/' + namespace;
-  console.log("intraId in setupWebSocket: " + intraId);
-  const socket = io(url , {
-    query: { token: intraId }
-  });
-  console.log("socket : " + socket);
-  console.log("url : " + url);
-  socketRef.current = socket;
-}
-
-/**
  * Sends a request to the backend to get the user's Online/offline status.
  * @param intraId the intraId of the user to get information for.
  * @returns the user's status
