@@ -23,8 +23,8 @@ export async function postImage(endpoint: string, body?: BodyInit): Promise<Resp
   console.log("request post");
 
   const token: string | undefined = await getJWT();
-  const url: string = `${process.env.BACKEND_URL}${endpoint}`;
-  console.log("url", url + "{img}");
+  const url: string = `${process.env.BACKEND_URL}${endpoint}` + '{img}';
+  console.log("url", url);
   console.log("body: ", body);
 
   const response: Response = await fetch(url, {
