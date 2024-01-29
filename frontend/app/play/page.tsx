@@ -2,109 +2,154 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { reset_game } from "./reset_game";
 import { Socket, io } from "socket.io-client";
-import { getCookie } from "@app/ServerUtils";
+import { getCookie, getUserInfo } from "@app/ServerUtils";
 import GameComponent from "@components/game/game";
+import { useSocket } from '@contexts/SocketContext';
 // import Canvas from './components/game/canvas'
 
 export default function game_page(): React.JSX.Element {
     // const
-    const [intraName, setIntraName] = useState<string | null>(null);
-    const gameSocketRef = useRef<Socket | null>(null);
+    const [intraId, setIntraId] = useState<string | null>(null);
+    const [userName, setUserName] = useState<string | null>(null);
     const [queueStatus, setQueueStatus] = useState(false);
     const [gameRoom, setGameRoom] = useState<number | null>(null);
-    /* The useEffect runs only once on component mount.
-    This is because de dependency array is empty.
-    ( the [] at the end ) */
-    async function fetchIntraName(): Promise<void> {
-        setIntraName(await getCookie('intraId'));
-    };
+    const socket = useSocket();
+
+    /**
+    *
+    * @param getCookie Get the cookie from the browser
+    * @param setUserName Set the user name
+    * @param setIntraId Set the intraId
+    */
+    async function fetchUserInfo(
+    getCookie: (name: string) => Promise<string>,
+    setUserName: React.Dispatch<React.SetStateAction<string>>,
+    setIntraId: React.Dispatch<React.SetStateAction<string>>
+  )
+  : Promise<string>
+{
+    const newUserName = await getCookie('username');
+    setUserName(newUserName);
+    const newIntraId = await getCookie('intraId');
+    setIntraId(newIntraId);
+    return (newIntraId);
+  }
+
+    async function test() {
+        console.log(getUserInfo());
+    }
+
+    // async function fetchIntraId(): Promise<void> {
+    //     setIntraId(await getCookie('intraId'));
+    // };
 
     async function resetGames() {
         console.log("Resetting all games");
         const res: any = await reset_game();
         console.log(res);
     }
-    // Setup websocket if intraName is set
-    useEffect(() => {
-        let socket: Socket;
 
-        async function setupWebSocket(): Promise<void> {
-            socket = io(process.env.BACKEND_URL, {
-                query: { token: intraName }
-            });
-            gameSocketRef.current = socket;
+    /* **************** */
+    /* UseEffect hooks  */
+    /* **************** */
+    useEffect(() => {
+        test();
+        // fetch(getCookie, setUserName, setIntraId);
+        // This will run when the socket connects
+        socket?.on('connect', () => {
+        console.log('Socket connected');
+        // Set up your chat listener here
+        console.log("setup chat listener");
+        socket.on('onMessage', (data: any) => {
+            console.log("onMessage: " + data);
+            // setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
+        });
+        });
+
+        // This will run when the socket disconnects
+        socket?.on('disconnect', () => {
+        console.log('Socket disconnected');
+        // Remove your chat listener here
+        socket.off('onMessage');
+        });
+
+        // Check if the socket is already connected when the component mounts
+        if (socket?.connected) {
+        console.log('Socket already connected');
+        // Set up your chat listener here
+        console.log("setup chat listener");
+        socket.on('onMessage', (data: any) => {
+            console.log("onMessage: " + data);
+            // setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
+        });
         }
-        if (intraName !== null && gameSocketRef.current === null) {
-            console.log("Setting up socket");
-            setupWebSocket();
-        }
+
+        // Clean up function
         return () => {
-            console.log("unmount");
-            if (gameSocketRef.current) {
-                console.log("Disconnecting socket");
-                gameSocketRef.current.disconnect();
-                gameSocketRef.current.close();
-            }
-        }
-    }, [intraName]);
+        // Remove the listeners when the component unmounts
+        socket?.off('connect');
+        socket?.off('disconnect');
+        socket?.off('onMessage');
+        };
+    }, [socket]);
 
     // Fetch intra name on mount
-    useEffect(() => {
-        async function fetchData(): Promise<void> {
-            if (intraName === null) {
-                console.log("Fetching intra name");
-                await fetchIntraName();
-                console.log(intraName);
-            }
-        }
-        fetchData();
-    }, []);
+    // useEffect(() => {
+    //     async function fetchData(): Promise<void> {
+    //         if (intraId === null) {
+    //             console.log("Fetching intra name");
+    //             await fetchUserInfo();
+    //             console.log(intraId);
+    //         }
+    //     }
+    //     fetchData();
+    // }, []);
 
-    // Setup websocket queue listeners
-    useEffect(() => {
-        if (gameSocketRef.current) {
-            gameSocketRef.current.on('queueStatus', (data: any) => {
-                console.log(data);
-            });
-            gameSocketRef.current.on(String(intraName), (data: any) => {
-                console.log(data);
-                if (data.type === "gameroom") {
-                    console.log("game room");
-                    setGameRoom(data.message);
-                    console.log(gameRoom);
-                }
-            });
-        }
-    }, [gameSocketRef.current, intraName]);
+    // // Setup websocket queue listeners
+    // useEffect(() => {
+    //     if (socket) {
+    //         socket.on('queueStatus', (data: any) => {
+    //             console.log(data);
+    //         });
+    //         socket.on(String(intraId), (data: any) => {
+    //             console.log(data);
+    //             if (data.type === "gameroom") {
+    //                 console.log("game room");
+    //                 setGameRoom(data.message);
+    //                 console.log(gameRoom);
+    //             }
+    //         });
+    //     }
+    // }, [socket, intraId]);
 
-    // Setup websocket gameroom listeners
-    useEffect(() => {
-        if (gameSocketRef.current) {
-            if (gameRoom) {
-                console.log("Got gameroom");
-                gameSocketRef.current.on(String(gameRoom), (data: any) => {
-                    // console.log(data);
-                });
-            }
-        }
-    }, [gameRoom, gameSocketRef.current]);
+    // // Setup websocket gameroom listeners
+    // useEffect(() => {
+    //     if (socket) {
+    //         if (gameRoom) {
+    //             console.log("Got gameroom");
+    //             socket.on(String(gameRoom), (data: any) => {
+    //                 // console.log(data);
+    //             });
+    //         }
+    //     }
+    // }, [gameRoom, socket]);
 
     // start queue
     async function startQueue() {
-        console.log(gameSocketRef.current);
-        if (gameSocketRef.current) {
-            gameSocketRef.current.emit('queueGame', {
-                userId: intraName,
-                socketId: gameSocketRef.current.id });
+        console.log(socket);
+        if (socket) {
+            socket.emit('queueGame', {
+                userId: intraId,
+                socketId: socket.id });
         }
     }
 
     async function testGame() {
-        console.log(gameSocketRef.current);
-        if (gameSocketRef.current) {
-            gameSocketRef.current.emit('testGame', {
-                userId: intraName,
-                socketId: gameSocketRef.current.id });
+        console.log(socket);
+        if (socket) {
+            socket.emit('testGame', {
+                userId: intraId,
+                socketId: socket.id });
         }
     }
 
@@ -132,7 +177,7 @@ export default function game_page(): React.JSX.Element {
                 Test game
             </button>
             {/* <canvas ref={canvasRef} className="webgl" /> */}
-            <GameComponent className="webgl" user={intraName} socket={gameSocketRef.current} gameRoom={gameRoom} />
+            <GameComponent className="webgl" user={intraId} socket={socket} gameRoom={gameRoom} />
         </section>
     );
 }

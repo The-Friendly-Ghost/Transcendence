@@ -35,8 +35,6 @@ export default function chat_page(): React.JSX.Element {
   const [userName, setUserName] = useState<string>("");
   // The 42 intraId of the user. This Id will stay the same, even if the user changes his name.
   const [intraId, setIntraId] = useState<string>("");
-  // The socket to send and receive messages
-  const chatSocket = useRef<Socket | null>(null);
   // Set the toggle tab
   const [toggleTab, setToggleTab] = useState<number>(1);
   // The current room the user is in
@@ -89,34 +87,6 @@ export default function chat_page(): React.JSX.Element {
       socket?.off('onMessage');
     };
   }, [socket]);
-
-//   useEffect(() => {
-//     console.log("useEffect chatSocket: ");
-//     socket?.emit("test", {"test": "test"});
-//     console.log(socket);
-//     if (socket !== null && socket.connected === false)
-//     {
-//       console.log("socket is not connected try to connect");
-//       socket.connect();
-//     }
-//     if (socket !== null && socket.connected === true)
-//     {
-//       console.log("setup chat listener");
-//       socket.on('onMessage', (data: any) => {
-//         setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
-//       });
-//     }
-//     return () => {
-//       console.log("remove chat listener");
-//       socket?.off('onMessage');
-//     };
-//     // checkReceivedMessage(chatSocket || null, setMessageReceived);
-// }, [socket]);
-
-  // useEffect(() => {
-  //   console.log(socket?.connected);
-  // }, [socket?.connected]);
-
 
   /* ***************** */
   /* Return Component */
