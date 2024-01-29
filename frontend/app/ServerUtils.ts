@@ -133,6 +133,18 @@ export async function getStatus(intraId: number): Promise<any>
 }
 
 /**
+ * Only for DM chat
+ * @param intraId 
+ * @returns 
+ */
+export async function getOtherUser(intraId: string): Promise<any>
+{
+    const endpoint: string = `/chat/get_chatroom/` + intraId;
+    const res: Response = await get(endpoint);
+    return res.json();
+}
+
+/**
  * Sends a request to the backend to get the user's in Game status.
  * @param intraId the intraId of the user to get information for.
  * @returns the user's ingame status
