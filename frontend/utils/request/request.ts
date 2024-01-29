@@ -19,6 +19,29 @@ export async function get(endpoint: string): Promise<Response> {
   return response;
 }
 
+export async function postImage(endpoint: string, body?: BodyInit): Promise<Response> {
+  console.log("request post");
+
+  const token: string | undefined = await getJWT();
+  const url: string = `${process.env.BACKEND_URL}${endpoint}` + '{img}';
+  console.log("url", url);
+  console.log("body: ", body);
+
+  const response: Response = await fetch(url, {
+    method: "POST",
+    mode: "same-origin",
+    redirect: "follow",
+    credentials: "include", // Don't forget to specify this if you need cookies
+    headers: {
+      Authorization: `Bearer ${token}`,
+      // "Content-Type": "multipart/form-data",
+    },
+    body, // Added this - the body of the request
+  });
+
+  return response;
+}
+
 export async function post(endpoint: string): Promise<Response> {
   console.log("request post");
 

@@ -23,8 +23,8 @@ export default function game_page(): React.JSX.Element {
     */
     async function fetchUserInfo(
     getCookie: (name: string) => Promise<string>,
-    setUserName: React.Dispatch<React.SetStateAction<string>>,
-    setIntraId: React.Dispatch<React.SetStateAction<string>>
+    setUserName: React.Dispatch<React.SetStateAction<string | null>>,
+    setIntraId: React.Dispatch<React.SetStateAction<string | null>>
   )
   : Promise<string>
 {
@@ -49,47 +49,52 @@ export default function game_page(): React.JSX.Element {
         console.log(res);
     }
 
+    async function setupListeners(socket: Socket) {
+        socket.on('queueUpdate', (data: any) => {
+            console.log(data);
+            if (data.type === "gameroom") {
+                console.log("game room");
+                setGameRoom(data.message);
+                console.log(gameRoom);
+            }
+        });
+    };
+
     /* **************** */
     /* UseEffect hooks  */
     /* **************** */
     useEffect(() => {
-        test();
-        // fetch(getCookie, setUserName, setIntraId);
+        // test();
+        fetchUserInfo(getCookie, setUserName, setIntraId);
         // This will run when the socket connects
-        socket?.on('connect', () => {
-        console.log('Socket connected');
-        // Set up your chat listener here
-        console.log("setup chat listener");
-        socket.on('onMessage', (data: any) => {
-            console.log("onMessage: " + data);
-            // setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
-        });
+            socket?.on('connect', () => {
+            console.log('Socket connected');
+            // Set up your game listener here
+            console.log("setup game listener");
+            setupListeners(socket);
         });
 
         // This will run when the socket disconnects
         socket?.on('disconnect', () => {
-        console.log('Socket disconnected');
-        // Remove your chat listener here
-        socket.off('onMessage');
+            console.log('Socket disconnected');
+            // Remove your chat listener here
+            socket.off('queueUpdate');
         });
 
         // Check if the socket is already connected when the component mounts
         if (socket?.connected) {
-        console.log('Socket already connected');
-        // Set up your chat listener here
-        console.log("setup chat listener");
-        socket.on('onMessage', (data: any) => {
-            console.log("onMessage: " + data);
-            // setMessageReceived(prevMessages => [...prevMessages, data.userName + " : " + data.msg]);
-        });
+            console.log('Socket already connected');
+            // Set up your game listeners here
+            setupListeners(socket);
         }
 
         // Clean up function
         return () => {
-        // Remove the listeners when the component unmounts
-        socket?.off('connect');
-        socket?.off('disconnect');
-        socket?.off('onMessage');
+            // Remove the listeners when the component unmounts
+            socket?.off('connect');
+            socket?.off('disconnect');
+            socket?.off('queueUpdate');
+            // socket?.off('gameUpdate');
         };
     }, [socket]);
 
