@@ -28,11 +28,12 @@ export const Popup: React.FC = () => {
     }
 
     return (
-      <div>
-        <p>This is a popup! You have been invited by {data?.senderName}!</p>
-        <button onClick={closePopup}>Close</button>
-        <p></p>
-        <button onClick={acceptButton}>Accept</button>
+      <div className="absolute bottom-10 right-20 bg-purple-600/40 p-3 rounded-md hover:scale-[102%] transition-all duration-300 backdrop-blur-md shadow-lg drop-shadow ease-in-out">
+        <p className="text-md font-semibold text-wrap">{data?.senderName} sent you an invite!</p>
+        <div className="flex flex-row justify-around gap-5 pt-3">
+        <button className="bg-green-700/80 px-2 rounded-md hover:bg-green-600" onClick={acceptButton}>Accept</button>
+        <button className="bg-red-700/80 px-2 rounded-md hover:bg-red-600" onClick={closePopup}>Close</button>
+        </div>
       </div>
     );
   };
