@@ -1,16 +1,25 @@
-import { PopupProviderProps } from "@components/providers/PopupProvider";
-import { PopupContext } from "@contexts/PopupContext";
-import React from "react";
+// import { PopupStateContext, usePopup } from "@contexts/PopupContext";
+import { usePopup } from "@components/providers/PopupProvider";
+import React, { use, useEffect } from "react";
 
 export const Popup: React.FC = () => {
-    const popupContext = React.useContext(PopupContext);
-    if (popupContext && !popupContext.isPopupOpen) {
+    const { isPopupOpen, data, closePopup } = usePopup();
+
+    // useEffect(() => {
+    //     console.log("Popup mounted");
+    //     return () => {
+    //         console.log("Popup unmounted");
+    //     }
+    // }, []);
+
+    if (!isPopupOpen) {
       return null;
     }
+
     return (
       <div>
-        <p>This is a popup!</p>
-        <button onClick={popupContext?.closePopup}>Close</button>
+        <p>This is a popup! You have been invited by {data?.senderId}!</p>
+        <button onClick={closePopup}>Close</button>
       </div>
     );
   };
