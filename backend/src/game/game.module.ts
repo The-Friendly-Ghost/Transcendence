@@ -7,9 +7,10 @@ import { PrismaGameService } from './prisma/prismaGame.service';
 import { GameGateway } from './game.gateway';
 import { PrismaChatService } from 'src/chat/prisma';
 import { GatewayModule } from 'src/gateway/gateway.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
-  imports: [PrismaClient, PrismaModule, GatewayModule],
+  imports: [PrismaClient, PrismaModule, GatewayModule, UserModule],
   providers: [GameService, PrismaGameService, GameGateway, PrismaChatService],
   controllers: [GameController],
   exports: [PrismaGameService],

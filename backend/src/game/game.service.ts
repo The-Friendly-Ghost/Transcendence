@@ -9,13 +9,15 @@ import { Invite } from './invite';
 import { GatewayService } from 'src/gateway/gateway.service';
 import { GatewayGateway } from 'src/gateway/gateway.gateway';
 import { Socket } from 'socket.io';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class GameService {
   constructor(
     private readonly prismaGameService: PrismaGameService,
     private gateway: GatewayService,
-    private gatewaygateway: GatewayGateway) { }
+    private gatewaygateway: GatewayGateway,
+    private userService: UserService) { }
   private pendingIntraId: number;
   private gamesInfo: GameInfo[];
   private gameManagers: Map<string, GameManager> = new Map();
@@ -121,7 +123,8 @@ export class GameService {
     let invite: Invite = new Invite(senderId, receiverId);
 
     let inviteId = invite.getId();
-    socket.emit("invite", {inviteId, senderId});
+    let senderName = (await this.userService.getUser(senderId)).name;
+    socket.emit("invite", {inviteId, senderId, senderName});
 
     return { "success": true, "inviteId": invite.getId() };
     // this.invites.set(invite.getId(), invite);

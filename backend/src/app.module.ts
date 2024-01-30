@@ -20,6 +20,6 @@ import { GatewayGateway } from './gateway/gateway.gateway';
   imports: [AuthModule, PrismaModule, UserModule, TFAModule, GatewayModule, ChatModule, GameModule, ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'files'),
   }),],
-  providers: [PrismaService, TFAService, PrismaTFAService, JwtService, UserService],
+  providers: [PrismaService, TFAService, PrismaTFAService, JwtService],
 })
 export class AppModule { }
