@@ -43,7 +43,7 @@ function ClientSideLayout
       console.log(data)
     });
     socket.on('invite', (data) => {
-      console.log("invite received")
+      console.log("You have been invited to a game by: " + data.senderId)
       console.log(data)
     });
   }

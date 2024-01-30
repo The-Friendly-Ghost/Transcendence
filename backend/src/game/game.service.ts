@@ -8,6 +8,7 @@ import { clear } from 'console';
 import { Invite } from './invite';
 import { GatewayService } from 'src/gateway/gateway.service';
 import { GatewayGateway } from 'src/gateway/gateway.gateway';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class GameService {
@@ -103,7 +104,7 @@ export class GameService {
     this.gameManagers.delete(gameInfo.roomName);
     this.prismaGameService.updateGame(gameInfo);
   }
-  
+
   /* Invite player takes an senderId and a receiverId.
     Validates that the receiverId is online.
     Creates a new invite object and adds it to the invites map.
@@ -112,14 +113,15 @@ export class GameService {
     Returns if the invite was successful or not and why and if succesful the inviteId.
   */
   async invitePlayer(senderId: number, receiverId: number) {
-    if (await this.gateway.get_socket_from_user(receiverId) === undefined) {
+
+    const socket: Socket = await this.gateway.get_socket_from_user(receiverId);
+    if (socket === undefined) {
       return { "success": false, "reason": "User is not online" };
     }
     let invite: Invite = new Invite(senderId, receiverId);
 
-    await this.gatewaygateway.sendMsgToReciever(receiverId, "You have been invited to a game by " + senderId);
-    // const socket = await this.gateway.get_socket_from_user(receiverId);
-    // socket.emit("invite", invite.getId());
+    let inviteId = invite.getId();
+    socket.emit("invite", {inviteId, senderId});
 
     return { "success": true, "inviteId": invite.getId() };
     // this.invites.set(invite.getId(), invite);
