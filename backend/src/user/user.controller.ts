@@ -39,6 +39,7 @@ export class UserController {
   }
 
   @Post('upload_avatar/:img')
+  @UseInterceptors(FileInterceptor('newAvatar'))
   @ApiOperation({
     summary: 'Upload avatar',
     description: 'Upload avatar',
@@ -48,16 +49,16 @@ export class UserController {
     schema: {
       type: 'object',
       properties: {
-        file: {
+        newAvatar: {
           type: 'string',
           format: 'binary',
         },
       },
     },
   })
-  @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File, @GetUser() user: User) {
-    return (this.userService.setAvatar(user.intraId, file).catch((e) => {return {message: e.message}}));
+  // @UseInterceptors(FileInterceptor('file'))
+  uploadFile(@UploadedFile() newAvatar: Express.Multer.File, @GetUser() user: User) {
+    return (this.userService.setAvatar(user.intraId, newAvatar).catch((e) => {return {message: e.message}}));
   }
 
   @Get('getUser/:intraId')

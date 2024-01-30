@@ -36,6 +36,8 @@ function ClientSideLayout
   }
 
   function setupListeners(socket: Socket): void {
+    console.log("setup listeners");
+    console.log(socket);
     socket.on('onConnection', (data) => {
       console.log("socket connected with server")
       console.log(data)
@@ -71,10 +73,11 @@ function ClientSideLayout
   useEffect(() => {
     console.log("setup socket");
     if (loggedIn) {
-      const ns = setupWebSocket(userInfo.intraId, "/gateway");
-      setSocket(ns);
+      const ns = setupWebSocket(userInfo.intraId, "gateway");
       setupListeners(ns);
+      setSocket(ns);
     } else if (socket) {
+      // console.log("logged out");
       socket.close();
       setSocket(null);
     }

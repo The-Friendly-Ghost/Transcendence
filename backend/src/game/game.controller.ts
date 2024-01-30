@@ -30,7 +30,7 @@ export class GameController {
   })
   @Get('invitePlayer/:playerId')
   async invitePlayer(@GetUser() user: User, @Param('playerId') playerId: number): Promise<any> {
-    console.log('GameController.invitePlayer');
+    console.log('GameController.invitePlayer: ' + playerId);
 
     const response = await this.gameService.invitePlayer(user.intraId, playerId);
     return response;

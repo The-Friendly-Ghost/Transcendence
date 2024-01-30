@@ -51,7 +51,7 @@ export class GameGateway {
     {
         this.gameService.joinQueue(parseInt(data.userId as unknown as string), this);
         console.log("User queued:", data);
-        client.emit('queueStatus', {
+        client.emit('queueUpdate', {
             queueStatus: "joined queue"
         });
     }
@@ -60,7 +60,7 @@ export class GameGateway {
     testGame(client: Socket, data: queueGameDto) {
         this.gameService.testGame(parseInt(data.userId as unknown as string), this);
         // console.log("message object:", data);
-        client.emit("queueStatus", {
+        client.emit("queueUpdate", {
             queueStatus: "starting test game"
         });
     }
