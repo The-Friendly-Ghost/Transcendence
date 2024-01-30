@@ -123,16 +123,29 @@ export class GameService {
     let invite: Invite = new Invite(senderId, receiverId);
 
     let inviteId = invite.getId();
+    console.log("inviteplayer inviteId", inviteId);
     let senderName = (await this.userService.getUser(senderId)).name;
     socket.emit("invite", {inviteId, senderId, senderName});
+    this.invites.set(inviteId, invite);
 
     return { "success": true, "inviteId": invite.getId() };
-    // this.invites.set(invite.getId(), invite);
-
   };
 
-  async acceptInvite(inviteId: number, intraId: number) {
-    this.invites.get(inviteId).acceptInvite(intraId);
+  async acceptInvite(inviteId: number, receiverId: number) {
+    console.log("acceptInvite");
+    console.log("inviteId", inviteId);
+    console.log("intraId", receiverId);
+    let invite = this.invites.get(inviteId);
+    if (invite === undefined) {
+      console.log("Invite not found");
+      return { "success": false, "reason": "Invite not found" };
+    }
+    if (invite.getReceiverId() !== receiverId) {
+      console.log("Invite not for this user");
+      return { "success": false, "reason": "Invite not for this user" };
+    }
+    invite.acceptInvite(receiverId);
+    console.log(invite);
     return true;
   };
 

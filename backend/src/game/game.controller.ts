@@ -41,10 +41,10 @@ export class GameController {
     description: 'Create an invite you can send to another player that they can accept, to play a game together.',
   })
   @Get('acceptInvite/:inviteId')
-  async accptInvite(@GetUser() user: User, @Param('inviteId') inviteId: number): Promise<any> {
+  async accptInvite(@GetUser() user: User, @Param('inviteId', ParseIntPipe) inviteId: number): Promise<any> {
     console.log('GameController.invitePlayer');
 
-    const response = await this.gameService.acceptInvite(user.intraId, inviteId);
+    const response = await this.gameService.acceptInvite(inviteId, user.intraId);
     return response;
   }
 
