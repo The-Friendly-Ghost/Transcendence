@@ -4,11 +4,10 @@ import { io, Socket } from "socket.io-client";
 import { isLoggedIn } from "@utils/isLoggedIn";
 import Navbar from "@components/navbar/Nav";
 import Login from "@components/login/Login";
-import { getUserInfo, setupWebSocket } from "./ServerUtils";
+import { getUserInfo } from "./ServerUtils";
 import { SocketContext } from "@contexts/SocketContext";
 import { addListener } from "process";
-import { PopupContext } from "@contexts/PopupContext";
-import { PopupProvider } from "@components/providers/PopupProvider";
+import { usePopup } from "@components/providers/PopupProvider";
 import { Popup } from "@components/Popup/popup";
 
 
@@ -18,6 +17,7 @@ function ClientSideLayout
   const [socket, setSocket] = useState<Socket | null>(null);
   const [userInfo, setUserInfo] = useState<any>([]);
   const [twoFactorVerified, setTwoFactorVerified] = useState(false);
+  const { isPopupOpen, openPopup, closePopup } = usePopup();
 
   /**
    *
@@ -43,8 +43,10 @@ function ClientSideLayout
       console.log(data)
     });
     socket.on('invite', (data) => {
-      console.log("invite received")
-      console.log(data)
+      // console.log(isPopupOpen)
+      openPopup(data);
+      console.log("You have been invited to a game by: " + data.senderId)
+      // console.log(data)
     });
   }
 
@@ -86,11 +88,9 @@ function ClientSideLayout
   return (
     <div>
       <SocketContext.Provider value={socket}>
-        <PopupProvider>
-          <Popup />
-          {loggedIn ? <Navbar /> : <Login />}
-          {children}
-        </PopupProvider>
+        <Popup />
+        {loggedIn ? <Navbar /> : <Login />}
+        {children}
       </SocketContext.Provider>
     </div>
   );

@@ -13,7 +13,7 @@ import { PrismaModule } from 'prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   controllers: [GatewayController],
-  exports: [GatewayService],
+  exports: [GatewayService, GatewayGateway],
   providers: [GatewayGateway, JwtService, GatewayService, PrismaChatService],
 })
 export class GatewayModule {}

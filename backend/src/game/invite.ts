@@ -22,7 +22,7 @@ export class Invite{
         return this.receiverId;
     }
 
-    acceptInvite(receiverId: number) {
+    public acceptInvite(receiverId: number) {
         // this.receiverId = receiverId;
         if (this.receiverId === receiverId)
             this.state = "ACCEPTED";

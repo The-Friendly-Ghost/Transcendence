@@ -28,11 +28,11 @@ export class GameController {
     summary: 'Create an invite to play a game together.',
     description: 'Create an invite you can send to another player that they can accept, to play a game together.',
   })
-  @Get('invitePlayer/:playerId')
-  async invitePlayer(@GetUser() user: User, @Param('playerId') playerId: number): Promise<any> {
-    console.log('GameController.invitePlayer: ' + playerId);
+  @Get('invitePlayer/:receiverId')
+  async invitePlayer(@GetUser() user: User, @Param('receiverId', ParseIntPipe) receiverId: number): Promise<any> {
+    console.log('GameController.invitePlayer: ' + receiverId);
 
-    const response = await this.gameService.invitePlayer(user.intraId, playerId);
+    const response = await this.gameService.invitePlayer(user.intraId, receiverId);
     return response;
   }
 
@@ -41,10 +41,10 @@ export class GameController {
     description: 'Create an invite you can send to another player that they can accept, to play a game together.',
   })
   @Get('acceptInvite/:inviteId')
-  async accptInvite(@GetUser() user: User, @Param('inviteId') inviteId: number): Promise<any> {
+  async accptInvite(@GetUser() user: User, @Param('inviteId', ParseIntPipe) inviteId: number): Promise<any> {
     console.log('GameController.invitePlayer');
 
-    const response = await this.gameService.acceptInvite(user.intraId, inviteId);
+    const response = await this.gameService.acceptInvite(inviteId, user.intraId);
     return response;
   }
 

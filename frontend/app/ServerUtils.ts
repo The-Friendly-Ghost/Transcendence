@@ -87,6 +87,14 @@ export async function getAllUsers()
     return res_json;
 }
 
+export async function acceptInvite(inviteId: any)
+: Promise<any> {
+    const url: string = `/game/acceptInvite/` + inviteId;
+    const res: Response = await get(url);
+    let res_json: any = await res.json();
+    return res_json;
+}
+
 export async function uploadAvatar(img: any)
 : Promise<any> {
     const url: string = `/user/upload_avatar/`;
@@ -134,8 +142,8 @@ export async function getStatus(intraId: number): Promise<any>
 
 /**
  * Only for DM chat
- * @param intraId 
- * @returns 
+ * @param intraId
+ * @returns
  */
 export async function getOtherUser(intraId: string): Promise<any>
 {

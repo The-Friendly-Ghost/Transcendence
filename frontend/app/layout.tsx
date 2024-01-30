@@ -15,6 +15,7 @@ import "@styles/stars.css";
 
 /* Import React or Library functions */
 import React from "react";
+import { PopupProvider } from "@components/providers/PopupProvider";
 
 // Metadata for the page
 export const metadata: Metadata = {
@@ -33,15 +34,17 @@ export default async function RootLayout (
 
         {/* Animated Gradient Background with static stars */}
         {/* <div className="auroral_background"></div> */}
-        <div id="stars"></div> 
+        <div id="stars"></div>
 
         {/* If the user is logged in, render the Navbar and the children.
         If the user is not logged in, render the Login page */}
         {
           <React.Fragment>
-            <ClientSideLayout>
-              {children}
-            </ClientSideLayout>
+            <PopupProvider>
+              <ClientSideLayout>
+                {children}
+              </ClientSideLayout>
+            </PopupProvider>
           </React.Fragment>
         }
       </body>

@@ -6,10 +6,18 @@ import { GameManager } from './gamemanager';
 import { create } from 'domain';
 import { clear } from 'console';
 import { Invite } from './invite';
+import { GatewayService } from 'src/gateway/gateway.service';
+import { GatewayGateway } from 'src/gateway/gateway.gateway';
+import { Socket } from 'socket.io';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class GameService {
-  constructor(private readonly prismaGameService: PrismaGameService) { }
+  constructor(
+    private readonly prismaGameService: PrismaGameService,
+    private gateway: GatewayService,
+    private gatewaygateway: GatewayGateway,
+    private userService: UserService) { }
   private pendingIntraId: number;
   private gamesInfo: GameInfo[];
   private gameManagers: Map<string, GameManager> = new Map();
@@ -107,14 +115,37 @@ export class GameService {
     Returns if the invite was successful or not and why and if succesful the inviteId.
   */
   async invitePlayer(senderId: number, receiverId: number) {
-    let invite: Invite = new Invite(senderId, receiverId);
-    // this.invites.set(invite.getId(), invite);
 
-    // return invite.getId();
+    const socket: Socket = await this.gateway.get_socket_from_user(receiverId);
+    if (socket === undefined) {
+      return { "success": false, "reason": "User is not online" };
+    }
+    let invite: Invite = new Invite(senderId, receiverId);
+
+    let inviteId = invite.getId();
+    console.log("inviteplayer inviteId", inviteId);
+    let senderName = (await this.userService.getUser(senderId)).name;
+    socket.emit("invite", {inviteId, senderId, senderName});
+    this.invites.set(inviteId, invite);
+
+    return { "success": true, "inviteId": invite.getId() };
   };
 
-  async acceptInvite(inviteId: number, intraId: number) {
-    this.invites.get(inviteId).acceptInvite(intraId);
+  async acceptInvite(inviteId: number, receiverId: number) {
+    console.log("acceptInvite");
+    console.log("inviteId", inviteId);
+    console.log("intraId", receiverId);
+    let invite = this.invites.get(inviteId);
+    if (invite === undefined) {
+      console.log("Invite not found");
+      return { "success": false, "reason": "Invite not found" };
+    }
+    if (invite.getReceiverId() !== receiverId) {
+      console.log("Invite not for this user");
+      return { "success": false, "reason": "Invite not for this user" };
+    }
+    invite.acceptInvite(receiverId);
+    console.log(invite);
     return true;
   };
 
