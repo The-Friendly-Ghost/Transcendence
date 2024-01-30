@@ -52,4 +52,10 @@ export class GatewayGateway {
         }
         this.server.to(body.destination).emit('onMessage', body);
     }
+
+    async sendMsgToReciever(reciever: number, msg: string) {
+        const socket = await this.gateway.get_socket_from_user(reciever);
+        // console.log("socket in gatewaygateway:", socket);
+        this.server.to(socket.id).emit('onMessage', msg);
+    }
 }

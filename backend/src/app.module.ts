@@ -13,6 +13,8 @@ import { ChatModule } from './chat/chat.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UserService } from './user/user.service';
+import { GatewayService } from './gateway/gateway.service';
+import { GatewayGateway } from './gateway/gateway.gateway';
 
 @Module({
   imports: [AuthModule, PrismaModule, UserModule, TFAModule, GatewayModule, ChatModule, GameModule, ServeStaticModule.forRoot({
