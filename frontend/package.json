@@ -15,7 +15,8 @@
     "react-cookie": "^6.1.1",
     "react-dom": "latest",
     "socket.io": "^4.7.2",
-    "socket.io-client": "^4.7.2"
+    "socket.io-client": "^4.7.2",
+    "tailwind": "^4.0.0"
   },
   "devDependencies": {
     "@types/matter-js": "^0.19.5",

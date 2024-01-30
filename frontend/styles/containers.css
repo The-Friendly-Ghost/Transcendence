@@ -12,10 +12,10 @@
 /* Container that's always visible on the background. */
 .container_full_background {
   background: linear-gradient(10deg, rgba(161, 217, 180, 0.8) 20%, rgba(50, 152, 138, 0.8) 40%, rgba(0, 14, 60, 1) 65%);
-  @apply 
+  @apply
     bg-black /* black background */
     w-full /* full width */
-    /* h-screen full height */
+    h-screen /* h-screen full height */
     flex-col /* flex direction column */
     overflow-auto /* hide overflow */
     relative /* position relative */
@@ -70,7 +70,7 @@
 /* Overlay container full width and height.
 Color of this container is transparant */
 .container_full_centered {
-    @apply 
+    @apply
       flex /* flex */
       flex-col /* flex direction column */
       items-center /* center items horizontally */

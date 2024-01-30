@@ -160,7 +160,7 @@ export default function game_page(): React.JSX.Element {
 
     return (
         <section>
-            <button
+            {/* <button
                 type="button"
                 className="main_btn w-1/2"
                 onClick={() => startQueue()}
@@ -180,7 +180,7 @@ export default function game_page(): React.JSX.Element {
                 onClick={() => testGame()}
             >
                 Test game
-            </button>
+            </button> */}
             {/* <canvas ref={canvasRef} className="webgl" /> */}
             <GameComponent className="webgl" user={intraId} socket={socket} gameRoom={gameRoom} />
         </section>
