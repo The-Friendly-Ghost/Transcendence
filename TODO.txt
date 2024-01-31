@@ -44,10 +44,9 @@ Client:
     Simplify socket system.
 
 Invite system:
-    Game controller will have a request new gameroom API point. This will return the gameroomID or Null
-    Then there will be a joinGameroom API point.
+    Game controller will have a request new gameroom API point.
 
-    invitePlayer(Inviter, Invitee) returns invite ID
-    acceptInvite(inviteID)
+    invitePlayer(Inviter, Invitee) returns invite ID. check
+    acceptInvite(inviteID). check
 
     Map / dict van invites.

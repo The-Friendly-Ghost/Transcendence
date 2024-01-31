@@ -20,7 +20,7 @@ export class GatewayService {
     console.log("map size after logout:", this.userBySocket.size);
   }
 
-  async get_socket_from_user(intraId: number): Promise<Socket> {
+  get_socket_from_user(intraId: number): Socket {
     console.log("intraId in get socket:", intraId);
     console.log("map size get_socket:", this.userBySocket.size);
 

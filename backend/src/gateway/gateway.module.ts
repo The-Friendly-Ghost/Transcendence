@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ChatController } from 'src/chat/chat.controller';
 import { GatewayGateway } from './gateway.gateway';
 import { PrismaChatService } from 'src/chat/prisma/prisma_chat.service';
@@ -9,6 +9,7 @@ import { GatewayService } from './gateway.service';
 import { GatewayController } from './gateway.controller';
 import { ChatModule } from 'src/chat/chat.module';
 import { PrismaModule } from 'prisma/prisma.module';
+import { GameModule } from 'src/game/game.module';
 
 @Module({
   imports: [PrismaModule],

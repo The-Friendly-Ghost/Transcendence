@@ -50,34 +50,45 @@ export default function game_page(): React.JSX.Element {
     }
 
     async function setupListeners(socket: Socket) {
+        console.log("setup game listeners");
+        socket.emit('queueGame', {
+            userId: intraId});
         socket.on('queueUpdate', (data: any) => {
             console.log(data);
-            if (data.type === "gameroom") {
-                console.log("game room");
-                setGameRoom(data.message);
-                console.log(gameRoom);
-            }
         });
+        socket.on('gameroom', (data: any) => {
+            console.log("game room");
+            console.log(data);
+            setGameRoom(data);
+            // console.log(gameRoom);
+        });
+        // socket.on('gameUpdate', (data: any) => {
+        //     console.log(data);
+        // });
     };
 
     /* **************** */
     /* UseEffect hooks  */
     /* **************** */
     useEffect(() => {
-        // test();
         fetchUserInfo(getCookie, setUserName, setIntraId);
+    }, [socket]);
+
+    useEffect(() => {
+        if (!intraId) {
+            return;
+        }
         // This will run when the socket connects
             socket?.on('connect', () => {
             console.log('Socket connected');
-            // Set up your game listener here
-            console.log("setup game listener");
+            // Set up your game listeners here
             setupListeners(socket);
         });
 
         // This will run when the socket disconnects
         socket?.on('disconnect', () => {
             console.log('Socket disconnected');
-            // Remove your chat listener here
+            // Remove your game listeners here
             socket.off('queueUpdate');
         });
 
@@ -94,9 +105,10 @@ export default function game_page(): React.JSX.Element {
             socket?.off('connect');
             socket?.off('disconnect');
             socket?.off('queueUpdate');
-            // socket?.off('gameUpdate');
+            socket?.off('gameUpdate');
+            socket?.off('gameroom');
         };
-    }, [socket]);
+    }, [socket, intraId]);
 
     // Fetch intra name on mount
     // useEffect(() => {
@@ -143,18 +155,15 @@ export default function game_page(): React.JSX.Element {
     async function startQueue() {
         console.log(socket);
         if (socket) {
-            socket.emit('queueGame', {
-                userId: intraId,
-                socketId: socket.id });
+            socket.emit('queueGame', {userId: intraId});
         }
     }
 
     async function testGame() {
         console.log(socket);
         if (socket) {
-            socket.emit('testGame', {
-                userId: intraId,
-                socketId: socket.id });
+            console.log("test game");
+            socket.emit('testGame', {userId: intraId});
         }
     }
 
@@ -166,7 +175,7 @@ export default function game_page(): React.JSX.Element {
                 onClick={() => startQueue()}
             >
                 Enter Queue
-            </button>
+            </button> */}
             <button
                 type="button"
                 className="main_btn w-1/2"
@@ -180,7 +189,7 @@ export default function game_page(): React.JSX.Element {
                 onClick={() => testGame()}
             >
                 Test game
-            </button> */}
+            </button>
             {/* <canvas ref={canvasRef} className="webgl" /> */}
             <GameComponent className="webgl" user={intraId} socket={socket} gameRoom={gameRoom} />
         </section>

@@ -14,7 +14,7 @@ export class GatewayGateway {
     constructor(
     private gateway: GatewayService,
     // private chat: ChatService,
-    private prisma_chat: PrismaChatService
+    private prisma_chat: PrismaChatService,
     ) {}
     @WebSocketServer()
     server: Server;
@@ -29,9 +29,6 @@ export class GatewayGateway {
         await this.gateway.add_socket_to_user(intraId, client).catch((err) => {
             console.log(err);
         });
-        // this.gateway.get_user_by_socket_map().then((map) => {
-        //     console.log("current map:", map);
-        // });
     }
 
     @SubscribeMessage('newMessage')

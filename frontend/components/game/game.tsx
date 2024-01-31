@@ -25,37 +25,47 @@ interface GameComponentProps {
 
 function GameComponent({ user, socket, gameRoom }: GameComponentProps) {
 
-    const gameSocketRef = useRef<Socket | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [game, setGame] = useState<Game | null>(null);
     const settings = new Settings();
 
+    // Setup game if canvasRef is set and game is not set yet
+    // This is also done to start the rendering.
     useEffect(() => {
-        // console.log('user: ' + user + ' socket: ' + socket);
         if (canvasRef.current && !game) {
             console.log('creating game');
             setGame(new Game(canvasRef.current, settings));
         }
     }, [canvasRef, settings]);
 
+    // Setup game socket if game is set and socket is set
     useEffect(() => {
-        console.log('socket: ' + socket);
-        if (socket && game)
-            game?.setSocket(socket);
+        if (game && socket)
+        {
+            console.log('setting game socket');
+            game.setSocket(socket);
+        }
     }, [socket, game]);
 
+    // Setup game user if game is set and user is set
     useEffect(() => {
-        console.log('user: ' + user);
         if (user && game)
+        {
+            console.log('user: ' + user);
             game.setUser(user);
+        }
     }, [user, game]);
 
+    // Setup game room if game is set and gameRoom is set
     useEffect(() => {
         if (game && user && socket && gameRoom) {
+            console.log('setting game room');
             game.setGameRoom(gameRoom);
+            console.log("current game room: " + game.gameRoom);
         }
-    }, [user, socket, gameRoom]);
+    }, [game, user, socket, gameRoom]);
 
+    // Start game if game is set
     useEffect(() => {
         if (game)
             game.start();
@@ -196,7 +206,7 @@ export class Game {
                 this.text = new Text({
                     font: this.font,
                     scene: this.scene,
-                    text: 'Waiting for game to start...',
+                    text: 'Waiting for other players...',
                     color: new THREE.Color(0xffffff),
                     position: new THREE.Vector3(0, 20, 10)
                 });
@@ -216,13 +226,7 @@ export class Game {
                 });
             }
         )
-        // this.gui = new GUI();
-        // this.gui.add(this, 'reset');
-        // this.gui.add(this.settings, 'ballBaseSpeed');
-        // this.gui.add(this.settings, 'ballSpeedMultiplier');
-        // this.gui.add(this, 'start');
         this.time.tick();
-        // this.countdown(3);
     };
 
     update_logic(): void {
@@ -260,69 +264,75 @@ export class Game {
         this.update_visuals();
     }
 
-    removeListeners(gameRoom: number): void {
-        this.socket?.off(String(gameRoom));
+    removeListeners(): void {
+        this.socket?.off('gameUpdate');
+        this.socket?.off('gameStart');
+        this.socket?.off('gameStatus');
+        this.socket?.off('gameReset');
+        this.socket?.off('playerScored');
+        this.socket?.off('playerLeft');
+        this.socket?.off('countdown');
     }
 
-    setListeners(gameRoom: number): void {
-        this.socket?.on(String(gameRoom), (data: any) => {
-            // console.log(data);
-            if (data.type == 'gameUpdate') {
-                // console.log(data.message);
-                this.ball.setPos(data.message.ball.pos);
-                this.ball.setVelocity(data.message.ball.vel);
-                this.paddle1.setPos(data.message.p1.pos);
-                this.paddle2.setPos(data.message.p2.pos);
-                this.paddle1.setAngle(data.message.p1.angle);
-                this.paddle2.setAngle(data.message.p2.angle);
-            }
-            if (data.type == 'gameStart') {
-                console.log(data.message);
+    setListeners(): void {
+        console.log('setting up game listeners');
+        console.log(this.socket);
+        this.socket?.on('gameUpdate', (state: any) => {
+            console.log(state);
+            // console.log(data.message);
+            this.ball.setPos(state.ball.pos);
+            this.ball.setVelocity(state.ball.vel);
+            this.paddle1.setPos(state.p1.pos);
+            this.paddle2.setPos(state.p2.pos);
+            this.paddle1.setAngle(state.p1.angle);
+            this.paddle2.setAngle(state.p2.angle);
+        });
+        this.socket?.on('gameStart', (data: any) => {
+                console.log(data);
                 this.countdown(3);
                 // this.start();
-            }
-            if (data.type == 'gameStatus') {
-                console.log(data.message);
+        });
+        this.socket?.on('gameStatus', (data: any) => {
+                console.log(data);
                 if (data.message == 'FINISHED') {
                     this.text.setText("Game over!");
-                    this.removeListeners(this.gameRoom);
+                    this.removeListeners();
                     console.log('game has ended. finito. finished');
                 }
-            }
-            if (data.type == 'gameReset') {
-                console.log(data.message);
+            });
+            this.socket?.on('gameReset', (data: any) => {
+                console.log(data);
                 this.reset();
                 this.countdown(3);
-            }
-            if (data.type == 'playerScored') {
-                console.log(data.message);
-                if (data.message.player == this.user) {
+            });
+            this.socket?.on('playerScored', (data: any) => {
+                console.log(data);
+                if (data.player == this.user) {
                     this.text.setText("You scored!");
                 }
                 else {
                     this.text.setText("Opponent scored!");
                 }
                 this.text.setVisibility(true);
-                this.scoreText1.setText('score: ' + data.message.p1_points);
-                this.scoreText2.setText('score: ' + data.message.p2_points);
-                // this.score(data.message);
-            }
-            if (data.type == 'playerLeft') {
-                console.log(data.message);
-                // this.removeListeners(this.gameRoom);
+                this.scoreText1.setText('score: ' + data.p1_points);
+                this.scoreText2.setText('score: ' + data.p2_points);
+                // this.score(data);
+            });
+            this.socket?.on('playerLeft', (data: any) => {
+                console.log(data);
+                // this.removeListeners();
                 // console.log('player left. game over');
-            }
-            if (data.type == 'countdown') {
-                console.log(data.message);
-                this.countdown(data.message.count);
-            }
-        });
-    }
+            });
+            this.socket?.on('countdown', (data: any) => {
+                console.log(data);
+                this.countdown(data.count);
+            });
+        };
 
     setGameRoom(gameRoom: number): void {
-        this.removeListeners(this.gameRoom);
+        this.removeListeners();
         this.gameRoom = gameRoom;
-        this.setListeners(gameRoom);
+        this.setListeners();
     }
 
     resize(): void {

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaGameService } from './prisma';
-import { GameGateway } from './game.gateway';
 import { GameInfo, User } from '@prisma/client';
 import { GameManager } from './gamemanager';
 import { create } from 'domain';
@@ -15,13 +14,33 @@ import { UserService } from 'src/user/user.service';
 export class GameService {
   constructor(
     private readonly prismaGameService: PrismaGameService,
-    private gateway: GatewayService,
-    private gatewaygateway: GatewayGateway,
-    private userService: UserService) { }
+    private gatewayService: GatewayService,
+    private gateway: GatewayGateway,
+    private userService: UserService) {
+
+    }
   private pendingIntraId: number;
+  private pendingClient: Socket;
   private gamesInfo: GameInfo[];
   private gameManagers: Map<string, GameManager> = new Map();
   private invites: Map<number, Invite> = new Map();
+
+  async onModuleInit() {
+    this.gateway.server.on('connection', this.setupConnection.bind(this));
+    // this.gateway.server.on('disconnect', this.disconnect_from_game.bind(this));
+  };
+
+  setupConnection(client: Socket) {
+    client.on('queueGame', (data: any) => {
+      console.log("data:", data);
+      this.queueGame(client, data);
+    });
+    client.on('testGame', (data: any) => {
+      console.log("data:", data);
+      this.testGame(client, Number(data.userId));
+    });
+  };
+
 
   async resetGames(userId: number) {
     console.log('GameService.resetGames');
@@ -45,54 +64,69 @@ export class GameService {
     return game;
   }
 
-  async testGame(p1: number, gateway: GameGateway) {
+  async testGame(client: Socket, p1: number) {
     let gameInfo: GameInfo;
     let gameManager: GameManager;
-
+    if (this.pendingIntraId == p1) {
+      this.pendingIntraId = null;
+      this.pendingClient = null;
+    }
     console.log("Test Game:")
     gameInfo = await this.create_game(p1, p1);
-    gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
-    gameManager = new GameManager(gameInfo, gateway, this.cleanupGame.bind(this), this.startGameCallback.bind(this));
+    client.emit('gameroom', gameInfo.roomName);
+    gameManager = new GameManager(gameInfo, this.gatewayService, this.gateway, this.cleanupGame.bind(this), this.startGameCallback.bind(this));
     this.gameManagers.set(gameInfo.roomName, gameManager);
     console.log(gameInfo);
   };
 
-  async joinQueue(intraId: number, gateway: GameGateway) {
+  async queueGame(client: Socket, data: any) {
+    console.log("queueGame");
+    console.log(data);
+    this.joinQueue(client, parseInt(data.userId as unknown as string));
+    console.log("User queued:", data);
+    client.emit('queueUpdate', {
+      queueStatus: "joined queue"
+    });
+  };
+
+  async joinQueue(client: Socket, intraId: number) {
     console.log('GameService.joinQueue userId', intraId);
     // Check if player is already in game
     const game = await this.prismaGameService.findGame({ userId: intraId });
     if (game != null && game.state != "FINISHED") {
-      gateway.sendToUser(intraId, "info", "You are already in a game");
-      gateway.sendToUser(intraId, "gameroom", game.roomName);
+      client.emit('queueUpdate', "You are already in a game");
+      client.emit('gameroom', game.roomName);
       console.log(intraId, "is already in a game");
       return;
     }
     // Check if a player is in queue already, if not add player to queue
     if (this.pendingIntraId == null && !Number.isNaN(intraId)) {
       this.pendingIntraId = intraId;
-      gateway.sendToUser(intraId, "info", "Added to queue");
+      this.pendingClient = client;
+      client.emit('queueUpdate', "Added to queue");
     }
     else if (this.pendingIntraId != intraId && !Number.isNaN(intraId)) {
       console.log("Found 2 users starting a game");
-      gateway.sendToUser(intraId, "info", "Found a player starting game");
-      await this.start_game(intraId, this.pendingIntraId, gateway);
+      client.emit('queueUpdate', "Found a player starting game");
+      await this.start_game(intraId, this.pendingIntraId, client, this.pendingClient);
       this.pendingIntraId = null;
+      this.pendingClient = null;
     }
     else {
       console.log("User is already in queue");
-      gateway.sendToUser(intraId, "info", "You are already in queue");
+      client.emit('queueUpdate', "You are already in queue");
     }
   }
 
-  async start_game(p1: number, p2: number, gateway: GameGateway) {
+  async start_game(p1: number, p2: number, client1: Socket, client2: Socket) {
     let gameInfo: GameInfo;
     let gameManager: GameManager;
 
     gameInfo = await this.create_game(p1, p2);
-    gateway.sendToUser(p1, "gameroom", gameInfo.roomName);
-    gateway.sendToUser(p2, "gameroom", gameInfo.roomName);
+    client1.emit('queueUpdate', {type: 'gameroom', roomname: gameInfo.roomName});
+    client2.emit('queueUpdate', {type: 'gameroom', roomname: gameInfo.roomName});
     console.log("gameroom created:");
-    gameManager = new GameManager(gameInfo, gateway, this.cleanupGame.bind(this), this.startGameCallback.bind(this));
+    gameManager = new GameManager(gameInfo, this.gatewayService, this.gateway, this.cleanupGame.bind(this), this.startGameCallback.bind(this));
     console.log("game initialized.");
     this.gameManagers.set(gameInfo.roomName, gameManager);
     console.log(gameInfo);
@@ -116,7 +150,7 @@ export class GameService {
   */
   async invitePlayer(senderId: number, receiverId: number) {
 
-    const socket: Socket = await this.gateway.get_socket_from_user(receiverId);
+    const socket: Socket = await this.gatewayService.get_socket_from_user(receiverId);
     if (socket === undefined) {
       return { "success": false, "reason": "User is not online" };
     }
