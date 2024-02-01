@@ -60,7 +60,8 @@ export function  dashboard() {
     <div className='dashboard_block'>
       <UserInfo
         info = {userInfo.name}
-        avatar = {userInfo.image_url}
+        intraImage = {userInfo.image_url}
+        avatar = {userInfo.avatar}
         intraId = {userInfo.intraId}
       />
     </div>
