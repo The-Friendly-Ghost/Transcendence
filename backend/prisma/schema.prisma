@@ -21,12 +21,9 @@ model User {
   losses         Int        @default(0)
   socket         Json?
   avatar         Json?
-
-  // Chat
-  chatrooms  Chatroom[] @relation("banned")
-  adminOf    Chatroom[] @relation("admin")
-  // Chatroom   Chatroom?  @relation(fields: [chatroomId], references: [id])
-  Chatroom   Chatroom[]
+  Chatroom       Chatroom[] @relation("ChatroomToUser")
+  adminOf        Chatroom[] @relation("admin")
+  chatrooms      Chatroom[] @relation("banned")
 }
 
 model GameInfo {
@@ -35,6 +32,8 @@ model GameInfo {
   state     GameState
   p1        Int
   p2        Int
+  winner    Int?
+  loser     Int?
   createdAt DateTime  @default(now())
   roomName  String?
 }
@@ -57,7 +56,7 @@ model Chatroom {
   ownerIntraId Int
   mutedIds     Int[]
   messages     Message[]
-  users        User[]
+  users        User[]    @relation("ChatroomToUser")
   admins       User[]    @relation("admin")
   bannedUsers  User[]    @relation("banned")
 }

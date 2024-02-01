@@ -12,7 +12,8 @@ export class GatewayService {
   async add_socket_to_user(intraId: number, client: Socket) {
     this.userBySocket.set(intraId, client);
     // console.log("current userBySocket map:", this.userBySocket);
-    console.log("map after login:", this.userBySocket);
+    // console.log("map after login:", this.userBySocket);
+    console.log("connected users map size: ", this.userBySocket.size);
   }
 
   async remove_socket_from_user(intraId: number) {

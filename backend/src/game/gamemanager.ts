@@ -62,6 +62,8 @@ export class GameManager {
         this.gameInfo.state = "FINISHED";
         console.log("game over");
         this.gameInfo.score = this.game.getScore();
+        this.gameInfo.winner = this.game.getWinner();
+        this.gameInfo.loser = this.game.getLoser();
         this.sendToRoom("gameStatus", this.gameInfo.state);
         this.cleanup();
     }

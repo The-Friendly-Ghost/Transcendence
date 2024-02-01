@@ -10,6 +10,7 @@ import InputHandler from './input';
 import { gameStateDto } from '../dto';
 import { EventEmitter } from 'stream';
 import Time from './utils/time';
+import { last } from 'rxjs';
 
 /*
 The game class should only have the logic.
@@ -189,6 +190,19 @@ export default class Game extends EventEmitter {
 
     getScore(): number[] {
         return [this.p1_points, this.p2_points];
+    }
+
+    getWinner(): number {
+        return this.lastScored;
+    }
+
+    getLoser(): number {
+        if (this.p1_points < this.p2_points) {
+            return this.player1;
+        }
+        else {
+            return this.player2;
+        }
     }
 
     stop(): void {
