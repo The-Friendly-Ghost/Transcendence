@@ -66,3 +66,10 @@ enum GameState {
   IN_PROGRESS
   FINISHED
 }
+
+model Invite {
+  id          Int      @id @default(autoincrement())
+  senderId    Int
+  receiverId  Int
+  state       String
+}

@@ -156,7 +156,13 @@ export class GameService {
     if (socket === undefined) {
       return { "success": false, "reason": "User is not online" };
     }
-    let invite: Invite = new Invite(senderId, receiverId);
+
+    let inviteInfo = await this.prismaGameService.createInvite({
+      senderId: senderId,
+      receiverId: receiverId,
+      state: "PENDING"
+    });
+    let invite: Invite = new Invite(inviteInfo.id, senderId, receiverId);
 
     let inviteId = invite.getId();
     console.log("inviteplayer inviteId", inviteId);
@@ -181,6 +187,9 @@ export class GameService {
       return { "success": false, "reason": "Invite not for this user" };
     }
     invite.acceptInvite(receiverId);
+    let inviteInfo = await this.prismaGameService.findInvite({ where: { id: inviteId } });
+    inviteInfo.state = "ACCEPTED";
+    this.prismaGameService.updateInvite(inviteInfo);
     console.log(invite);
     return true;
   };

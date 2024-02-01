@@ -42,6 +42,41 @@ export class PrismaGameService {
       });;
   }
 
+  async createInvite(data: Prisma.InviteCreateInput): Promise<any> {
+    return await this.prisma.invite
+      .create({
+        data: data,
+      })
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error(
+          'PrismaGameService.createInvite error reason: ' + e.message + ' code: ' + e.code,
+        );
+        throw new NotFoundException();
+      });;
+  }
+
+  async findInvite(data: Prisma.InviteFindFirstArgs): Promise<any> {
+    return await this.prisma.invite
+      .findFirst(data)
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error(
+          'PrismaGameService.findInvite error reason: ' + e.message + ' code: ' + e.code,
+        );
+        throw new NotFoundException();
+      });;
+  }
+
+  async updateInvite(data: Prisma.InviteUpdateArgs): Promise<any> {
+    return await this.prisma.invite
+      .update(data)
+      .catch((e: Prisma.PrismaClientKnownRequestError) => {
+        console.error(
+          'PrismaGameService.updateInvite error reason: ' + e.message + ' code: ' + e.code,
+        );
+        throw new NotFoundException();
+      });;
+  }
+
   async findGame(dto: findGameDto): Promise<GameInfo> {
     let games: GameInfo[] = null;
     try {
