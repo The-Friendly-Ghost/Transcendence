@@ -39,6 +39,10 @@ export class GameService {
       console.log("data:", data);
       this.testGame(client, Number(data.userId));
     });
+    client.on('leaveQueue', (data: any) => {
+      console.log("data:", data);
+      this.leaveQueue(client, Number(data.userId));
+    });
   };
 
 
@@ -80,8 +84,7 @@ export class GameService {
   };
 
   async queueGame(client: Socket, data: any) {
-    console.log("queueGame");
-    console.log(data);
+    console.log("queueGame", data);
     this.joinQueue(client, parseInt(data.userId as unknown as string));
     console.log("User queued:", data);
     client.emit('queueUpdate', {
@@ -89,8 +92,33 @@ export class GameService {
     });
   };
 
+  async leaveQueue(client: Socket, data: any) {
+    console.log("leaveQueue");
+    console.log(data);
+    let userId = parseInt(data.userId as unknown as string);
+    if (this.pendingIntraId == userId || this.pendingClient == client) {
+      this.pendingIntraId = null;
+      this.pendingClient = null;
+    }
+    console.log("User left queue:", data);
+    client.emit('queueUpdate', {
+      queueStatus: "left queue"
+    });
+  }
+
   async joinQueue(client: Socket, intraId: number) {
     console.log('GameService.joinQueue userId', intraId);
+    // Check if player was invited to a game
+    const invite = await this.prismaGameService.findInvite({where: {OR: [{ receiverId: intraId}, {senderId: intraId}]}});
+    console.log("invite:", invite);
+    if (invite != null && invite.state == "ACCEPTED") {
+      console.log("User was invited to a game");
+      client.emit('queueUpdate', "Joining game from invite");
+      await this.start_game(invite.senderId, invite.receiverId, this.gatewayService.get_socket_from_user(invite.senderId), this.gatewayService.get_socket_from_user(invite.receiverId));
+      // invite.state = "FINISHED";
+      await this.prismaGameService.updateInvite({where: {id: invite.id}, data: {state: "FINISHED"}});
+      return;
+    }
     // Check if player is already in game
     const game = await this.prismaGameService.findGame({ userId: intraId });
     if (game != null && game.state != "FINISHED") {
@@ -162,6 +190,9 @@ export class GameService {
       receiverId: receiverId,
       state: "PENDING"
     });
+    if (inviteInfo === undefined) {
+      return { "success": false, "reason": "Invite not created" };
+    }
     let invite: Invite = new Invite(inviteInfo.id, senderId, receiverId);
 
     let inviteId = invite.getId();
@@ -187,9 +218,10 @@ export class GameService {
       return { "success": false, "reason": "Invite not for this user" };
     }
     invite.acceptInvite(receiverId);
-    let inviteInfo = await this.prismaGameService.findInvite({ where: { id: inviteId } });
-    inviteInfo.state = "ACCEPTED";
-    this.prismaGameService.updateInvite(inviteInfo);
+    // let inviteInfo = await this.prismaGameService.findInvite({ where: { id: inviteId } });
+    // console.log("inviteInfo", inviteInfo);
+    // inviteInfo.state = "ACCEPTED";
+    this.prismaGameService.updateInvite({where: {id: invite.id}, data: {state: "ACCEPTED"}});
     console.log(invite);
     return true;
   };

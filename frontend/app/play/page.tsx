@@ -51,8 +51,7 @@ export default function game_page(): React.JSX.Element {
 
     async function setupListeners(socket: Socket) {
         console.log("setup game listeners");
-        socket.emit('queueGame', {
-            userId: intraId});
+        socket.emit('queueGame', {userId: intraId});
         socket.on('queueUpdate', (data: any) => {
             console.log(data);
         });
@@ -102,6 +101,7 @@ export default function game_page(): React.JSX.Element {
         // Clean up function
         return () => {
             // Remove the listeners when the component unmounts
+            socket?.emit('leaveQueue', {userId: intraId});
             socket?.off('connect');
             socket?.off('disconnect');
             socket?.off('queueUpdate');
