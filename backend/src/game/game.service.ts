@@ -111,12 +111,14 @@ export class GameService {
     // Check if player was invited to a game
     const invite = await this.prismaGameService.findInvite({where: {OR: [{ receiverId: intraId}, {senderId: intraId}]}});
     console.log("invite:", invite);
-    if (invite != null && invite.state == "ACCEPTED") {
+    if (invite != null && (invite.state == "ACCEPTED" || invite.state == "PENDING")) {
       console.log("User was invited to a game");
       client.emit('queueUpdate', "Joining game from invite");
-      await this.start_game(invite.senderId, invite.receiverId, this.gatewayService.get_socket_from_user(invite.senderId), this.gatewayService.get_socket_from_user(invite.receiverId));
-      // invite.state = "FINISHED";
-      await this.prismaGameService.updateInvite({where: {id: invite.id}, data: {state: "FINISHED"}});
+      if (invite.state == "ACCEPTED") {
+        await this.start_game(invite.senderId, invite.receiverId, this.gatewayService.get_socket_from_user(invite.senderId), this.gatewayService.get_socket_from_user(invite.receiverId));
+        // invite.state = "FINISHED";
+        await this.prismaGameService.updateInvite({where: {id: invite.id}, data: {state: "FINISHED"}});
+      }
       return;
     }
     // Check if player is already in game
@@ -127,6 +129,7 @@ export class GameService {
       console.log(intraId, "is already in a game");
       return;
     }
+
     // Check if a player is in queue already, if not add player to queue
     if (this.pendingIntraId == null && !Number.isNaN(intraId)) {
       this.pendingIntraId = intraId;

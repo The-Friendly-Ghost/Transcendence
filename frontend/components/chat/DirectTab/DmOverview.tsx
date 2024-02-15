@@ -8,8 +8,9 @@ import InputSimple from '@components/common/Input';
 import { validateChatroomPassword } from '@app/chat/serverUtils';
 import { getOtherUser } from '@app/ServerUtils';
 import { useRouter } from 'next/navigation'
+import { invitePlayer } from './invitePlayer';
 
-export default function DmOverview( { setCurrentRoom, key, room, myIntraId, userName, chatSocket } 
+export default function DmOverview( { setCurrentRoom, key, room, myIntraId, userName, chatSocket }
 : ChatProps )
 : React.JSX.Element
 {
@@ -21,7 +22,7 @@ export default function DmOverview( { setCurrentRoom, key, room, myIntraId, user
 	useEffect(()  => {
 		const fetchFriendId = async () => {
 			const temp = await getOtherUser(room.name);
-			if (temp) {
+			if (temp && temp.users[0] && temp.users[1]) {
 				if (temp.users[0].intraId !== IntraIdNum) {
 					setOtherIntraId(temp.users[0].intraId);
 					setOtherName(temp.users[0].name);
@@ -46,7 +47,13 @@ export default function DmOverview( { setCurrentRoom, key, room, myIntraId, user
 					buttonStyle={"border-white border-[1px] hover:bg-violet-700/40 m-0 mr-4 mt-4"}
 				/>
 				<StandardButton
-					onClick={() => get(`/game/invitePlayer/${otherIntraId}`).then(() => router.push("/play"))}
+					onClick={() => invitePlayer(otherIntraId)
+						.then(response => {
+							if (response && response.success) {
+								router.push("/play")
+							}
+						})
+					}
 					text={"Invite " + otherName}
 					buttonStyle={"w-[200px] border-white border-[1px] hover:bg-violet-700/40 m-0 mr-4 mt-4"}
 				/>
