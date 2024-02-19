@@ -278,7 +278,7 @@ export class Game {
         console.log('setting up game listeners');
         console.log(this.socket);
         this.socket?.on('gameUpdate', (state: any) => {
-            console.log(state);
+            // console.log(state);
             // console.log(data.message);
             this.ball.setPos(state.ball.pos);
             this.ball.setVelocity(state.ball.vel);

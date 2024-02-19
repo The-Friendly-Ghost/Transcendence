@@ -32,9 +32,6 @@ export class QueueService {
 
     async queueGame(client: Socket, data: any) {
         this.joinQueue(client, parseInt(data.userId as unknown as string));
-        client.emit('queueUpdate', {
-            queueStatus: "joined queue"
-        });
     };
 
     async leaveQueue(client: Socket, data: any) {
@@ -47,7 +44,8 @@ export class QueueService {
         }
         console.log("User left queue:", data);
         client.emit('queueUpdate', {
-            queueStatus: "left queue"
+            message: "Left queue",
+            status: "LEFT_QUEUE"
         });
     }
 
@@ -68,7 +66,10 @@ export class QueueService {
         // Check if player is already in game
         const game = await this.prismaGameService.findGame({ userId: intraId });
         if (game != null && game.state != "FINISHED") {
-            client.emit('queueUpdate', "You are already in a game");
+            client.emit('queueUpdate', {
+                message: "You are already in a game",
+                status: "IN_GAME"
+        });
             client.emit('gameroom', game.roomName);
             console.log(intraId, "is already in a game");
             return;
@@ -78,7 +79,10 @@ export class QueueService {
         if (this.pendingIntraId == null && !Number.isNaN(intraId)) {
             this.pendingIntraId = intraId;
             this.pendingClient = client;
-            client.emit('queueUpdate', "Added to queue");
+            client.emit('queueUpdate', {
+                message: "Added to queue",
+                status: "IN_QUEUE"
+            });
         }
         else if (this.pendingIntraId != intraId && !Number.isNaN(intraId)) {
             console.log("Found 2 users starting a game");
@@ -89,7 +93,10 @@ export class QueueService {
         }
         else {
             console.log("User is already in queue");
-            client.emit('queueUpdate', "You are already in queue");
+            client.emit('queueUpdate', {
+                message: "You are already in queue",
+                status: "IN_QUEUE"
+            });
         }
     }
 }

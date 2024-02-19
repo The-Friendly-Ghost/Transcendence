@@ -4,12 +4,14 @@ import { reset_game } from "./reset_game";
 import { Socket, io } from "socket.io-client";
 import { getCookie, getUserInfo } from "@app/ServerUtils";
 import GameComponent from "@components/game/game";
+import MenuOverlay from "@components/menuOverlay/menuOverlay";
 import { useSocket } from '@contexts/SocketContext';
 
 export default function game_page(): React.JSX.Element {
     // const
     const [intraId, setIntraId] = useState<string | null>(null);
     const [userName, setUserName] = useState<string | null>(null);
+    const [overlayVisible, setOverlayVisible] = useState<boolean>(true);
     const [queueStatus, setQueueStatus] = useState(false);
     const [gameRoom, setGameRoom] = useState<number | null>(null);
     const socket = useSocket();
@@ -46,15 +48,19 @@ export default function game_page(): React.JSX.Element {
 
     async function setupListeners(socket: Socket) {
         console.log("setup game listeners");
-        socket.emit('queueGame', {userId: intraId});
-        socket.on('queueUpdate', (data: any) => {
-            console.log(data);
-        });
+        // socket.on('queueUpdate', (data: any) => {
+        //     console.log(data);
+        // });
         socket.on('gameroom', (data: any) => {
             console.log("game room");
             console.log(data);
             setGameRoom(data);
             // console.log(gameRoom);
+        });
+        socket.on('gameOver', (data: any) => {
+            console.log("game Over");
+            console.log(data);
+            setGameRoom(null);
         });
         // socket.on('gameUpdate', (data: any) => {
         //     console.log(data);
@@ -83,7 +89,6 @@ export default function game_page(): React.JSX.Element {
         socket?.on('disconnect', () => {
             console.log('Socket disconnected');
             // Remove your game listeners here
-            socket.off('queueUpdate');
         });
 
         // Check if the socket is already connected when the component mounts
@@ -99,7 +104,7 @@ export default function game_page(): React.JSX.Element {
             socket?.emit('leaveQueue', {userId: intraId});
             socket?.off('connect');
             socket?.off('disconnect');
-            socket?.off('queueUpdate');
+            // socket?.off('queueUpdate');
             socket?.off('gameUpdate');
             socket?.off('gameroom');
         };
@@ -144,6 +149,7 @@ export default function game_page(): React.JSX.Element {
             >
                 Test game
             </button>
+            <MenuOverlay visibility={overlayVisible} socket={socket} user={intraId} gameRoom={gameRoom} />
             <GameComponent className="webgl" user={intraId} socket={socket} gameRoom={gameRoom} />
         </section>
     );
