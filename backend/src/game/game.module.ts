@@ -8,10 +8,12 @@ import { PrismaGameService } from './prisma/prismaGame.service';
 import { PrismaChatService } from 'src/chat/prisma';
 import { GatewayModule } from 'src/gateway/gateway.module';
 import { UserModule } from 'src/user/user.module';
+import { InviteService } from './invite.service';
+import { QueueService } from './queue.service';
 
 @Module({
   imports: [PrismaClient, PrismaModule, GatewayModule, UserModule],
-  providers: [GameService, PrismaGameService, PrismaChatService],
+  providers: [GameService, QueueService, PrismaGameService, PrismaChatService, InviteService],
   controllers: [GameController],
   exports: [GameService, PrismaGameService],
 })

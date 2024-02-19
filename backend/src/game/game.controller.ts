@@ -1,16 +1,19 @@
-import { Controller, Get, Param, ParseIntPipe, Post, UseGuards, Response } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Jwt2faAuthGuard } from 'src/2fa/guard';
 import { GameService } from './game.service';
-import { GameInfo, User } from '@prisma/client';
-import { Response as Res } from 'express';
+import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
+import { InviteService } from './invite.service';
 
 @UseGuards(Jwt2faAuthGuard)
 @Controller('game')
 @ApiTags('game')
 export class GameController {
-  constructor(private readonly gameService: GameService) { }
+  constructor(
+    private readonly gameService: GameService,
+    private readonly inviteService: InviteService,
+    ) { }
 
   @ApiOperation({
     summary: 'Reset all games in the database.',
@@ -32,7 +35,7 @@ export class GameController {
   async invitePlayer(@GetUser() user: User, @Param('receiverId', ParseIntPipe) receiverId: number): Promise<any> {
     console.log('GameController.invitePlayer: ' + receiverId);
 
-    const response = await this.gameService.invitePlayer(user.intraId, receiverId);
+    const response = await this.inviteService.invitePlayer(user.intraId, receiverId);
     return response;
   }
 
@@ -44,7 +47,7 @@ export class GameController {
   async accptInvite(@GetUser() user: User, @Param('inviteId', ParseIntPipe) inviteId: number): Promise<any> {
     console.log('GameController.invitePlayer');
 
-    const response = await this.gameService.acceptInvite(inviteId, user.intraId);
+    const response = await this.inviteService.acceptInvite(inviteId, user.intraId);
     return response;
   }
 

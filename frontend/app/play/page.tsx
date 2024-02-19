@@ -5,7 +5,6 @@ import { Socket, io } from "socket.io-client";
 import { getCookie, getUserInfo } from "@app/ServerUtils";
 import GameComponent from "@components/game/game";
 import { useSocket } from '@contexts/SocketContext';
-// import Canvas from './components/game/canvas'
 
 export default function game_page(): React.JSX.Element {
     // const
@@ -38,10 +37,6 @@ export default function game_page(): React.JSX.Element {
     async function test() {
         console.log(getUserInfo());
     }
-
-    // async function fetchIntraId(): Promise<void> {
-    //     setIntraId(await getCookie('intraId'));
-    // };
 
     async function resetGames() {
         console.log("Resetting all games");
@@ -78,7 +73,7 @@ export default function game_page(): React.JSX.Element {
             return;
         }
         // This will run when the socket connects
-            socket?.on('connect', () => {
+        socket?.on('connect', () => {
             console.log('Socket connected');
             // Set up your game listeners here
             setupListeners(socket);
@@ -109,47 +104,6 @@ export default function game_page(): React.JSX.Element {
             socket?.off('gameroom');
         };
     }, [socket, intraId]);
-
-    // Fetch intra name on mount
-    // useEffect(() => {
-    //     async function fetchData(): Promise<void> {
-    //         if (intraId === null) {
-    //             console.log("Fetching intra name");
-    //             await fetchUserInfo();
-    //             console.log(intraId);
-    //         }
-    //     }
-    //     fetchData();
-    // }, []);
-
-    // // Setup websocket queue listeners
-    // useEffect(() => {
-    //     if (socket) {
-    //         socket.on('queueStatus', (data: any) => {
-    //             console.log(data);
-    //         });
-    //         socket.on(String(intraId), (data: any) => {
-    //             console.log(data);
-    //             if (data.type === "gameroom") {
-    //                 console.log("game room");
-    //                 setGameRoom(data.message);
-    //                 console.log(gameRoom);
-    //             }
-    //         });
-    //     }
-    // }, [socket, intraId]);
-
-    // // Setup websocket gameroom listeners
-    // useEffect(() => {
-    //     if (socket) {
-    //         if (gameRoom) {
-    //             console.log("Got gameroom");
-    //             socket.on(String(gameRoom), (data: any) => {
-    //                 // console.log(data);
-    //             });
-    //         }
-    //     }
-    // }, [gameRoom, socket]);
 
     // start queue
     async function startQueue() {
@@ -190,7 +144,6 @@ export default function game_page(): React.JSX.Element {
             >
                 Test game
             </button>
-            {/* <canvas ref={canvasRef} className="webgl" /> */}
             <GameComponent className="webgl" user={intraId} socket={socket} gameRoom={gameRoom} />
         </section>
     );

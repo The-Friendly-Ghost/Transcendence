@@ -8,7 +8,7 @@ import { getUserInfo } from "./ServerUtils";
 import { SocketContext } from "@contexts/SocketContext";
 import { addListener } from "process";
 import { usePopup } from "@components/providers/PopupProvider";
-import { Popup } from "@components/Popup/popup";
+import { InvitePopup } from "@components/Popup/popup";
 
 
 function ClientSideLayout
@@ -88,7 +88,7 @@ function ClientSideLayout
   return (
     <div>
       <SocketContext.Provider value={socket}>
-        <Popup />
+        <InvitePopup />
         {loggedIn ? <Navbar /> : <Login />}
         {children}
       </SocketContext.Provider>

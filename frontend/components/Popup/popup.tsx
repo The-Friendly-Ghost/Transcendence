@@ -5,7 +5,7 @@ import { usePopup } from "@components/providers/PopupProvider";
 import { useRouter } from "next/navigation";
 import React, { use, useEffect } from "react";
 
-export const Popup: React.FC = () => {
+export const InvitePopup: React.FC = () => {
     const { isPopupOpen, data, closePopup } = usePopup();
     const router = useRouter();
 
