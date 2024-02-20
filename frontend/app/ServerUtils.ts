@@ -1,10 +1,8 @@
-"use server"
+"use server";
 
 /* Import Functions */
 import { get, post, postImage } from "@utils/request/request";
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
-import { io, Socket } from "socket.io-client";
 
 /**
  * Gets a cookie from the backend API.
@@ -12,8 +10,11 @@ import { io, Socket } from "socket.io-client";
  * @returns the value of the cookie with the specified name.
  */
 export async function getCookie(name: string): Promise<string> {
-  const cookie: RequestCookie | undefined = cookies().get(name);
-  return (cookie ? cookie.value : "");
+  const ck = cookies();
+  const token = ck.get(name);
+  console.log("getCoockie getCookie", token?.value);
+
+  return token ? token.value : "";
 }
 
 /**
@@ -22,11 +23,9 @@ export async function getCookie(name: string): Promise<string> {
  * @returns true if the TFA code is valid, false otherwise.
  */
 export async function verifyTfaCode(tfa_code: string): Promise<boolean> {
-
   const intraId: string = await getCookie("intraId");
   const endpoint: string = `/auth/2fa/verify/${intraId}/${tfa_code}`;
   const res: Response = await post(endpoint);
-
 
   // get the cookies from the response...
   const my_cookies: string[] = res.headers.getSetCookie();
@@ -44,10 +43,15 @@ export async function verifyTfaCode(tfa_code: string): Promise<boolean> {
   // console.log("verifyTfaCode key_values", keyValues);
 
   // set the cookie to the client side...
-  // console.log("end verifyTfaCode ===========================\n");
+  // console.log("verifyTfaCode res", res);
+  console.log("end verifyTfaCode ===========================\n");
   if (res.status === 201) {
     const ck = cookies();
+    console.log("verifyTfaCode keyValues.TfaValidated", keyValues.TfaValidated);
+    console.log("verifyTfaCode keyValues.TfaEnabled", keyValues.TfaEnabled);
     ck.set("TfaValidated", keyValues.TfaValidated);
+    ck.set("TfaEnabled", keyValues.TfaEnabled);
+    console.log("verifyTfaCode ck", ck.get("TfaValidated"));
     return true;
   }
   return false;
@@ -62,70 +66,59 @@ export async function verifyTfaCode(tfa_code: string): Promise<boolean> {
  * @param intraId the intraId of the user to get information for.
  * @returns the user's information.
  */
-export async function getUserInfo(intraId?: number): Promise<any>
-{
-
-  if (intraId)
-  {
+export async function getUserInfo(intraId?: number): Promise<any> {
+  if (intraId) {
     const endpoint: string = `/user/getUser/` + intraId;
     const res: Response = await get(endpoint);
     return res.json();
-  }
-  else
-  {
+  } else {
     const endpoint: string = `/user/getMe`;
     const res: Response = await get(endpoint);
     return res.json();
   }
 }
 
-export async function getAllUsers()
-: Promise<any> {
-    const url: string = `/user/get_all_users`;
-    const res: Response = await get(url);
-    let res_json: any = await res.json();
-    return res_json;
+export async function getAllUsers(): Promise<any> {
+  const url: string = `/user/get_all_users`;
+  const res: Response = await get(url);
+  let res_json: any = await res.json();
+  return res_json;
 }
 
-export async function acceptInvite(inviteId: any)
-: Promise<any> {
-    const url: string = `/game/acceptInvite/` + inviteId;
-    const res: Response = await get(url);
-    let res_json: any = await res.json();
-    return res_json;
+export async function acceptInvite(inviteId: any): Promise<any> {
+  const url: string = `/game/acceptInvite/` + inviteId;
+  const res: Response = await get(url);
+  let res_json: any = await res.json();
+  return res_json;
 }
 
-export async function uploadAvatar(img: any)
-: Promise<any> {
-    const url: string = `/user/upload_avatar/`;
-    const res: Response = await postImage(url, img);
+export async function uploadAvatar(img: any): Promise<any> {
+  const url: string = `/user/upload_avatar/`;
+  const res: Response = await postImage(url, img);
   console.log("res: " + res);
-    let res_json: any = await res.json();
-    return res_json;
+  let res_json: any = await res.json();
+  return res_json;
 }
 
-export async function getMatchHistory()
-: Promise<any> {
-    const url: string = `/game/match_history`;
-    const res: Response = await get(url);
-    let res_json: any = await res.json();
-    return res_json;
+export async function getMatchHistory(): Promise<any> {
+  const url: string = `/game/match_history`;
+  const res: Response = await get(url);
+  let res_json: any = await res.json();
+  return res_json;
 }
 
-export async function addNewFriend( intraID: string )
-: Promise<any> {
-    const url: string = `/user/addFriend/` + intraID;
-    const res: Response = await post(url);
-    let res_json: any = await res.json();
-    return res_json;
+export async function addNewFriend(intraID: string): Promise<any> {
+  const url: string = `/user/addFriend/` + intraID;
+  const res: Response = await post(url);
+  let res_json: any = await res.json();
+  return res_json;
 }
 
-export async function changeUsername( newUsername: string )
-: Promise<any> {
-    const url: string = `/user/setUserName/` + newUsername;
-    const res: Response = await post(url);
-    let res_json: any = await res.json();
-    return res_json;
+export async function changeUsername(newUsername: string): Promise<any> {
+  const url: string = `/user/setUserName/` + newUsername;
+  const res: Response = await post(url);
+  let res_json: any = await res.json();
+  return res_json;
 }
 
 /**
@@ -133,11 +126,10 @@ export async function changeUsername( newUsername: string )
  * @param intraId the intraId of the user to get information for.
  * @returns the user's status
  */
-export async function getStatus(intraId: number): Promise<any>
-{
-    const endpoint: string = `/gateway/status/` + intraId;
-    const res: Response = await get(endpoint);
-    return res.json();
+export async function getStatus(intraId: number): Promise<any> {
+  const endpoint: string = `/gateway/status/` + intraId;
+  const res: Response = await get(endpoint);
+  return res.json();
 }
 
 /**
@@ -145,11 +137,10 @@ export async function getStatus(intraId: number): Promise<any>
  * @param intraId
  * @returns
  */
-export async function getOtherUser(intraId: string): Promise<any>
-{
-    const endpoint: string = `/chat/get_chatroom/` + intraId;
-    const res: Response = await get(endpoint);
-    return res.json();
+export async function getOtherUser(intraId: string): Promise<any> {
+  const endpoint: string = `/chat/get_chatroom/` + intraId;
+  const res: Response = await get(endpoint);
+  return res.json();
 }
 
 /**
@@ -157,18 +148,22 @@ export async function getOtherUser(intraId: string): Promise<any>
  * @param intraId the intraId of the user to get information for.
  * @returns the user's ingame status
  */
-export async function getInGame(intraId: number): Promise<any>
-{
-    const endpoint: string = `/game/game_status/` + intraId;
-    const res: Response = await get(endpoint);
-    return res.json();
+export async function getInGame(intraId: number | string): Promise<any> {
+  const endpoint: string = `/game/game_status/` + intraId;
+  const res: Response = await get(endpoint);
+  return res.json();
 }
 
 /**
  */
-export async function getSecret(intraId: number): Promise<any>
-{
-    const endpoint: string = `/auth/2fa/secret/` + intraId;
-    const res: Response = await get(endpoint);
-    return res.json();
+export async function getSecret(intraId: number | string): Promise<any> {
+  const endpoint: string = `/auth/2fa/secret/` + intraId;
+  const res: Response = await get(endpoint);
+  return res.json();
+}
+
+export async function getTfaEnabled(intraId: number | string): Promise<any> {
+  const endpoint: string = `/auth/2fa/tfaEnabled/` + intraId;
+  const res: Response = await get(endpoint);
+  return res.json();
 }

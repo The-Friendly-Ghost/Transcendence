@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { cookies } from "next/headers";
 
 export async function get(endpoint: string): Promise<Response> {
@@ -11,6 +11,8 @@ export async function get(endpoint: string): Promise<Response> {
 
   const response: Response = await fetch(url, {
     method: "GET",
+    redirect: "follow",
+    credentials: "include",
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -19,11 +21,14 @@ export async function get(endpoint: string): Promise<Response> {
   return response;
 }
 
-export async function postImage(endpoint: string, body?: BodyInit): Promise<Response> {
+export async function postImage(
+  endpoint: string,
+  body?: BodyInit
+): Promise<Response> {
   console.log("request post");
 
   const token: string | undefined = await getJWT();
-  const url: string = `${process.env.BACKEND_URL}${endpoint}` + '{img}';
+  const url: string = `${process.env.BACKEND_URL}${endpoint}` + "{img}";
   console.log("url", url);
   console.log("body: ", body);
 

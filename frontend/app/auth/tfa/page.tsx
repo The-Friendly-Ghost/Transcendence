@@ -9,7 +9,7 @@ import "@styles/buttons.css";
 
 /* Import Functions */
 import { useRouter } from "next/navigation";
-import { verifyTfaCode } from "@app/ServerUtils";
+import { getCookie, getTfaEnabled, verifyTfaCode } from "@app/ServerUtils";
 
 export default function tfa_page() {
   const router = useRouter();
@@ -19,8 +19,7 @@ export default function tfa_page() {
     e.preventDefault();
 
     const isVerified: boolean = await verifyTfaCode(tfa_code);
-    if (isVerified) 
-      router.push("/");
+    if (isVerified) window.location.href = "/";
     else alert("Wrong 2FA code");
   };
 

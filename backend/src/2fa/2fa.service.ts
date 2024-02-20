@@ -14,8 +14,8 @@ export class TFAService {
     private user: UserService,
   ) {}
 
-// if needed to revert this funciton to show qr use this:
-//name: string, stream: Response, 
+  // if needed to revert this funciton to show qr use this:
+  //name: string, stream: Response,
   async get_secret(intraId: number): Promise<string> {
     const user = await this.user.getUser(intraId);
     if (!user) throw new Error('User not found');
@@ -31,9 +31,11 @@ export class TFAService {
     return secret;
   }
 
-  async toggle_2fa(intraId: number): Promise<any> {
+  async toggle_2fa(intraId: number): Promise<boolean> {
     console.log('TFAService.enable_2fa');
-    const is2faEnabled = await this.prisma.getTwoFAEnabled(intraId).catch((e: Error) => {return "wrong intraId"});
+    const is2faEnabled = await this.prisma.getTwoFAEnabled(intraId).catch((e: Error) => {
+      return 'wrong intraId';
+    });
     if (is2faEnabled) {
       return await this.prisma.toggle_tfa(intraId, false);
     }

@@ -33,7 +33,7 @@ export class PrismaTFAService {
     return user.twoFASecret;
   }
 
-  async toggle_tfa(intraId: number, enable_2fa: boolean): Promise<string> {
+  async toggle_tfa(intraId: number, enable_2fa: boolean): Promise<boolean> {
     await this.prisma.user
       .update({
         data: { twoFAEnabled: enable_2fa },
@@ -44,10 +44,7 @@ export class PrismaTFAService {
         // throw the internal prisma error
         throw new InternalServerErrorException();
       });
-      if (enable_2fa === true) {
-        return "enabled 2fa";
-      }
-      return "disabled 2fa";
+    return enable_2fa;
   }
 
   async getTwoFAEnabled(intraId: number): Promise<boolean> {
