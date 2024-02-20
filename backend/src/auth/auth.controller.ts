@@ -6,7 +6,6 @@ import { FortyTwoAuthGuard } from './guard';
 import { User } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
 import { Jwt2faAuthGuard } from 'src/2fa/guard';
-import { promises } from 'dns';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -61,8 +60,12 @@ export class AuthController {
     });
     if (!user.twoFAEnabled) {
       console.log('AuthController.handleCallback redirecting to frontend');
-      res.clearCookie('TfaValidated');
+      // res.clearCookie('TfaValidated');
       res.cookie('TfaValidated', true, {
+        httpOnly: false,
+        secure: false,
+      });
+      res.cookie('TfaEnabled', false, {
         httpOnly: false,
         secure: false,
       });
@@ -91,21 +94,30 @@ export class AuthController {
     If so, sets TfaValidated to false and redirects to the 2FA page.
     If not, sets TfaValidated to true and redirects to the home page.
     */
+    console.log('AuthController.validate res.headers', res.getHeaders());
     if (user.twoFAEnabled) {
+      res.clearCookie('TfaValidated');
       res.cookie('TfaValidated', false, {
+        httpOnly: false,
+        secure: false,
+      });
+      res.clearCookie('TfaEnabled');
+      res.cookie('TfaEnabled', true, {
         httpOnly: false,
         secure: false,
       });
       console.log('AuthController.validate IF redirecting to frontend');
 
       // res.header('TfaValidated', req.user.twoFAEnabled);
-      res.setHeader('TfaValidated', req.user.twoFAEnabled);
-      console.log('AuthController.validate res.headers', res.getHeaders());
       return res.redirect(
         `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}/auth/tfa`,
       );
     } else {
       res.cookie('TfaValidated', true, {
+        httpOnly: false,
+        secure: false,
+      });
+      res.cookie('TfaEnabled', false, {
         httpOnly: false,
         secure: false,
       });
@@ -126,6 +138,7 @@ export class AuthController {
     res.clearCookie('username');
     console.log('cleared cookie');
     res.clearCookie('TfaValidated');
+    res.clearCookie('TfaEnabled');
     return res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`);
   }
 }

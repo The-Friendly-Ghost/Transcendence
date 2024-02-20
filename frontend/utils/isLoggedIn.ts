@@ -1,24 +1,29 @@
-"use server"
+"use server";
 
-import { getCookie } from "@app/ServerUtils";
+import { getCookie, getSecret, getTfaEnabled } from "@app/ServerUtils";
 import { get } from "./request/request";
 
 export async function isLoggedIn(): Promise<boolean> {
-  const TfaValidated: string = await getCookie("TfaValidated");
+  return get("/auth/validate").then(async (res) => {
+    if (res.status !== 200) return false;
+    return true;
+  });
+}
 
-  console.log("isLoggedIn TfaValidated", TfaValidated);
-  if (TfaValidated === "true") {
+export async function isLoggedInTFA(): Promise<boolean> {
+  const intraid: string = await getCookie("intraId");
+
+  const isTfaEnabled: any = await getTfaEnabled(intraid);
+  console.log("\n\nisLoggedInTFA isTfaEnabled", isTfaEnabled.TfaEnabled);
+
+  if (!isTfaEnabled.TfaEnabled) {
     return true;
   }
 
-  return get("/auth/validate").then((res) => {
-    console.log("isLoggedIn res", res.status);
-    console.log("isLoggedIn res.text", res.statusText);
-    console.log("isLoggedIn res.headers", res.headers);
-    if (res.status === 200) {
-      return true;
-    } else {
-      return false;
-    }
-  });
+  const TfaEnabled: string = await getCookie("TfaEnabled");
+  const TfaValidated: string = await getCookie("TfaValidated");
+
+  console.log("isLoggedInTFA TfaEnabled", TfaEnabled);
+  console.log("isLoggedInTFA TfaValidated", TfaValidated);
+  return TfaEnabled === "true" && TfaValidated === "true";
 }

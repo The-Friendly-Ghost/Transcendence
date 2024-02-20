@@ -1,7 +1,7 @@
 "use client";
 import React, { use, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { isLoggedIn } from "@utils/isLoggedIn";
+import { isLoggedIn, isLoggedInTFA } from "@utils/isLoggedIn";
 import Navbar from "@components/navbar/Nav";
 import Login from "@components/login/Login";
 import { getUserInfo } from "./ServerUtils";
@@ -10,11 +10,11 @@ import { addListener } from "process";
 import { usePopup } from "@components/providers/PopupProvider";
 import { InvitePopup } from "@components/Popup/popup";
 import { useRouter } from "next/navigation";
+import TFA from "@app/auth/tfa/page";
 
-
-function ClientSideLayout
-({ children }: { children: React.ReactNode }) {
+function ClientSideLayout({ children }: { children: React.ReactNode }) {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedInTFA, setLoggedInTFA] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [userInfo, setUserInfo] = useState<any>([]);
   const [twoFactorVerified, setTwoFactorVerified] = useState(false);
@@ -24,14 +24,11 @@ function ClientSideLayout
    *
    * @param intraId The user name of the user
    * @param setChatSocket The function to set the socket
-  */
- function setupWebSocket(
-    intraId: string,
-    namespace: string): Socket
-  {
-    const url: string = `${process.env.BACKEND_URL}` + '/' + namespace;
-    const socket = io(url , {
-      query: { token: intraId }
+   */
+  function setupWebSocket(intraId: string, namespace: string): Socket {
+    const url: string = `${process.env.BACKEND_URL}` + "/" + namespace;
+    const socket = io(url, {
+      query: { token: intraId },
     });
     return socket;
   }
@@ -39,22 +36,21 @@ function ClientSideLayout
   function setupListeners(socket: Socket): void {
     console.log("setup listeners");
     console.log(socket);
-    socket.on('onConnection', (data) => {
-      console.log("socket connected with server")
-      console.log(data)
+    socket.on("onConnection", (data) => {
+      console.log("socket connected with server");
+      console.log(data);
     });
-    socket.on('invite', (data) => {
+    socket.on("invite", (data) => {
       // console.log(isPopupOpen)
       openPopup(data);
-      console.log("You have been invited to a game by: " + data.senderId)
+      console.log("You have been invited to a game by: " + data.senderId);
       // console.log(data)
     });
-    socket.on('AcceptedInvite', (data) => {
-      console.log("Invite accepted")
-      console.log(data)
-      if (window.location.pathname == "/play")
-      {
-        socket.emit('checkInvite', { userId: Number(userInfo.intraId) });
+    socket.on("AcceptedInvite", (data) => {
+      console.log("Invite accepted");
+      console.log(data);
+      if (window.location.pathname == "/play") {
+        socket.emit("checkInvite", { userId: Number(userInfo.intraId) });
       } else {
         router.push("/play");
       }
@@ -63,9 +59,9 @@ function ClientSideLayout
 
   // This useEffect is used to get the chat rooms from the backend
   useEffect(() => {
-  getUserInfo().then((userInfo) => {
-    setUserInfo(userInfo);
-  });
+    getUserInfo().then((userInfo) => {
+      setUserInfo(userInfo);
+    });
   }, []);
 
   useEffect(() => {
@@ -78,6 +74,16 @@ function ClientSideLayout
     const checkLoggedIn = async () => {
       const result = await isLoggedIn();
       setLoggedIn(result);
+    };
+
+    checkLoggedIn();
+  }, []);
+
+  useEffect(() => {
+    const checkLoggedIn = async () => {
+      console.log("checking logged in tfa\n\n", document.cookie);
+      const result = await isLoggedInTFA();
+      setLoggedInTFA(result);
     };
 
     checkLoggedIn();
@@ -99,13 +105,12 @@ function ClientSideLayout
   return (
     <div>
       <SocketContext.Provider value={socket}>
-        {loggedIn && <InvitePopup />}
-        {loggedIn ? <Navbar /> : <Login />}
-        {children}
+        <InvitePopup />
+        {loggedIn ? loggedInTFA ? <Navbar /> : <TFA /> : <Login />}
+        {loggedIn ? (loggedInTFA ? children : null) : null}
       </SocketContext.Provider>
     </div>
   );
 }
 
-export default ClientSideLayout
-;
+export default ClientSideLayout;
