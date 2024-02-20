@@ -18,8 +18,8 @@ export default class Camera {
 
         // Base camera
         this.instance = new THREE.PerspectiveCamera(75, this.sizes.width / this.sizes.height, 0.1, 1000);
-        if (this.instance.aspect > 1.5) {
-            this.instance.position.z = this.game.settings.cameraDistance / 1.5;
+        if (this.instance.aspect > 1.3) {
+            this.instance.position.z = this.game.settings.cameraDistance / 1.3;
         }
         else {
             this.instance.position.z = this.game.settings.cameraDistance / this.instance.aspect;
@@ -38,8 +38,8 @@ export default class Camera {
 
     resize(): void {
         this.instance.aspect = this.sizes.width / this.sizes.height;
-        if (this.instance.aspect > 1.5) {
-            this.instance.position.z = this.game.settings.cameraDistance / 1.5;
+        if (this.instance.aspect > 1.3) {
+            this.instance.position.z = this.game.settings.cameraDistance / 1.3;
         }
         else {
             this.instance.position.z = this.game.settings.cameraDistance / this.instance.aspect;

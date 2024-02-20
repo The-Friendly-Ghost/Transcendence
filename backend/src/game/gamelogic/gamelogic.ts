@@ -91,10 +91,10 @@ export default class Game extends EventEmitter {
             this.paddle1.update();
             this.paddle2.update();
         }
-        if (this.ball.position.x > (this.settings.fieldWidth / 2 + 10)) {
+        if (this.ball.position.x > (this.settings.fieldWidth / 2 + this.settings.paddleHeight)) {
             this.score(1);
         }
-        else if (this.ball.position.x < (-this.settings.fieldWidth / 2 - 10)) {
+        else if (this.ball.position.x < (-this.settings.fieldWidth / 2 - this.settings.paddleHeight)) {
             this.score(2);
         }
     }
@@ -123,10 +123,18 @@ export default class Game extends EventEmitter {
         };
     }
 
-    start(): void {
-        this.emit('start');
+    play(): void {
+        this.emit('play');
         this.ball.start();
         this.paused = false;
+    }
+
+    start(): void {
+        this.emit('start');
+        setTimeout(() => {
+            this.emit('countdown');
+            this.countdown(3);
+        }, 1000);
     };
 
     reset(): void {
@@ -152,7 +160,7 @@ export default class Game extends EventEmitter {
             console.log(count);
             count -= 1;
             if (count < 0) {
-                this.start();
+                this.play();
             }
             else {
                 this.countdown(count);

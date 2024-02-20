@@ -38,7 +38,6 @@ export class GameManager {
         this.game.on('gameOver', this.gameOver.bind(this));
         this.game.on('score', this.score.bind(this));
         this.game.on('countdown', this.countdown.bind(this));
-        // this.game.on('startgame', this.startGame.bind(this));
         this.cleanupCallback = cleanupCallback;
         this.startCallback = startCallback;
         this.startGame();
@@ -49,8 +48,6 @@ export class GameManager {
     }
 
     updateClients() {
-        // this.p1Socket.emit('gameUpdate', this.game.state);
-        // this.p2Socket.emit('gameUpdate', this.game.state);
         this.sendToRoom('gameUpdate', this.game.state);
     }
 
@@ -66,13 +63,14 @@ export class GameManager {
         this.gameInfo.loser = this.game.getLoser();
         this.sendToRoom("gameStatus", this.gameInfo.state);
         this.sendToRoom("gameOver", this.gameInfo);
+        this.sendToRoom("queueUpdate", { status: "FINISHED", winner: this.gameInfo.winner, score: this.gameInfo.score });
         this.cleanup();
     }
 
     startGame() {
         console.log("start game" + this.gameInfo);
-        this.sendToRoom("gameStart", "started");
-        this.game.countdown(3);
+        this.sendToRoom('gameStart', "started");
+        this.game.start();
         this.gameInfo.state = "IN_PROGRESS";
         this.startCallback(this.gameInfo);
     }
@@ -104,13 +102,11 @@ export class GameManager {
     }
 
     score(player: number) {
-        // this.gameInfo.state = "SCORE";
         this.sendToRoom("playerScored", {
             player: this.game.lastScored,
             p1_points: this.game.p1_points,
             p2_points: this.game.p2_points
         });
-        // this.game.score;
     }
 
     countdown() {

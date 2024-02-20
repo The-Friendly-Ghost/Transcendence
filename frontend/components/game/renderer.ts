@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import Camera from './camera';
 import Sizes from './utils/sizes';
-import Game from './game';
+import { Game } from './game';
 
 export default class Renderer {
     game: Game;
@@ -28,7 +28,6 @@ export default class Renderer {
             antialias: true,
             alpha: true
         });
-        this.instance.useLegacyLights = false;
         this.instance.toneMapping = THREE.CineonToneMapping;
         this.instance.toneMappingExposure = 1.75;
         this.instance.outputColorSpace = THREE.LinearSRGBColorSpace;

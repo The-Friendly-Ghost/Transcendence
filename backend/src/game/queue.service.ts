@@ -70,7 +70,7 @@ export class QueueService {
                 message: "You are already in a game",
                 status: "IN_GAME"
         });
-            client.emit('gameroom', game.roomName);
+            client.emit('gameInfo', game);
             console.log(intraId, "is already in a game");
             return;
         }

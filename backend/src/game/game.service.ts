@@ -55,7 +55,7 @@ export class GameService {
     let gameManager: GameManager;
     console.log("Test Game:")
     gameInfo = await this.create_game(p1, p1);
-    client.emit('gameroom', gameInfo.roomName);
+    client.emit('gameInfo', gameInfo);
     gameManager = new GameManager(gameInfo, this.gatewayService, this.gateway, this.cleanupGame.bind(this), this.startGameCallback.bind(this));
     this.gameManagers.set(gameInfo.roomName, gameManager);
     console.log(gameInfo);
@@ -74,10 +74,11 @@ export class GameService {
       return;
     }
     gameInfo = await this.create_game(p1, p2);
-    client1.emit('gameroom', gameInfo.roomName);
-    client2.emit('gameroom', gameInfo.roomName);
     console.log("gameroom created:");
     gameManager = new GameManager(gameInfo, this.gatewayService, this.gateway, this.cleanupGame.bind(this), this.startGameCallback.bind(this));
+    // client1.emit('gameInfo', gameInfo);
+    // client2.emit('gameInfo', gameInfo);
+    gameManager.sendToRoom('gameInfo', gameInfo);
     console.log("game initialized.");
     this.gameManagers.set(gameInfo.roomName, gameManager);
     console.log(gameInfo);
@@ -87,7 +88,7 @@ export class GameService {
     this.prismaGameService.updateGame(gameInfo);
   }
 
-  cleanupGame(gameInfo: GameInfo) {
+  async cleanupGame(gameInfo: GameInfo) {
     this.userService.addWin(gameInfo.winner);
     this.userService.addLoss(gameInfo.loser);
     this.gameManagers.delete(gameInfo.roomName);

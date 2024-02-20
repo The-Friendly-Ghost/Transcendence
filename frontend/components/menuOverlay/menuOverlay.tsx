@@ -2,6 +2,8 @@
 
 import { Dispatch, SetStateAction, use, useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
+import "@styles/buttons.css";
+import { getUserInfo } from "@app/ServerUtils";
 
 interface MenuOverlayProps {
     visibility: boolean;
@@ -10,7 +12,7 @@ interface MenuOverlayProps {
     gameRoom: number | null;
 }
 
-function queueUpdateHandler(data: any, setStatusMessage: Dispatch<SetStateAction<string>>) {
+async function queueUpdateHandler(data: any, setStatusMessage: Dispatch<SetStateAction<string>>) {
     console.log(data);
     if (String(data.status) == "IN_QUEUE") {
         console.log("In queue...");
@@ -27,6 +29,10 @@ function queueUpdateHandler(data: any, setStatusMessage: Dispatch<SetStateAction
     } else if (String(data.status) == "INVITER") {
         console.log("Inviter to game...");
         setStatusMessage("Waiting on " + data.receiverName + " to accept invite...");
+    } else if (String(data.status) == "FINISHED") {
+        console.log("Game finished...");
+        let winnerUser: any = await getUserInfo(data.winner);
+        setStatusMessage("Game finished. " + winnerUser.name + " won the game. Final score: " + data.score);
     }
 }
 
@@ -48,11 +54,15 @@ function setup(socket: Socket | null, queueUpdate: any, user: string | null) {
 }
 
 function MenuOverlay({ visibility, socket, user, gameRoom }: MenuOverlayProps) {
-    const [overlayVisible, setOverlayVisible] = useState(false);
+    const [overlayVisible, setOverlayVisible] = useState<boolean>(false);
     const [statusMessage, setStatusMessage] = useState("Not in queue.");
     const queueUpdate = (data:any) => queueUpdateHandler(data, setStatusMessage)
-    useEffect(() => {
 
+    useEffect(() => {
+        setOverlayVisible(false);
+    }, []);
+
+    useEffect(() => {
         socket?.on('connect', () => {
             // console.log("connected");
             // Set up your game listeners here
@@ -75,31 +85,30 @@ function MenuOverlay({ visibility, socket, user, gameRoom }: MenuOverlayProps) {
     }, [socket, user]);
 
     useEffect(() => {
-        if (visibility === true) {
-            setOverlayVisible(true);
-        } else {
-            setOverlayVisible(false);
-        }
+        setOverlayVisible(visibility);
     }, [visibility]);
 
+    // If there is a game room, hide the overlay
+    // If there is no game room, show the overlay
+    // UNLESS the visibility prop is set to false, then hide the overlay
     useEffect(() => {
         if (gameRoom !== null) {
             setOverlayVisible(false);
-        } else {
+        } else if (visibility) {
             setOverlayVisible(true);
         }
-    }, [gameRoom]);
+    }, [gameRoom, visibility]);
 
     return (
         <div>
             {overlayVisible && (
-                <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-600/20 p-3 rounded-md backdrop-blur-md shadow-lg drop-shadow h-1/2 w-1/2'>
+                <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-violet-100/10 p-3 rounded-md backdrop-blur-md shadow-lg drop-shadow h-1/2 w-1/2'>
                     <h1 className="text-center text-md font-semibold text-wrap">Play Menu</h1>
                     <div className="flex flex-col justify-center basis-1/2 gap-5 pt-3">
-                        <button className="bg-gray-600/80 py-5 rounded-md hover:bg-gray-500" onClick={() => {
+                        <button className="main_btn border-gray-700 border drop-shadow bg-col2 hover:bg-cyan-500 hover:shadow-cyan-500 w-full ml-0" onClick={() => {
                             joinQueue(socket, user, setStatusMessage);
                         }}>Join Queue</button>
-                        <button className="bg-gray-600/80 py-5 rounded-md hover:bg-gray-500" onClick={() => {
+                        <button className="main_btn border-gray-700 border drop-shadow bg-col2 hover:bg-cyan-500 hover:shadow-cyan-500 w-full ml-0" onClick={() => {
                             console.log("clicked");
                             console.log(socket);
                             if (socket !== null) {
@@ -113,6 +122,7 @@ function MenuOverlay({ visibility, socket, user, gameRoom }: MenuOverlayProps) {
             )}
         </div>
     );
+
 };
 
 export default MenuOverlay;

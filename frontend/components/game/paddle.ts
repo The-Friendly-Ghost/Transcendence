@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import Game from './game';
 import * as Matter from 'matter-js';
+import Text from './text';
 
 export default class Paddle {
     game: Game;
@@ -9,6 +10,7 @@ export default class Paddle {
     desiredPos: Matter.Vector;
     desiredAngle: number;
     startPos: Matter.Vector;
+    text: Text;
 
     constructor(game: Game, dimensions: THREE.Vector3, position: THREE.Vector3) {
         // Game stuff
@@ -79,11 +81,22 @@ export default class Paddle {
         Matter.Body.setPosition(this.body, pos);
         this.desiredPos = pos;
         this.mesh.position.set(pos.x, pos.y, 0);
+        if (this.text) {
+            this.text.mesh.position.set(pos.x, pos.y, 5);
+        }
     };
 
     setAngle(angle: number): void {
         Matter.Body.setAngle(this.body, angle);
         this.mesh.rotation.z = angle;
         this.desiredAngle = angle;
+        if (this.text) {
+            this.text.mesh.rotation.z = angle + Math.PI / 2;
+        }
     };
+
+    set_text(text: Text): void {
+        this.text = text;
+        this.game.scene.add(this.text.mesh);
+    }
 };

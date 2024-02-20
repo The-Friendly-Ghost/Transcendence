@@ -18,7 +18,7 @@ export interface TextParameters {
 
 export default class Text {
     private string: string;
-    private mesh: THREE.Mesh;
+    public mesh: THREE.Mesh;
     private material: THREE.MeshBasicMaterial;
     private geometry: TextGeometry;
     private font: any;
@@ -51,9 +51,10 @@ export default class Text {
             }
         )
         this.geometry.center();
-        this.material = new THREE.MeshBasicMaterial()
+        this.material = new THREE.MeshBasicMaterial({ color: this.color })
         this.mesh = new THREE.Mesh(this.geometry, this.material)
         this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+        this.mesh.rotation.set(this.rotation.x, this.rotation.y, this.rotation.z);
         this.scene.add(this.mesh)
     };
 

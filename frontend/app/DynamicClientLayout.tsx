@@ -99,7 +99,7 @@ function ClientSideLayout
   return (
     <div>
       <SocketContext.Provider value={socket}>
-        <InvitePopup />
+        {loggedIn && <InvitePopup />}
         {loggedIn ? <Navbar /> : <Login />}
         {children}
       </SocketContext.Provider>

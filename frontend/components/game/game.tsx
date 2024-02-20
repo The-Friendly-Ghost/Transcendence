@@ -15,15 +15,17 @@ import UserInput from './input';
 import { Socket } from 'socket.io-client';
 import { FontLoader, Font } from 'three/examples/jsm/loaders/FontLoader.js';
 import Text from './text';
+import { getUserInfo } from '@app/ServerUtils';
 // import GUI from 'lil-gui';
 
 interface GameComponentProps {
     user: string | null;
     socket: Socket | null;
     gameRoom: number | null;
+    gameInfo: any | null;
 }
 
-function GameComponent({ user, socket, gameRoom }: GameComponentProps) {
+function GameComponent({ user, socket, gameRoom, gameInfo }: GameComponentProps) {
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [game, setGame] = useState<Game | null>(null);
@@ -55,6 +57,17 @@ function GameComponent({ user, socket, gameRoom }: GameComponentProps) {
             game.setUser(user);
         }
     }, [user, game]);
+
+    useEffect(() => {
+        async function setUsers() {
+            if (game && gameInfo)
+            {
+                console.log(gameInfo);
+                game.setUsers(await getUserInfo(gameInfo.p1), await getUserInfo(gameInfo.p2));
+            }
+        }
+        setUsers();
+    }, [game, gameInfo]);
 
     // Setup game room if game is set and gameRoom is set
     useEffect(() => {
@@ -88,33 +101,22 @@ It could also have a reference to the game class and use that to get the logic.
 The game should also run on the server.
 Then sync the game state to the client.
 We need game settings and client settings.
-
 Client-server game architecture which can be summarized as follows:
-
 Server gets inputs from all the clients, with timestamps
-
 Server processes inputs and updates world status
-
 Server sends regular world snapshots to all clients
-
 Client sends input and simulates their effects locally
-
 Client get world updates and
-
 Syncs predicted state to authoritative state
-
 Interpolates known past states for other entities
-
 From a player’s point of view, this has two important consequences:
-
 Player sees himself in the present
-
 Player sees other entities in the past
 */
 
 export class Game {
-    // player1: Player;
-    // player2: Player;
+    user1: any;
+    user2: any;
     user: string | null;
     gameRoom: number;
     socketData: any;
@@ -133,7 +135,6 @@ export class Game {
     level: Level;
     engine: Matter.Engine;
     input: UserInput;
-    // gui: GUI;
     p1_points: number;
     p2_points: number;
     paused: boolean;
@@ -141,12 +142,14 @@ export class Game {
     text: Text;
     scoreText1: Text;
     scoreText2: Text;
+    user1Text: Text;
+    user2Text: Text;
 
 
     constructor(canvas: HTMLCanvasElement, settings: Settings) {
         this.paused = true;
-        // this.player1 = p1;
-        // this.player2 = p2;
+        this.user1 = null;
+        this.user2 = null;
         this.user = null;
         this.gameRoom = 0;
         this.socket = null;
@@ -176,9 +179,6 @@ export class Game {
         this.time.on('tick', this.update.bind(this));
         // Ball
         this.ball = new Ball(this);
-        // this.level.spotLight1.target = this.ball.mesh;
-        // this.level.spotLight2.target = this.ball.mesh;
-
 
         // paddle 1
         this.paddle1 = new Paddle(
@@ -194,8 +194,6 @@ export class Game {
             new THREE.Vector3(this.settings.fieldWidth / 2, 0, 0)
         );
 
-        // this.setGameRoom(this.gameRoom);
-
         // loaders
         this.font = null;
         const fontLoader = new FontLoader()
@@ -206,7 +204,7 @@ export class Game {
                 this.text = new Text({
                     font: this.font,
                     scene: this.scene,
-                    text: 'Waiting for other players...',
+                    text: '',
                     color: new THREE.Color(0xffffff),
                     position: new THREE.Vector3(0, 20, 10)
                 });
@@ -215,15 +213,35 @@ export class Game {
                     scene: this.scene,
                     text: 'score: 0',
                     color: new THREE.Color(0xffffff),
-                    position: new THREE.Vector3(-this.settings.fieldWidth / 3, this.settings.fieldHeight / 3 - 20, 1)
+                    position: new THREE.Vector3(-this.settings.fieldWidth / 3, this.settings.fieldHeight / 3 - 20, 0.5)
                 });
                 this.scoreText2 = new Text({
                     font: this.font,
                     scene: this.scene,
                     text: 'score: 0',
                     color: new THREE.Color(0xffffff),
-                    position: new THREE.Vector3(this.settings.fieldWidth / 3, this.settings.fieldHeight / 3 - 20, 1)
+                    position: new THREE.Vector3(this.settings.fieldWidth / 3, this.settings.fieldHeight / 3 - 20, 0.5)
                 });
+                this.user1Text = new Text({
+                    font: this.font,
+                    scene: this.scene,
+                    text: 'user1',
+                    color: new THREE.Color(0xdddddd),
+                    position: new THREE.Vector3(- this.settings.fieldWidth / 2, 0, 5),
+                    size: 8,
+                    rotation: new THREE.Euler(0, 0, Math.PI/2)
+                });
+                this.paddle1.set_text(this.user1Text);
+                this.user2Text = new Text({
+                    font: this.font,
+                    scene: this.scene,
+                    text: 'user2',
+                    color: new THREE.Color(0xdddddd),
+                    position: new THREE.Vector3(this.settings.fieldWidth / 2, 0, 5),
+                    size: 8,
+                    rotation: new THREE.Euler(0, 0, -Math.PI/2)
+                });
+                this.paddle2.set_text(this.user2Text);
             }
         )
         this.time.tick();
@@ -231,22 +249,11 @@ export class Game {
 
     update_logic(): void {
         if (!this.paused) {
-            // this.input.update();
             Matter.Engine.update(this.engine, this.time.delta);
         }
         this.ball.update();
         this.paddle1.update_logic();
         this.paddle2.update_logic();
-        // if (this.ball.position.x > this.settings.fieldWidth / 2 + 1) {
-        //     this.score(1);
-        //     this.reset();
-        //     // this.countdown();
-        // }
-        // else if (this.ball.position.x < -this.settings.fieldWidth / 2 - 1) {
-        //     this.score(2);
-        //     this.reset();
-        //     // this.countdown();
-        // }
     }
 
     update_visuals(): void {
@@ -256,7 +263,6 @@ export class Game {
         this.paddle2.update_visuals();
         this.ball.update_visuals();
     }
-
 
     update(): void {
         this.input.update();
@@ -289,7 +295,7 @@ export class Game {
         });
         this.socket?.on('gameStart', (data: any) => {
                 console.log(data);
-                this.countdown(3);
+                this.text.setText("Game starting in...");
                 // this.start();
         });
         this.socket?.on('gameStatus', (data: any) => {
@@ -316,7 +322,6 @@ export class Game {
                 this.text.setVisibility(true);
                 this.scoreText1.setText('score: ' + data.p1_points);
                 this.scoreText2.setText('score: ' + data.p2_points);
-                // this.score(data);
             });
             this.socket?.on('playerLeft', (data: any) => {
                 console.log(data);
@@ -334,6 +339,15 @@ export class Game {
         this.gameRoom = gameRoom;
         this.setListeners();
     }
+
+    setUsers(user1: any, user2: any): void {
+        this.user1 = user1;
+        this.user2 = user2;
+        console.log("setUsers: " + user1);
+        console.log("setUsers: " + user2);
+        this.user1Text.setText(user1.name);
+        this.user2Text.setText(user2.name);
+    };
 
     resize(): void {
         this.camera.resize();

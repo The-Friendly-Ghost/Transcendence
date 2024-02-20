@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { reset_game } from "./reset_game";
-import { Socket, io } from "socket.io-client";
+import { Socket } from "socket.io-client";
 import { getCookie, getUserInfo } from "@app/ServerUtils";
 import GameComponent from "@components/game/game";
 import MenuOverlay from "@components/menuOverlay/menuOverlay";
@@ -11,9 +11,9 @@ export default function game_page(): React.JSX.Element {
     // const
     const [intraId, setIntraId] = useState<string | null>(null);
     const [userName, setUserName] = useState<string | null>(null);
-    const [overlayVisible, setOverlayVisible] = useState<boolean>(true);
-    const [queueStatus, setQueueStatus] = useState(false);
+    const [overlayVisible, setOverlayVisible] = useState<boolean>(false);
     const [gameRoom, setGameRoom] = useState<number | null>(null);
+    const [gameInfo, setGameInfo] = useState<any | null>(null);
     const socket = useSocket();
 
     /**
@@ -23,21 +23,16 @@ export default function game_page(): React.JSX.Element {
     * @param setIntraId Set the intraId
     */
     async function fetchUserInfo(
-    getCookie: (name: string) => Promise<string>,
-    setUserName: React.Dispatch<React.SetStateAction<string | null>>,
-    setIntraId: React.Dispatch<React.SetStateAction<string | null>>
-  )
-  : Promise<string>
-{
-    const newUserName = await getCookie('username');
-    setUserName(newUserName);
-    const newIntraId = await getCookie('intraId');
-    setIntraId(newIntraId);
-    return (newIntraId);
-  }
-
-    async function test() {
-        console.log(getUserInfo());
+        getCookie: (name: string) => Promise<string>,
+        setUserName: React.Dispatch<React.SetStateAction<string | null>>,
+        setIntraId: React.Dispatch<React.SetStateAction<string | null>>
+    ): Promise<string>
+    {
+        const newUserName = await getCookie('username');
+        setUserName(newUserName);
+        const newIntraId = await getCookie('intraId');
+        setIntraId(newIntraId);
+        return (newIntraId);
     }
 
     async function resetGames() {
@@ -48,10 +43,11 @@ export default function game_page(): React.JSX.Element {
 
     async function setupListeners(socket: Socket) {
         console.log("setup game listeners");
-        socket.on('gameroom', (data: any) => {
+        socket.on('gameInfo', (data: any) => {
             console.log("game room");
             console.log(data);
-            setGameRoom(data);
+            setGameInfo(data);
+            setGameRoom(data.roomName);
             // console.log(gameRoom);
         });
         socket.on('gameOver', (data: any) => {
@@ -76,12 +72,14 @@ export default function game_page(): React.JSX.Element {
         socket?.on('connect', () => {
             console.log('Socket connected');
             // Set up your game listeners here
+            setOverlayVisible(true);
             setupListeners(socket);
         });
 
         // This will run when the socket disconnects
         socket?.on('disconnect', () => {
             console.log('Socket disconnected');
+            setOverlayVisible(false);
             // Remove your game listeners here
         });
 
@@ -89,6 +87,7 @@ export default function game_page(): React.JSX.Element {
         if (socket?.connected) {
             console.log('Socket already connected');
             // Set up your game listeners here
+            setOverlayVisible(true);
             setupListeners(socket);
         }
 
@@ -100,7 +99,7 @@ export default function game_page(): React.JSX.Element {
             socket?.off('disconnect');
             // socket?.off('queueUpdate');
             socket?.off('gameUpdate');
-            socket?.off('gameroom');
+            socket?.off('gameInfo');
         };
     }, [socket, intraId]);
 
@@ -114,29 +113,24 @@ export default function game_page(): React.JSX.Element {
 
     return (
         <section>
-            {/* <button
-                type="button"
-                className="main_btn w-1/2"
-                onClick={() => startQueue()}
-            >
-                Enter Queue
-            </button> */}
-            <button
-                type="button"
-                className="main_btn w-1/2"
-                onClick={resetGames}
-            >
-                resetGames
-            </button>
-            <button
-                type="button"
-                className="main_btn w-1/2"
-                onClick={() => testGame()}
-            >
-                Test game
-            </button>
-            <MenuOverlay visibility={overlayVisible} socket={socket} user={intraId} gameRoom={gameRoom} />
-            <GameComponent className="webgl" user={intraId} socket={socket} gameRoom={gameRoom} />
+            {socket && (
+                <section>
+                    {/* <button
+                        type="button"
+                        className="main_btn w-1/2"
+                        onClick={resetGames}
+                    >resetGames
+                    </button>
+                    <button
+                        type="button"
+                        className="main_btn w-1/2"
+                        onClick={() => testGame()}
+                    >Test game
+                    </button> */}
+                    <MenuOverlay visibility={overlayVisible} socket={socket} user={intraId} gameRoom={gameRoom}/>
+                    <GameComponent className="webgl" user={intraId} socket={socket} gameRoom={gameRoom} gameInfo={gameInfo}/>
+                </section>
+            )}
         </section>
     );
 }
