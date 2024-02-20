@@ -48,9 +48,6 @@ export default function game_page(): React.JSX.Element {
 
     async function setupListeners(socket: Socket) {
         console.log("setup game listeners");
-        // socket.on('queueUpdate', (data: any) => {
-        //     console.log(data);
-        // });
         socket.on('gameroom', (data: any) => {
             console.log("game room");
             console.log(data);
@@ -62,9 +59,6 @@ export default function game_page(): React.JSX.Element {
             console.log(data);
             setGameRoom(null);
         });
-        // socket.on('gameUpdate', (data: any) => {
-        //     console.log(data);
-        // });
     };
 
     /* **************** */
@@ -109,14 +103,6 @@ export default function game_page(): React.JSX.Element {
             socket?.off('gameroom');
         };
     }, [socket, intraId]);
-
-    // start queue
-    async function startQueue() {
-        console.log(socket);
-        if (socket) {
-            socket.emit('queueGame', {userId: intraId});
-        }
-    }
 
     async function testGame() {
         console.log(socket);

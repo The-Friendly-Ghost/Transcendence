@@ -9,6 +9,7 @@ import { SocketContext } from "@contexts/SocketContext";
 import { addListener } from "process";
 import { usePopup } from "@components/providers/PopupProvider";
 import { InvitePopup } from "@components/Popup/popup";
+import { useRouter } from "next/navigation";
 
 
 function ClientSideLayout
@@ -18,13 +19,13 @@ function ClientSideLayout
   const [userInfo, setUserInfo] = useState<any>([]);
   const [twoFactorVerified, setTwoFactorVerified] = useState(false);
   const { isPopupOpen, openPopup, closePopup } = usePopup();
-
+  const router = useRouter();
   /**
    *
    * @param intraId The user name of the user
    * @param setChatSocket The function to set the socket
-   */
-  function setupWebSocket(
+  */
+ function setupWebSocket(
     intraId: string,
     namespace: string): Socket
   {
@@ -47,6 +48,16 @@ function ClientSideLayout
       openPopup(data);
       console.log("You have been invited to a game by: " + data.senderId)
       // console.log(data)
+    });
+    socket.on('AcceptedInvite', (data) => {
+      console.log("Invite accepted")
+      console.log(data)
+      if (window.location.pathname == "/play")
+      {
+        socket.emit('checkInvite', { userId: Number(userInfo.intraId) });
+      } else {
+        router.push("/play");
+      }
     });
   }
 

@@ -69,6 +69,10 @@ export class GameService {
 
     client1 = this.gatewayService.get_socket_from_user(p1);
     client2 = this.gatewayService.get_socket_from_user(p2);
+    if (client1 == undefined || client2 == undefined) {
+      console.log("One or both players are not online");
+      return;
+    }
     gameInfo = await this.create_game(p1, p2);
     client1.emit('gameroom', gameInfo.roomName);
     client2.emit('gameroom', gameInfo.roomName);

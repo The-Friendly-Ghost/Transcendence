@@ -15,14 +15,18 @@ function queueUpdateHandler(data: any, setStatusMessage: Dispatch<SetStateAction
     if (String(data.status) == "IN_QUEUE") {
         console.log("In queue...");
         setStatusMessage("In queue...\n Waiting for other players to queue...");
-    }
-    else if (String(data.status) == "LEFT_QUEUE") {
+    } else if (String(data.status) == "LEFT_QUEUE") {
         console.log("Left queue...");
         setStatusMessage("Not in queue.");
-    }
-    else if (String(data.status) == "IN_GAME") {
+    } else if (String(data.status) == "IN_GAME") {
         console.log("Joined game...");
         setStatusMessage("Joined game...");
+    } else if (String(data.status) == "INVITED") {
+        console.log("Invited to game...");
+        setStatusMessage("Invited to game...");
+    } else if (String(data.status) == "INVITER") {
+        console.log("Inviter to game...");
+        setStatusMessage("Waiting on " + data.receiverName + " to accept invite...");
     }
 }
 
@@ -34,6 +38,15 @@ function joinQueue(socket: Socket | null, user: string | null, setStatusMessage:
     }
 }
 
+function setup(socket: Socket | null, queueUpdate: any, user: string | null) {
+    console.log("setup game listeners");
+    if (socket !== null) {
+        socket.on('queueUpdate', queueUpdate);
+    }
+    setTimeout(() => {socket?.emit('checkInvite', { userId: Number(user) })}, 500);
+
+}
+
 function MenuOverlay({ visibility, socket, user, gameRoom }: MenuOverlayProps) {
     const [overlayVisible, setOverlayVisible] = useState(false);
     const [statusMessage, setStatusMessage] = useState("Not in queue.");
@@ -43,7 +56,7 @@ function MenuOverlay({ visibility, socket, user, gameRoom }: MenuOverlayProps) {
         socket?.on('connect', () => {
             // console.log("connected");
             // Set up your game listeners here
-            socket?.on('queueUpdate', queueUpdate);
+            setup(socket, queueUpdate, user);
         });
         // This will run when the socket disconnects
         socket?.on('disconnect', () => {
@@ -53,13 +66,13 @@ function MenuOverlay({ visibility, socket, user, gameRoom }: MenuOverlayProps) {
         if (socket?.connected) {
             // console.log('Socket already connected');
             // Set up your game listeners here
-            socket?.on('queueUpdate', queueUpdate);
+            setup(socket, queueUpdate, user);
         }
 
         return () => {
             socket?.off('queueUpdate');
         }
-    }, [socket]);
+    }, [socket, user]);
 
     useEffect(() => {
         if (visibility === true) {

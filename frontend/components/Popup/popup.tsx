@@ -12,7 +12,7 @@ export const InvitePopup: React.FC = () => {
     function acceptButton() {
       console.log("accept button");
         acceptInvite(data?.inviteId);
-        router.push("/play");
+        // router.push("/play");
         closePopup();
     };
 
