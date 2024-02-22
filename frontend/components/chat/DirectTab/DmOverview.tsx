@@ -10,7 +10,7 @@ import { getOtherUser } from '@app/ServerUtils';
 import { useRouter } from 'next/navigation'
 import { invitePlayer } from './invitePlayer';
 
-export default function DmOverview( { setCurrentRoom, key, room, myIntraId, userName, chatSocket }
+export default function DmOverview( { setCurrentRoom, room, myIntraId, userName, chatSocket }
 : ChatProps )
 : React.JSX.Element
 {
@@ -36,7 +36,7 @@ export default function DmOverview( { setCurrentRoom, key, room, myIntraId, user
 	}, []);
 
   return (
-	<div className='p-5 border rounded-lg cursor-pointer' key={key}>
+	<div className='p-5 border rounded-lg cursor-pointer'>
 	  <p className='mb-2'>{room.name}</p>
 
 

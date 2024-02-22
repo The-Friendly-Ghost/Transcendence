@@ -16,7 +16,7 @@ import { put } from '@utils/request/request'
 import Image from 'next/image'
 
 /**
- * 
+ *
  * @param setUserName The function to set the user name
  * @param chatSocket The socket to send and receive messages
  * @param userName The user name of the user
@@ -24,7 +24,7 @@ import Image from 'next/image'
  * @returns A JSX Element that represents the settings tab.
  */
 export function SettingsTab({ setUserName, chatSocket, userName, intraId}
-	: {  setUserName: React.Dispatch<React.SetStateAction<string>>, chatSocket: Socket | null, 
+	: {  setUserName: React.Dispatch<React.SetStateAction<string>>, chatSocket: Socket | null,
 		userName: string, intraId: string})
 	: React.JSX.Element
 {
@@ -44,11 +44,11 @@ export function SettingsTab({ setUserName, chatSocket, userName, intraId}
         <div>
 			<p className='mb-3'>Find user profile</p>
                     <SimpleForm
-                        onSubmit= { async (event: any) => { 
+                        onSubmit= { async (event: any) => {
                             event.preventDefault();
                             let numUser = Number(toFind);
                             const dmUser: any = await getUserInfo(numUser);
-                            
+
                             if (dmUser.message && dmUser.message === "Not Found")
                                 setErrorMessage("User not found");
                             else
@@ -61,12 +61,12 @@ export function SettingsTab({ setUserName, chatSocket, userName, intraId}
                         }}
                         content = {
                             <div className="flex">
-                                <InputSimple 
-                                    input={toFind} 
+                                <InputSimple
+                                    input={toFind}
                                     setInput={setToFind}
                                     placeholder={"IntraID"}
                                 />
-                                <StandardButton 
+                                <StandardButton
                                     text={"Search"}
                                     buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
                                 />
@@ -76,13 +76,15 @@ export function SettingsTab({ setUserName, chatSocket, userName, intraId}
 
 				<p>Name: {showUserName}</p>
 				{/* <image src={showImageUrl} /> */}
-				<Image
-                  src={showImageUrl}
-                  alt="User Avatar"
-                  width={120}
-                  height={120}
-                  className='rounded-lg'
-                />
+                {showImageUrl != "" && (
+                    <Image
+                      src={showImageUrl}
+                      alt="User Avatar"
+                      width={120}
+                      height={120}
+                      className='rounded-lg height-auto width-auto'
+                    />
+                )}
 				<p>Wins: {showWins}</p>
 				<p>Losses: {showLosses}</p>
         </div>

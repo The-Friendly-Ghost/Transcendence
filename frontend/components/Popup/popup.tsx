@@ -16,13 +16,6 @@ export const InvitePopup: React.FC = () => {
         closePopup();
     };
 
-    useEffect(() => {
-        console.log("Popup mounted");
-        return () => {
-            console.log("Popup unmounted");
-        }
-    }, []);
-
     if (!isPopupOpen) {
       return null;
     }

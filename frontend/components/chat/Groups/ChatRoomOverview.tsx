@@ -7,7 +7,7 @@ import { validateChatroom } from '@app/chat/utils';
 import InputSimple from '@components/common/Input';
 import { validateChatroomPassword } from '@app/chat/serverUtils';
 
-export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId, userName, chatSocket } 
+export default function ChatRoomOverview( { setCurrentRoom, room, myIntraId, userName, chatSocket }
 : ChatProps )
 : React.JSX.Element
 {
@@ -21,16 +21,16 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 	const [banUser, setBanUser] = useState<string>("");
 
   return (
-	<div className='p-5 border rounded-lg cursor-pointer' key={key}>
+	<div className='p-5 border rounded-lg cursor-pointer'>
 	  <p className='mb-2'>{room.name}</p>
 
 		{/* Check if room is public or private and show this in the information */}
-	  {room.private === true ? 
+	  {room.private === true ?
 	  	(<span className='mt-2 mr-3'><span className="inline-block h-2 w-2 rounded-full bg-orange-500 mr-2"></span>Private</span>)
 		:(<span className='mt-2 mr-3'><span className="inline-block h-2 w-2 rounded-full bg-green-500 mr-2"></span>Public</span>)}
-	
+
 		{/* Check if a room is password protected. If so, create password box */}
-	  {room.pw_hash === null ? 
+	  {room.pw_hash === null ?
 	  	(
 			<React.Fragment>
 				<span className='mt-2 mr-3'><span className="inline-block h-2 w-2 rounded-full bg-green-500 mr-2"></span>Open</span>
@@ -52,7 +52,7 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 
 				<div className='mt-3'>
 					<SimpleForm
-                        onSubmit= { async (event: any) => { 
+                        onSubmit= { async (event: any) => {
 							event.preventDefault();
 							const valid = await validateChatroomPassword(room, password);
 							if ( valid.body === true )
@@ -68,13 +68,13 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
                         }}
                         content = {
                             <div className="flex">
-                                <InputSimple 
-                                    input={password} 
+                                <InputSimple
+                                    input={password}
                                     setInput={setPassword}
                                     placeholder={"Enter password"}
 									type={"password"}
                                 />
-                                <StandardButton 
+                                <StandardButton
                                     text={"Join"}
                                     buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
                                 />
@@ -89,7 +89,7 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 		)}
 
 	{/* Check if user is the owner of the room. If so, show admin panel */}
-	{room.ownerIntraId === Number(myIntraId) ? 
+	{room.ownerIntraId === Number(myIntraId) ?
 		<details>
 			<summary className="h4_font font-bold pt-4 w-full cursor-pointer">
 				Admin Panel
@@ -110,17 +110,17 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 				{/* Add user to chatroom */}
 				<p className='my-3'>Add User</p>
 				<SimpleForm
-                    onSubmit= { async (event: any) => { 
+                    onSubmit= { async (event: any) => {
 						await put(`/chat/add_user_to_chatroom/${room.name}/${addUser}`)
                     }}
                     content = {
                         <div className="flex">
-                            <InputSimple 
-                                input={addUser} 
+                            <InputSimple
+                                input={addUser}
                                 setInput={setAddUser}
                                 placeholder={"IntraID"}
                             />
-                            <StandardButton 
+                            <StandardButton
                                 text={"Add"}
                                 buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
                             />
@@ -131,17 +131,17 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 				{/* Ban user */}
 				<p className='my-3'>Ban user</p>
 				<SimpleForm
-                    onSubmit= { async (event: any) => { 
+                    onSubmit= { async (event: any) => {
 						await put(`/chat/ban_user/${room.name}/${banUser}`)
                     }}
                     content = {
                         <div className="flex">
-                            <InputSimple 
+                            <InputSimple
                                 input={banUser}
                                 setInput={setBanUser}
                                 placeholder={"intraID"}
                             />
-                            <StandardButton 
+                            <StandardButton
                                 text={"Ban"}
                                 buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
                             />
@@ -152,17 +152,17 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 				{/* Remove user from chatroom*/}
 				<p className='my-3'>Remove User</p>
 				<SimpleForm
-                    onSubmit= { async (event: any) => { 
+                    onSubmit= { async (event: any) => {
 						await put(`/chat/remove_user_from_chatroom/${room.name}/${removeUser}`)
                     }}
                     content = {
                         <div className="flex">
-                            <InputSimple 
-                                input={removeUser} 
+                            <InputSimple
+                                input={removeUser}
                                 setInput={setRemoveUser}
                                 placeholder={"IntraID"}
                             />
-                            <StandardButton 
+                            <StandardButton
                                 text={"Remove"}
                                 buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
                             />
@@ -186,17 +186,17 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 				{/* Make Admin */}
 				<p className='my-3'>Make admin</p>
 				<SimpleForm
-                    onSubmit= { async (event: any) => { 
+                    onSubmit= { async (event: any) => {
 						await put(`/chat/make_admin/${room.name}/${makeAdmin}`)
                     }}
                     content = {
                         <div className="flex">
-                            <InputSimple 
-                                input={makeAdmin} 
+                            <InputSimple
+                                input={makeAdmin}
                                 setInput={setMakeAdmin}
                                 placeholder={"IntraID"}
                             />
-                            <StandardButton 
+                            <StandardButton
                                 text={"Set"}
                                 buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
                             />
@@ -207,17 +207,17 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 				{/* Change chatroom password */}
 				<p className='my-3'>New password</p>
 				<SimpleForm
-                    onSubmit= { async (event: any) => { 
+                    onSubmit= { async (event: any) => {
 						await put(`/chat/set_password/${room.name}/${newRoomPassword}`)
                     }}
                     content = {
                         <div className="flex">
-                            <InputSimple 
+                            <InputSimple
                                 input={newRoomPassword}
                                 setInput={setNewRoomPassword}
                                 placeholder={"new password"}
                             />
-                            <StandardButton 
+                            <StandardButton
                                 text={"Set"}
                                 buttonStyle={"border-white border-[1px] hover:bg-violet-700/40"}
                             />
@@ -242,7 +242,7 @@ export default function ChatRoomOverview( { setCurrentRoom, key, room, myIntraId
 
 			</div>
 		</details>
-		: 
+		:
 		<></>
 	}
 

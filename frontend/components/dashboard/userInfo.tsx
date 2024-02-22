@@ -6,6 +6,8 @@ import React from "react";
 import Image from "next/image";
 
 function userInfo(props: any) {
+  let image = null;
+
   function checkAvatar(userinfo: any): string {
     if (userinfo.avatar == null) return props.intraImage;
     else {
@@ -14,18 +16,23 @@ function userInfo(props: any) {
     }
   }
 
+  image = checkAvatar(props);
+
   return (
     <div>
       <h2 className="dashboard-block-title">User Info</h2>
       <div className="dashboard-block-content grid grid-cols-2 gap-4">
         <div className="col-span-1 flex flex-col justify-center">
-          <Image
-            src={checkAvatar(props)}
-            alt="User Avatar"
-            width={450}
-            height={450}
-            className="rounded-lg mb-2"
-          />
+          {image && (
+            <Image
+              src={image}
+              alt="User Avatar"
+              width={450}
+              height={450}
+              className="rounded-lg mb-2"
+              priority={true}
+            />
+          )}
           {/* <img className='rounded-lg mb-2' src={props.avatar} alt="User Avatar" /> */}
         </div>
         <div className="col-span-1grid grid-cols-1 gap-2 content-start">
