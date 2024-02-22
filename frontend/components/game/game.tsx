@@ -347,6 +347,8 @@ export class Game {
         console.log("setUsers: " + user2);
         this.user1Text.setText(user1.name);
         this.user2Text.setText(user2.name);
+        this.scoreText1.setText('score: 0');
+        this.scoreText2.setText('score: 0');
     };
 
     resize(): void {
